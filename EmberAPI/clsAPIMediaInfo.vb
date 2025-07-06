@@ -260,8 +260,8 @@ Public Class MediaInfo
                         aLang = ifoAudio(1)
                         If Not String.IsNullOrEmpty(aLang) Then
                             miAudio.LongLanguage = aLang
-                            If Not String.IsNullOrEmpty(Localization.Languages.Get_Alpha3_T_By_Name(miAudio.LongLanguage)) Then
-                                miAudio.Language = Localization.Languages.Get_Alpha3_T_By_Name(miAudio.LongLanguage)
+                            If Localization.ISOLangGetCode3ByLang(miAudio.LongLanguage) <> "" Then
+                                miAudio.Language = Localization.ISOLangGetCode3ByLang(miAudio.LongLanguage)
                             End If
                         End If
                         With miAudio
@@ -277,8 +277,8 @@ Public Class MediaInfo
                         sLang = cDVD.GetIFOSubPic(s)
                         If Not String.IsNullOrEmpty(sLang) Then
                             miSubtitle.LongLanguage = sLang
-                            If Not String.IsNullOrEmpty(Localization.Languages.Get_Alpha3_T_By_Name(miSubtitle.LongLanguage)) Then
-                                miSubtitle.Language = Localization.Languages.Get_Alpha3_T_By_Name(miSubtitle.LongLanguage)
+                            If Localization.ISOLangGetCode3ByLang(miSubtitle.LongLanguage) <> "" Then
+                                miSubtitle.Language = Localization.ISOLangGetCode3ByLang(miSubtitle.LongLanguage)
                             End If
                             If Not String.IsNullOrEmpty(miSubtitle.Language) Then
                                 'miSubtitle.SubsForced = Not supported(?)
@@ -611,7 +611,12 @@ Public Class MediaInfo
         Dim fiOut As New MediaContainers.Fileinfo
 
         Handle = MediaInfo_New()
-        UseAnsi = False
+
+        If Master.isWindows Then
+            UseAnsi = False
+        Else
+            UseAnsi = True
+        End If
 
         Open(IFOPath)
 
@@ -637,8 +642,8 @@ Public Class MediaInfo
             aLang = Get_(StreamKind.Audio, a, "Language/String")
             If Not String.IsNullOrEmpty(aLang) Then
                 miAudio.LongLanguage = aLang
-                If Not String.IsNullOrEmpty(Localization.Languages.Get_Alpha3_T_By_Name(miAudio.LongLanguage)) Then
-                    miAudio.Language = Localization.Languages.Get_Alpha3_T_By_Name(miAudio.LongLanguage)
+                If Localization.ISOLangGetCode3ByLang(miAudio.LongLanguage) <> "" Then
+                    miAudio.Language = Localization.ISOLangGetCode3ByLang(miAudio.LongLanguage)
                 End If
             End If
             fiOut.StreamDetails.Audio.Add(miAudio)
@@ -655,8 +660,8 @@ Public Class MediaInfo
             sLang = Get_(StreamKind.Text, s, "Language/String")
             If Not String.IsNullOrEmpty(sLang) Then
                 miSubtitle.LongLanguage = sLang
-                If Not String.IsNullOrEmpty(Localization.Languages.Get_Alpha3_T_By_Name(miSubtitle.LongLanguage)) Then
-                    miSubtitle.Language = Localization.Languages.Get_Alpha3_T_By_Name(miSubtitle.LongLanguage)
+                If Localization.ISOLangGetCode3ByLang(miSubtitle.LongLanguage) <> "" Then
+                    miSubtitle.Language = Localization.ISOLangGetCode3ByLang(miSubtitle.LongLanguage)
                 End If
             End If
             If Not String.IsNullOrEmpty(miSubtitle.Language) Then
@@ -776,7 +781,12 @@ Public Class MediaInfo
 
                 If Not sPath = String.Empty Then
                     Handle = MediaInfo_New()
-                    UseAnsi = False
+
+                    If Master.isWindows Then
+                        UseAnsi = False
+                    Else
+                        UseAnsi = True
+                    End If
 
                     Open(sPath)
 
@@ -863,8 +873,8 @@ Public Class MediaInfo
                     vLang = Get_(StreamKind.Visual, v, "Language/String")
                     If Not String.IsNullOrEmpty(vLang) Then
                         miVideo.LongLanguage = vLang
-                        If Not String.IsNullOrEmpty(Localization.Languages.Get_Alpha3_T_By_Name(miVideo.LongLanguage)) Then
-                            miVideo.Language = Localization.Languages.Get_Alpha3_T_By_Name(miVideo.LongLanguage)
+                        If Localization.ISOLangGetCode3ByLang(miVideo.LongLanguage) <> "" Then
+                            miVideo.Language = Localization.ISOLangGetCode3ByLang(miVideo.LongLanguage)
                         End If
                     End If
 
@@ -901,8 +911,8 @@ Public Class MediaInfo
                     aLang = Get_(StreamKind.Audio, a, "Language/String")
                     If Not String.IsNullOrEmpty(aLang) Then
                         miAudio.LongLanguage = Regex.Match(aLang, "\w*").Value.Trim
-                        If Not String.IsNullOrEmpty(Localization.Languages.Get_Alpha3_T_By_Name(miAudio.LongLanguage)) Then
-                            miAudio.Language = Localization.Languages.Get_Alpha3_T_By_Name(miAudio.LongLanguage)
+                        If Not String.IsNullOrEmpty(Localization.ISOLangGetCode3ByLang(miAudio.LongLanguage)) Then
+                            miAudio.Language = Localization.ISOLangGetCode3ByLang(miAudio.LongLanguage)
                         End If
                         'IFO Scan results (used when scanning VIDEO_TS files)
                     ElseIf fiIFO.StreamDetails.Audio.Count > 0 Then
@@ -928,8 +938,8 @@ Public Class MediaInfo
                     sLang = Get_(StreamKind.Text, s, "Language/String")
                     If Not String.IsNullOrEmpty(sLang) Then
                         miSubtitle.LongLanguage = Regex.Match(sLang, "\w*").Value.Trim
-                        If Not String.IsNullOrEmpty(Localization.Languages.Get_Alpha3_T_By_Name(miSubtitle.LongLanguage)) Then
-                            miSubtitle.Language = Localization.Languages.Get_Alpha3_T_By_Name(miSubtitle.LongLanguage)
+                        If Not String.IsNullOrEmpty(Localization.ISOLangGetCode3ByLang(miSubtitle.LongLanguage)) Then
+                            miSubtitle.Language = Localization.ISOLangGetCode3ByLang(miSubtitle.LongLanguage)
                         End If
                         miSubtitle.Forced = True
 
@@ -1091,7 +1101,7 @@ Public Class MediaInfo
                 'DVD structure
 
 
-                Dim di As New DirectoryInfo(Directory.GetParent(sPath).FullName)
+                Dim di As New IO.DirectoryInfo(Directory.GetParent(sPath).FullName)
                 If ISO Then
                     'ie. path = driveletter & "VIDEO_TS"
                     di = New DirectoryInfo(sPath)
@@ -1132,7 +1142,7 @@ Public Class MediaInfo
             Else
 
                 ' looking at the largest m2ts file within the \BDMV\STREAM folder
-                Dim di As New DirectoryInfo(Directory.GetParent(sPath).FullName)
+                Dim di As New IO.DirectoryInfo(Directory.GetParent(sPath).FullName)
                 If ISO Then
                     'ie. path = driveletter & "VIDEO_TS"
                     di = New DirectoryInfo(sPath)

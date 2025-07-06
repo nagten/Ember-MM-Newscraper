@@ -345,14 +345,14 @@ Partial Class frmSettingsHolder
     Friend WithEvents pnlSettings As System.Windows.Forms.Panel
     Friend WithEvents gbGetWatchedState As System.Windows.Forms.GroupBox
     Friend WithEvents tblGetWatchedState As System.Windows.Forms.TableLayoutPanel
-    Friend WithEvents gbGetWatchedStateMovies As Windows.Forms.GroupBox
-    Friend WithEvents TableLayoutPanel2 As Windows.Forms.TableLayoutPanel
-    Friend WithEvents chkGetWatchedStateBeforeEdit_Movie As Windows.Forms.CheckBox
-    Friend WithEvents chkGetWatchedStateScraperMulti_Movie As Windows.Forms.CheckBox
-    Friend WithEvents chkGetWatchedStateScraperSingle_Movie As Windows.Forms.CheckBox
-    Friend WithEvents gbGetWatchedStateTVEpisodes As Windows.Forms.GroupBox
-    Friend WithEvents TableLayoutPanel3 As Windows.Forms.TableLayoutPanel
-    Friend WithEvents chkGetWatchedStateBeforeEdit_TVEpisode As Windows.Forms.CheckBox
-    Friend WithEvents chkGetWatchedStateScraperMulti_TVEpisode As Windows.Forms.CheckBox
-    Friend WithEvents chkGetWatchedStateScraperSingle_TVEpisode As Windows.Forms.CheckBox
+    Friend WithEvents gbGetWatchedStateMovies As System.Windows.Forms.GroupBox
+    Friend WithEvents TableLayoutPanel2 As System.Windows.Forms.TableLayoutPanel
+    Friend WithEvents chkGetWatchedStateBeforeEdit_Movie As System.Windows.Forms.CheckBox
+    Friend WithEvents chkGetWatchedStateScraperMulti_Movie As System.Windows.Forms.CheckBox
+    Friend WithEvents chkGetWatchedStateScraperSingle_Movie As System.Windows.Forms.CheckBox
+    Friend WithEvents gbGetWatchedStateTVEpisodes As System.Windows.Forms.GroupBox
+    Friend WithEvents TableLayoutPanel3 As System.Windows.Forms.TableLayoutPanel
+    Friend WithEvents chkGetWatchedStateBeforeEdit_TVEpisode As System.Windows.Forms.CheckBox
+    Friend WithEvents chkGetWatchedStateScraperMulti_TVEpisode As System.Windows.Forms.CheckBox
+    Friend WithEvents chkGetWatchedStateScraperSingle_TVEpisode As System.Windows.Forms.CheckBox
 End Class

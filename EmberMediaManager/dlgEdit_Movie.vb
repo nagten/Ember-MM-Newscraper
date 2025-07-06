@@ -189,8 +189,7 @@ Public Class dlgEdit_Movie
             lblLinkTrailer.Text = String.Concat(.GetString(227, "Trailer URL"), ":")
             lblMPAA.Text = String.Concat(.GetString(235, "MPAA Rating"), ":")
             lblMPAADesc.Text = String.Concat(.GetString(229, "MPAA Rating Description:"), ":")
-            lblMovieset.Text = String.Concat(.GetString(1381, "Movieset"), ":")
-            lblMoviesetAdditional.Text = String.Concat(Master.eLang.GetString(798, "Additional Moviesets"), ":")
+            lblMovieSet.Text = String.Concat(.GetString(1381, "Movieset"), ":")
             lblOriginalTitle.Text = String.Concat(.GetString(302, "Original Title"), ":")
             lblOutline.Text = String.Concat(.GetString(64, "Plot Outline"), ":")
             lblPlot.Text = String.Concat(.GetString(65, "Plot"), ":")
@@ -343,9 +342,7 @@ Public Class dlgEdit_Movie
         End If
     End Sub
 
-    Private Sub CheckedListBox_ItemCheck(ByVal sender As Object, ByVal e As ItemCheckEventArgs) Handles _
-        clbMoviesets.ItemCheck,
-        clbTVShowLinks.ItemCheck
+    Private Sub CheckedListBox_ItemCheck(ByVal sender As Object, ByVal e As ItemCheckEventArgs) Handles clbTVShowLinks.ItemCheck
         Dim nCheckedListBox = DirectCast(sender, CheckedListBox)
         If e.Index = 0 Then
             For i As Integer = 1 To nCheckedListBox.Items.Count - 1
@@ -357,8 +354,6 @@ Public Class dlgEdit_Movie
     End Sub
 
     Private Sub ClearSelection() Handles tcEdit.SelectedIndexChanged
-        clbMoviesets.ClearSelected()
-        clbTVShowLinks.ClearSelected()
         dgvCertifications.ClearSelection()
         dgvCountries.ClearSelection()
         dgvCredits.ClearSelection()
@@ -469,10 +464,6 @@ Public Class dlgEdit_Movie
             'Genres
             Genres_Fill()
             'Moviesets
-            If Not Master.eSettings.MovieScraperCollectionsYAMJCompatibleSets Then
-                lblMoviesetAdditional.Visible = False
-                clbMoviesets.Visible = False
-            End If
             Moviesets_Fill()
             'MPAA
             MPAA_Fill()
@@ -484,12 +475,9 @@ Public Class dlgEdit_Movie
             'Plot
             txtPlot.Text = .Plot
             'Premiered
-            Dim nDatePremiered As Date
-            If .PremieredSpecified AndAlso Date.TryParseExact(.Premiered, "yyyy-MM-dd", Globalization.CultureInfo.InvariantCulture, Globalization.DateTimeStyles.None, nDatePremiered) Then
-                dtpPremiered.Value = nDatePremiered
+            If .PremieredSpecified Then
+                dtpPremiered.Text = .Premiered
                 dtpPremiered.Checked = True
-            Else
-                dtpPremiered.Value = Date.Now
             End If
             'Ratings
             Ratings_Fill()
@@ -800,7 +788,22 @@ Public Class dlgEdit_Movie
                 .Genres.Clear()
             End If
             'Movieset
-            .Sets.Items = Moviesets_Get()
+            .Sets.Clear()
+            Select Case cbMovieset.SelectedIndex
+                Case -1
+                    'new manually added entry
+                    If Not String.IsNullOrEmpty(cbMovieset.Text.Trim) Then
+                        .Sets.Add(New MediaContainers.SetDetails With {
+                                 .Title = cbMovieset.Text.Trim
+                                 })
+                    End If
+                Case 0
+                    '[none]
+                    'do nothing, Sets has already been cleared
+                Case Else
+                    'scraped or existing MovieSet has been selected
+                    .Sets.Add(DirectCast(cbMovieset.SelectedValue, MediaContainers.SetDetails))
+            End Select
             'MPAA
             If Not String.IsNullOrEmpty(txtMPAA.Text.Trim) Then
                 .MPAA = txtMPAA.Text.Trim
@@ -1682,96 +1685,23 @@ Public Class dlgEdit_Movie
     End Sub
 
     Private Sub Moviesets_Fill()
-        'primary movieset
-        Dim primaryItems As New Dictionary(Of MediaContainers.MoviesetDetails, String) From {
-            {New MediaContainers.MoviesetDetails, Master.eLang.None}
-        }
-        'load primary movieset into DropDownList
+        Dim items As New Dictionary(Of MediaContainers.SetDetails, String)
+        items.Add(New MediaContainers.SetDetails, Master.eLang.None)
         If tmpDBElement.Movie.SetsSpecified Then
-            primaryItems.Add(tmpDBElement.Movie.Sets.Items.OrderBy(Function(f) f.Order).First, tmpDBElement.Movie.Sets.Items.OrderBy(Function(f) f.Order).First.Title)
+            items.Add(tmpDBElement.Movie.Sets.First, tmpDBElement.Movie.Sets.First.Title)
         End If
-        'load all other moviesets into DropDownList
-        For Each nSet In Master.DB.GetAll_MoviesetDetails.Where(Function(f) Not primaryItems.Keys.Contains(f) AndAlso Not primaryItems.Values.Contains(f.Title))
-            primaryItems.Add(nSet, nSet.Title)
+        For Each nSet In Master.DB.GetAll_MovieSetDetails.Where(Function(f) Not items.Keys.Contains(f) AndAlso Not items.Values.Contains(f.Title))
+            items.Add(nSet, nSet.Title)
         Next
-        'fill DropDownList
-        cbMovieset.DataSource = primaryItems.ToList
+        cbMovieset.DataSource = items.ToList
         cbMovieset.DisplayMember = "Value"
         cbMovieset.ValueMember = "Key"
-        'select DropDownList entry if needed
         If tmpDBElement.Movie.SetsSpecified Then
             cbMovieset.SelectedIndex = 1
         Else
             cbMovieset.SelectedIndex = 0
         End If
-
-        'additional moviesets
-        If Master.eSettings.MovieScraperCollectionsYAMJCompatibleSets Then
-            Dim additionalItems As New Dictionary(Of MediaContainers.MoviesetDetails, String) From {
-                {New MediaContainers.MoviesetDetails, Master.eLang.None}
-            }
-            'load additional moviesets into CheckedListBox 
-            For i As Integer = 1 To tmpDBElement.Movie.Sets.Items.Count - 1
-                additionalItems.Add(tmpDBElement.Movie.Sets.Items(i), tmpDBElement.Movie.Sets.Items(i).Title)
-            Next
-            'load all other moviesets into CheckedListBox
-            For Each nSet In Master.DB.GetAll_MoviesetDetails.Where(Function(f) Not additionalItems.Keys.Contains(f) AndAlso Not additionalItems.Values.Contains(f.Title))
-                additionalItems.Add(nSet, nSet.Title)
-            Next
-            'fill CheckedListBox
-            clbMoviesets.DataSource = additionalItems.ToList
-            clbMoviesets.DisplayMember = "Value"
-            clbMoviesets.ValueMember = "Key"
-            'set all additional moviesets to "Checked"
-            If tmpDBElement.Movie.Sets.Items.Count > 1 Then
-                For i As Integer = 1 To tmpDBElement.Movie.Sets.Items.Count - 1
-                    clbMoviesets.SetItemChecked(i, True)
-                Next
-            Else
-                'select "[none]" if no additional moviesets has been specified
-                clbMoviesets.SetItemChecked(0, True)
-            End If
-        End If
     End Sub
-
-    Private Function Moviesets_Get() As List(Of MediaContainers.MoviesetDetails)
-        Dim nList As New List(Of MediaContainers.MoviesetDetails)
-        Dim iOrder As Integer = 0
-        'primary movieset
-        Select Case cbMovieset.SelectedIndex
-            Case -1
-                'new manually added entry
-                If Not String.IsNullOrEmpty(cbMovieset.Text.Trim) Then
-                    nList.Add(New MediaContainers.MoviesetDetails With {
-                              .Order = iOrder,
-                              .Title = cbMovieset.Text.Trim
-                              })
-                    iOrder += 1
-                End If
-            Case 0
-                '[none]
-                'do nothing, Sets has already been cleared
-            Case Else
-                'scraped or existing MovieSet has been selected
-                Dim nSet = DirectCast(cbMovieset.SelectedValue, MediaContainers.MoviesetDetails)
-                nSet.Order = iOrder
-                nList.Add(nSet)
-                iOrder += 1
-        End Select
-        'additional moviesets
-        If Master.eSettings.MovieScraperCollectionsYAMJCompatibleSets Then
-            Dim checkedSets = clbMoviesets.CheckedItems.Cast(Of KeyValuePair(Of MediaContainers.MoviesetDetails, String)).Where(Function(f) f.Value IsNot Master.eLang.None).Select(Function(f) f.Key)
-            For i As Integer = 0 To checkedSets.Count - 1
-                If checkedSets(i) IsNot Nothing Then
-
-                End If
-                checkedSets(i).Order = iOrder
-                nList.Add(checkedSets(i))
-                iOrder += 1
-            Next
-        End If
-        Return nList
-    End Function
 
     Private Sub MPAA_Changed(sender As Object, e As EventArgs) Handles lbMPAA.SelectedIndexChanged, txtMPAADescription.TextChanged
         If Not lbMPAA.SelectedIndex = 0 AndAlso lbMPAA.SelectedItems.Count = 1 Then
@@ -1865,33 +1795,21 @@ Public Class dlgEdit_Movie
                 Dim iVotes As Integer
                 If r.Cells(colRatingsSource.Name).Value IsNot Nothing AndAlso
                     Not String.IsNullOrEmpty(r.Cells(colRatingsSource.Name).Value.ToString.Trim) AndAlso
-                    r.Cells(colRatingsMax.Name).Value IsNot Nothing AndAlso
                     Integer.TryParse(r.Cells(colRatingsMax.Name).Value.ToString, iMax) AndAlso
-                    r.Cells(colRatingsValue.Name).Value IsNot Nothing AndAlso
                     Double.TryParse(r.Cells(colRatingsValue.Name).Value.ToString, dblValue) AndAlso
-                    r.Cells(colRatingsVotes.Name).Value IsNot Nothing AndAlso
                     Integer.TryParse(r.Cells(colRatingsVotes.Name).Value.ToString, iVotes) Then
                     nList.Add(New MediaContainers.RatingDetails With {
-                              .IsDefault = CBool(r.Cells(colRatingsDefault.Name).Value),
-                              .Max = iMax,
-                              .Type = r.Cells(colRatingsSource.Name).Value.ToString.Trim,
-                              .Value = dblValue,
-                              .Votes = iVotes
-                              })
+                             .IsDefault = CBool(r.Cells(colRatingsDefault.Name).Value),
+                             .Max = iMax,
+                             .Type = r.Cells(colRatingsSource.Name).Value.ToString.Trim,
+                             .Value = dblValue,
+                             .Votes = iVotes
+                             })
                 End If
             End If
         Next
         Return nList
     End Function
-
-    Private Sub Ratings_DefaultValuesNeeded(sender As Object, e As DataGridViewRowEventArgs) Handles dgvRatings.DefaultValuesNeeded
-        With e.Row
-            .Cells(colRatingsSource.Name).Value = String.Empty
-            .Cells(colRatingsValue.Name).Value = 0
-            .Cells(colRatingsMax.Name).Value = 0
-            .Cells(colRatingsVotes.Name).Value = 0
-        End With
-    End Sub
 
     Private Sub Subtitles_Delete()
         If lvSubtitles.SelectedItems.Count > 0 Then

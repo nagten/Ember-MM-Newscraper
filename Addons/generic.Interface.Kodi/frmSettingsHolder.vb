@@ -160,7 +160,7 @@ Public Class frmSettingsHolder
     Private Sub btnAddHost_Click(sender As Object, e As EventArgs) Handles btnAddHost.Click
         Dim newHost As New KodiInterface.Host
         Dim dlgNew As New dlgHost(newHost)
-        If dlgNew.ShowDialog = Windows.Forms.DialogResult.OK Then
+        If dlgNew.ShowDialog = System.Windows.Forms.DialogResult.OK Then
             HostList.Add(dlgNew.Result)
             ReloadKodiHosts()
         End If

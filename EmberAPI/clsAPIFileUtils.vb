@@ -556,7 +556,7 @@ Namespace FileUtils
                 Return Path.Combine(Path.GetDirectoryName(strPath), Path.GetFileNameWithoutExtension(strPath))
                 'Return Path.Combine(Directory.GetParent(sPath).FullName, Path.GetFileNameWithoutExtension(sPath))
             Catch ex As Exception
-                logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(Windows.Forms.Keys.Tab) & "Source: <" & strPath & ">")
+                logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(System.Windows.Forms.Keys.Tab) & "Source: <" & strPath & ">")
                 Return String.Empty
             End Try
         End Function
@@ -580,18 +580,16 @@ Namespace FileUtils
             Return filename
         End Function
 
-        Public Shared Function ReturnSettingsFile(ByVal directoryName As String, ByVal fileName As String) As String
+        Public Shared Function ReturnSettingsFile(ByVal dir As String, ByVal name As String) As String
             'Cocotus, Load from central Dir folder if it exists!
-            Dim configpath As String = String.Concat(Functions.AppPath, directoryName, Path.DirectorySeparatorChar, fileName)
+            Dim configpath As String = String.Concat(Functions.AppPath, dir, Path.DirectorySeparatorChar, name)
 
             'AdvancedSettings.xml is still at old place (root) -> move to new place if there's no AdvancedSettings.xml !
-            If Not File.Exists(configpath) AndAlso
-                File.Exists(Path.Combine(Functions.AppPath, fileName)) AndAlso
-                Directory.Exists(String.Concat(Functions.AppPath, directoryName, Path.DirectorySeparatorChar)) Then
-                File.Move(Path.Combine(Functions.AppPath, fileName), String.Concat(Functions.AppPath, directoryName, Path.DirectorySeparatorChar, fileName))
+            If Not File.Exists(configpath) AndAlso File.Exists(Path.Combine(Functions.AppPath, name)) AndAlso Directory.Exists(String.Concat(Functions.AppPath, dir, Path.DirectorySeparatorChar)) Then
+                File.Move(Path.Combine(Functions.AppPath, name), String.Concat(Functions.AppPath, dir, Path.DirectorySeparatorChar, name))
                 'New Settings folder doesn't exist -> do it the old way...
-            ElseIf Not Directory.Exists(String.Concat(Functions.AppPath, directoryName, Path.DirectorySeparatorChar)) Then
-                configpath = Path.Combine(Functions.AppPath, fileName)
+            ElseIf Not Directory.Exists(String.Concat(Functions.AppPath, dir, Path.DirectorySeparatorChar)) Then
+                configpath = Path.Combine(Functions.AppPath, name)
             End If
 
             Return configpath
@@ -633,7 +631,7 @@ Namespace FileUtils
                                                      Master.eLang.GetString(630, "Reconnect the source and press Retry"), ".",
                                                      Environment.NewLine, Environment.NewLine,
                                                      dbMovie.Filename), String.Empty,
-                                                                        MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning) = Windows.Forms.DialogResult.Cancel Then Return False
+                                                                        MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning) = System.Windows.Forms.DialogResult.Cancel Then Return False
                 Else
                     Return False
                 End If
@@ -674,7 +672,7 @@ Namespace FileUtils
                                                      Master.eLang.GetString(630, "Reconnect the source and press Retry"), ".",
                                                      Environment.NewLine, Environment.NewLine,
                                                      dbTV.Filename), String.Empty,
-                                                                     MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning) = Windows.Forms.DialogResult.Cancel Then Return False
+                                                                     MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning) = System.Windows.Forms.DialogResult.Cancel Then Return False
                 Else
                     Return False
                 End If
@@ -690,7 +688,7 @@ Namespace FileUtils
                                                      Master.eLang.GetString(630, "Reconnect the source and press Retry"), ".",
                                                      Environment.NewLine, Environment.NewLine,
                                                      dbTV.ShowPath), String.Empty,
-                                                                     MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning) = Windows.Forms.DialogResult.Cancel Then Return False
+                                                                     MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning) = System.Windows.Forms.DialogResult.Cancel Then Return False
                 Else
                     Return False
                 End If
@@ -834,7 +832,7 @@ Namespace FileUtils
 #Region "Methods"
 
         Public Shared Sub Cache_All()
-            If MessageBox.Show(Master.eLang.GetString(104, "Are you sure?"), Master.eLang.GetString(565, "Clear Cache"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
+            If MessageBox.Show(Master.eLang.GetString(104, "Are you sure?"), Master.eLang.GetString(565, "Clear Cache"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) = System.Windows.Forms.DialogResult.Yes Then
                 If Directory.Exists(Master.TempPath) Then
                     Try
                         Dim dInfo As New DirectoryInfo(Master.TempPath)
@@ -857,7 +855,7 @@ Namespace FileUtils
 
         Public Shared Sub Cache_Show(ByVal TVDBIDs As List(Of String), ByVal cData As Boolean, ByVal cImages As Boolean)
             If TVDBIDs IsNot Nothing AndAlso TVDBIDs.Count > 0 Then
-                If MessageBox.Show(Master.eLang.GetString(104, "Are you sure?"), Master.eLang.GetString(565, "Clear Cache"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
+                If MessageBox.Show(Master.eLang.GetString(104, "Are you sure?"), Master.eLang.GetString(565, "Clear Cache"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) = System.Windows.Forms.DialogResult.Yes Then
                     For Each id As String In TVDBIDs
                         Try
                             Dim basePath As String = Path.Combine(Master.TempPath, String.Concat("Shows", Path.DirectorySeparatorChar, id))
@@ -2594,26 +2592,25 @@ Namespace FileUtils
             Try
                 If Directory.Exists(sourcePath) Then
                     'Get information about files in the directory
-                    Dim diSourcePath As New DirectoryInfo(sourcePath)
-                    Dim lstFilesInDir As New List(Of FileInfo)
-                    Dim lstVideosInDir As New List(Of FileInfo)
+                    Dim di As New DirectoryInfo(sourcePath)
+                    Dim lFi As New List(Of FileInfo)
+                    Dim lMediaList As IOrderedEnumerable(Of FileInfo)
 
-                    'Create a list of all media files with a valid extension in the directory
-                    lstVideosInDir = diSourcePath.GetFiles.Where(Function(f) Master.eSettings.FileSystemValidExts.Contains(f.Extension.ToLower) AndAlso
-                             Not Regex.IsMatch(f.Name, String.Concat("[^\w\s]\s?(", AdvancedSettings.GetSetting("NotValidFileContains", "trailer|sample"), ")"), RegexOptions.IgnoreCase) AndAlso
-                             ((Master.eSettings.MovieSkipStackedSizeCheck AndAlso Common.isStacked(f.FullName)) OrElse
-                             (Not Convert.ToInt32(Master.eSettings.MovieSkipLessThan) > 0 OrElse f.Length >= Master.eSettings.MovieSkipLessThan * 1048576))).OrderByDescending(Function(f) Path.GetFileNameWithoutExtension(f.FullName)).ToList
-
-                    'Create a list of all other files in the directory
+                    'Create a List of files in the directory
                     Try
-                        lstFilesInDir.AddRange(diSourcePath.GetFiles.Where(Function(f) Not lstVideosInDir.Select(Function(t) t.FullName).Contains(f.FullName)))
+                        lFi.AddRange(di.GetFiles())
                     Catch
                     End Try
 
+                    'Create a list of all media files with a valid extension in the directory
+                    lMediaList = lFi.Where(Function(f) Master.eSettings.FileSystemValidExts.Contains(f.Extension.ToLower) AndAlso
+                             Not Regex.IsMatch(f.Name, String.Concat("[^\w\s]\s?(", AdvancedSettings.GetSetting("NotValidFileContains", "trailer|sample"), ")"), RegexOptions.IgnoreCase) AndAlso ((Master.eSettings.MovieSkipStackedSizeCheck AndAlso
+                            Common.isStacked(f.FullName)) OrElse (Not Convert.ToInt32(Master.eSettings.MovieSkipLessThan) > 0 OrElse f.Length >= Master.eSettings.MovieSkipLessThan * 1048576))).OrderByDescending(Function(f) Path.GetFileNameWithoutExtension(f.FullName))
+
                     'For each valid file in the directory...
-                    For Each sFile As FileInfo In lstVideosInDir
+                    For Each sFile As FileInfo In lMediaList
                         Dim nMovie As New Database.DBElement(Enums.ContentType.Movie) With {.Filename = sFile.FullName, .IsSingle = False}
-                        RaiseEvent ProgressUpdated((iCount \ lstVideosInDir.Count * 100), String.Concat(Master.eLang.GetString(219, "Moving "), sFile.Name))
+                        RaiseEvent ProgressUpdated((iCount \ lMediaList.Count * 100), String.Concat(Master.eLang.GetString(219, "Moving "), sFile.Name))
 
                         'create a new directory for the movie
                         Dim strNewPath As String = Path.Combine(sourcePath, Path.GetFileNameWithoutExtension(Common.RemoveStackingMarkers(nMovie.Filename)))
@@ -2664,7 +2661,7 @@ Namespace FileUtils
                         Next
 
                         'search for files that starts with the same name like the file name
-                        For Each aFile In lstFilesInDir.Where(Function(f) File.Exists(f.FullName) AndAlso f.FullName.ToLower.StartsWith(Common.RemoveExtFromPath(nMovie.Filename).ToLower))
+                        For Each aFile In lFi.Where(Function(f) Not lMediaList.Contains(f) AndAlso File.Exists(f.FullName) AndAlso f.FullName.ToLower.StartsWith(Common.RemoveExtFromPath(nMovie.Filename).ToLower))
                             aFile.MoveTo(Path.Combine(strNewPath, Path.GetFileName(aFile.Name)))
                         Next
                         iCount += 1

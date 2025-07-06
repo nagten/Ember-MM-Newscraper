@@ -215,7 +215,7 @@ Namespace TVDBs
                                            .Order = aCast.SortOrder,
                                            .Role = aCast.Role,
                                            .URLOriginal = If(Not String.IsNullOrEmpty(aCast.ImagePath), String.Format("{0}/banners/{1}", _TVDBMirror.Address, aCast.ImagePath), String.Empty),
-                                           .TVDbId = CStr(aCast.Id)
+                                           .TVDB = CStr(aCast.Id)
                                            })
                     Next
                 End If
@@ -293,14 +293,12 @@ Namespace TVDBs
 
             'Rating
             If FilteredOptions.bMainRating Then
-                If TVShowInfo.Series.Rating > 0 AndAlso TVShowInfo.Series.RatingCount > 0 Then
-                    nTVShow.Ratings.Add(New MediaContainers.RatingDetails With {
-                                        .Max = 10,
-                                        .Type = "tvdb",
-                                        .Value = TVShowInfo.Series.Rating,
-                                        .Votes = TVShowInfo.Series.RatingCount
-                                        })
-                End If
+                nTVShow.Ratings.Add(New MediaContainers.RatingDetails With {
+                                    .Max = 10,
+                                    .Type = "tvdb",
+                                    .Value = TVShowInfo.Series.Rating,
+                                    .Votes = TVShowInfo.Series.RatingCount
+                                    })
             End If
 
             If bwTVDB.CancellationPending Then Return Nothing
@@ -474,7 +472,7 @@ Namespace TVDBs
                                             .Order = aCast.SortOrder,
                                             .Role = aCast.Role,
                                             .URLOriginal = If(Not String.IsNullOrEmpty(aCast.ImagePath), String.Format("{0}/banners/{1}", _TVDBMirror.Address, aCast.ImagePath), String.Empty),
-                                            .TVDbId = CStr(aCast.Id)
+                                            .TVDB = CStr(aCast.Id)
                                             })
                     Next
                 End If
@@ -539,14 +537,12 @@ Namespace TVDBs
 
             'Rating
             If FilteredOptions.bMainRating Then
-                If EpisodeInfo.Rating > 0 AndAlso EpisodeInfo.RatingCount > 0 Then
-                    nEpisode.Ratings.Add(New MediaContainers.RatingDetails With {
-                                         .Max = 10,
-                                         .Type = "tvdb",
-                                         .Value = EpisodeInfo.Rating,
-                                         .Votes = EpisodeInfo.RatingCount
-                                         })
-                End If
+                nEpisode.Ratings.Add(New MediaContainers.RatingDetails With {
+                                     .Max = 10,
+                                     .Type = "tvdb",
+                                     .Value = EpisodeInfo.Rating,
+                                     .Votes = EpisodeInfo.RatingCount
+                                     })
             End If
 
             'ThumbPoster

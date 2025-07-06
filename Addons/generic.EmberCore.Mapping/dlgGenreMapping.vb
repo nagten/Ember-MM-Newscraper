@@ -80,7 +80,7 @@ Public Class dlgGenreMapping
     End Sub
 
     Private Sub btnGenreRemove_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnGenreRemove.Click
-        If MessageBox.Show(Master.eLang.GetString(661, "This will remove the Genre from all Mappings. Are you sure?"), Master.eLang.GetString(662, "Remove Genre"), MessageBoxButtons.YesNo) = DialogResult.Yes Then
+        If MsgBox(Master.eLang.GetString(661, "This will remove the Genre from all Mappings. Are you sure?"), MsgBoxStyle.YesNo, Master.eLang.GetString(662, "Remove Genre")) = MsgBoxResult.Yes Then
             If dgvGenres.SelectedRows.Count > 0 Then 'AndAlso Not dgvLang.CurrentRow.Cells(1).Value Is Nothing Then
                 Dim gProperty As GenreProperty = DirectCast(dgvGenres.SelectedRows(0).Tag, GenreProperty)
                 tmpGenreXML.Genres.Remove(gProperty)
@@ -180,7 +180,7 @@ Public Class dlgGenreMapping
     End Sub
 
     Private Sub dgvGenres_CellPainting(sender As Object, e As DataGridViewCellPaintingEventArgs) Handles dgvGenres.CellPainting
-        If e.RowIndex >= 0 AndAlso Not dgvGenres.Item(e.ColumnIndex, e.RowIndex).Displayed Then
+        If Master.isWindows AndAlso e.RowIndex >= 0 AndAlso Not dgvGenres.Item(e.ColumnIndex, e.RowIndex).Displayed Then
             e.Handled = True
             Return
         End If
@@ -274,7 +274,7 @@ Public Class dlgGenreMapping
     End Sub
 
     Private Sub dgvMappings_CellPainting(sender As Object, e As DataGridViewCellPaintingEventArgs) Handles dgvMappings.CellPainting
-        If e.RowIndex >= 0 AndAlso Not dgvMappings.Item(e.ColumnIndex, e.RowIndex).Displayed Then
+        If Master.isWindows AndAlso e.RowIndex >= 0 AndAlso Not dgvMappings.Item(e.ColumnIndex, e.RowIndex).Displayed Then
             e.Handled = True
             Return
         End If

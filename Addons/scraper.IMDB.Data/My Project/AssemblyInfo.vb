@@ -8,11 +8,11 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("scraper.Data.IMDB")> 
-<Assembly: AssemblyDescription("http://forum.xbmc.org/forumdisplay.php?fid=195")> 
+<Assembly: AssemblyTitle("scraper.Data.IMDB")>
+<Assembly: AssemblyDescription("https://github.com/nagten/Ember-MM-Newscraper")>
 <Assembly: AssemblyCompany("Ember Media Manager")>
 <Assembly: AssemblyProduct("scraper.Data.IMDB")>
-<Assembly: AssemblyCopyright("Copyright © 2021")>
+<Assembly: AssemblyCopyright("Copyright © 2025")>
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)>
@@ -31,5 +31,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("1.11.1.0")>
-<Assembly: AssemblyFileVersion("1.11.1.0")>
+<Assembly: AssemblyVersion("1.11.1.1")>
+<Assembly: AssemblyFileVersion("1.11.1.1")>

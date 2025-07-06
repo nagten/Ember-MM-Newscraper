@@ -69,7 +69,7 @@ Public Class dlgIMDBSearchResults_TV
         _IMDB = IMDB
     End Sub
 
-    Public Overloads Function ShowDialog(ByVal sShowTitle As String, ByVal sShowPath As String, ByVal ScrapeModifiers As Structures.ScrapeModifiers, ByVal FilteredOptions As Structures.ScrapeOptions) As Windows.Forms.DialogResult
+    Public Overloads Function ShowDialog(ByVal sShowTitle As String, ByVal sShowPath As String, ByVal ScrapeModifiers As Structures.ScrapeModifiers, ByVal FilteredOptions As Structures.ScrapeOptions) As System.Windows.Forms.DialogResult
         tmrWait.Enabled = False
         tmrWait.Interval = 250
         tmrLoad.Enabled = False
@@ -92,7 +92,7 @@ Public Class dlgIMDBSearchResults_TV
         Return ShowDialog()
     End Function
 
-    Public Overloads Function ShowDialog(ByVal Res As SearchResults_TVShow, ByVal sShowTitle As String, ByVal sShowPath As String) As Windows.Forms.DialogResult
+    Public Overloads Function ShowDialog(ByVal Res As SearchResults_TVShow, ByVal sShowTitle As String, ByVal sShowPath As String) As System.Windows.Forms.DialogResult
         tmrWait.Enabled = False
         tmrWait.Interval = 250
         tmrLoad.Enabled = False

@@ -99,7 +99,7 @@ Public Class StringUtils
             Next
             Return newName.Trim
         Catch ex As Exception
-            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(Windows.Forms.Keys.Tab) & "Name: " & name & " generated an error message")
+            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(System.Windows.Forms.Keys.Tab) & "Name: " & name & " generated an error message")
         End Try
         Return name.Trim
     End Function
@@ -273,7 +273,7 @@ Public Class StringUtils
             Next
 
         Catch ex As Exception
-            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(Windows.Forms.Keys.Tab) & "Source of <" & sString & "> generated an error")
+            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(System.Windows.Forms.Keys.Tab) & "Source of <" & sString & "> generated an error")
             'Return the source string and move along
             sReturn = sString.Trim
         End Try
@@ -540,7 +540,7 @@ Public Class StringUtils
         Return Regex.Match(strRawString, "((19|20)\d{2})", RegexOptions.RightToLeft).Value.Trim
     End Function
 
-    Public Shared Function FormatDuration(ByVal duration As String, ByVal contentType As Enums.ContentType) As String
+    Public Shared Function FormatDuration(ByVal tDur As String, ByVal contentType As Enums.ContentType) As String
         Dim strMask As String = String.Empty
         Select Case contentType
             Case Enums.ContentType.Movie
@@ -550,14 +550,14 @@ Public Class StringUtils
             Case Else
                 Return String.Empty
         End Select
-        Dim rmDuration As Match = Regex.Match(duration, "(([0-9]+)h)?\s?(([0-9]+)min)?\s?(([0-9]+)s)?")
+        Dim rmDuration As Match = Regex.Match(tDur, "(([0-9]+)h)?\s?(([0-9]+)min)?\s?(([0-9]+)s)?")
         Dim iHours As Integer = If(Not String.IsNullOrEmpty(rmDuration.Groups(2).Value), (Convert.ToInt32(rmDuration.Groups(2).Value)), 0)
         Dim iMinutes As Integer = If(Not String.IsNullOrEmpty(rmDuration.Groups(4).Value), (Convert.ToInt32(rmDuration.Groups(4).Value)), 0)
         Dim iSeconds As Integer = If(Not String.IsNullOrEmpty(rmDuration.Groups(6).Value), (Convert.ToInt32(rmDuration.Groups(6).Value)), 0)
 
         'new handling: only seconds as tdur
-        If Integer.TryParse(duration, 0) Then
-            Dim ts As New TimeSpan(0, 0, Convert.ToInt32(duration))
+        If Integer.TryParse(tDur, 0) Then
+            Dim ts As New TimeSpan(0, 0, Convert.ToInt32(tDur))
             iHours = ts.Hours
             iMinutes = ts.Minutes
             iSeconds = ts.Seconds
@@ -706,7 +706,7 @@ Public Class StringUtils
             Next
             Return result.ToString()
         Catch ex As Exception
-            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(Windows.Forms.Keys.Tab) & "Input <" & stext & "> generated an error message")
+            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(System.Windows.Forms.Keys.Tab) & "Input <" & stext & "> generated an error message")
         End Try
 
         'If we get here, something went wrong.
@@ -820,7 +820,7 @@ Public Class StringUtils
             'TODO Dekker500 - This used to be "sReturn.ToLower", but didn't make sense why it did... Investigate up the chain! (What does the case have to do with punctuation anyway???)
             sReturn = Regex.Replace(sReturn, "\s\s(\s+)?", " ")
         Catch ex As Exception
-            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(Windows.Forms.Keys.Tab) & "Source of <" & sString & "> generated an error")
+            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(System.Windows.Forms.Keys.Tab) & "Source of <" & sString & "> generated an error")
             'Return the source string and move along
             sReturn = sString
         End Try
@@ -935,7 +935,7 @@ Public Class StringUtils
                 Return New Size(Convert.ToInt32(SplitSize(0)), Convert.ToInt32(SplitSize(1)))
             End If
         Catch ex As Exception
-            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(Windows.Forms.Keys.Tab) & "Source of <" & sString & "> generated an error")
+            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(System.Windows.Forms.Keys.Tab) & "Source of <" & sString & "> generated an error")
         End Try
         'If you get here, something went wrong
         Return New Size(0, 0)
@@ -982,7 +982,7 @@ Public Class StringUtils
                 End If
             End If
         Catch ex As Exception
-            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(Windows.Forms.Keys.Tab) & "Source of <" & sString & "> generated an error")
+            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(System.Windows.Forms.Keys.Tab) & "Source of <" & sString & "> generated an error")
         End Try
 
         'If you get here, something went wrong
