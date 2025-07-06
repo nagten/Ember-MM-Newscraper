@@ -465,19 +465,19 @@ Partial Class dlgGenreMapping
     Friend WithEvents btnMappingAdd As System.Windows.Forms.Button
     Friend WithEvents btnGenreRemove As System.Windows.Forms.Button
     Friend WithEvents btnGenreAdd As System.Windows.Forms.Button
-    Friend WithEvents btnImageRemove As Windows.Forms.Button
-    Friend WithEvents MappingSearchString As Windows.Forms.DataGridViewTextBoxColumn
-    Friend WithEvents GenreEnabled As Windows.Forms.DataGridViewCheckBoxColumn
-    Friend WithEvents GenreName As Windows.Forms.DataGridViewTextBoxColumn
-    Friend WithEvents btnGenreConfirmAll As Windows.Forms.Button
-    Friend WithEvents btnGenreConfirm As Windows.Forms.Button
-    Friend WithEvents btnMappingConfirmAll As Windows.Forms.Button
-    Friend WithEvents btnMappingConfirm As Windows.Forms.Button
-    Friend WithEvents btnOK As Windows.Forms.Button
-    Friend WithEvents btnCancel As Windows.Forms.Button
-    Friend WithEvents StatusStrip1 As Windows.Forms.StatusStrip
-    Friend WithEvents tsslSpring As Windows.Forms.ToolStripStatusLabel
-    Friend WithEvents tspbStatus As Windows.Forms.ToolStripProgressBar
-    Friend WithEvents tblMain As Windows.Forms.TableLayoutPanel
-    Friend WithEvents tblImage As Windows.Forms.TableLayoutPanel
+    Friend WithEvents btnImageRemove As System.Windows.Forms.Button
+    Friend WithEvents MappingSearchString As System.Windows.Forms.DataGridViewTextBoxColumn
+    Friend WithEvents GenreEnabled As System.Windows.Forms.DataGridViewCheckBoxColumn
+    Friend WithEvents GenreName As System.Windows.Forms.DataGridViewTextBoxColumn
+    Friend WithEvents btnGenreConfirmAll As System.Windows.Forms.Button
+    Friend WithEvents btnGenreConfirm As System.Windows.Forms.Button
+    Friend WithEvents btnMappingConfirmAll As System.Windows.Forms.Button
+    Friend WithEvents btnMappingConfirm As System.Windows.Forms.Button
+    Friend WithEvents btnOK As System.Windows.Forms.Button
+    Friend WithEvents btnCancel As System.Windows.Forms.Button
+    Friend WithEvents StatusStrip1 As System.Windows.Forms.StatusStrip
+    Friend WithEvents tsslSpring As System.Windows.Forms.ToolStripStatusLabel
+    Friend WithEvents tspbStatus As System.Windows.Forms.ToolStripProgressBar
+    Friend WithEvents tblMain As System.Windows.Forms.TableLayoutPanel
+    Friend WithEvents tblImage As System.Windows.Forms.TableLayoutPanel
 End Class

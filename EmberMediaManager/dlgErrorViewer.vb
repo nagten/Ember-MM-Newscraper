@@ -124,7 +124,15 @@ Public Class dlgErrorViewer
     End Sub
 
     Private Sub llblURL_LinkClicked(ByVal sender As Object, ByVal e As LinkLabelLinkClickedEventArgs) Handles llblURL.LinkClicked
-        Process.Start("http://bugs.embermediamanager.org/thebuggenie/embermediamanager/issues/open")
+        If Master.isWindows Then
+            Process.Start("http://bugs.embermediamanager.org/thebuggenie/embermediamanager/issues/open")
+        Else
+            Using Explorer As New Process
+                Explorer.StartInfo.FileName = "xdg-open"
+                Explorer.StartInfo.Arguments = "http://bugs.embermediamanager.org/thebuggenie/embermediamanager/issues/open"
+                Explorer.Start()
+            End Using
+        End If
     End Sub
 
     Private Sub OK_Button_Click(ByVal sender As Object, ByVal e As EventArgs) Handles OK_Button.Click

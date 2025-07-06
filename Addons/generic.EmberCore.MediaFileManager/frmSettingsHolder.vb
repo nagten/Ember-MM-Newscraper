@@ -86,7 +86,7 @@ Public Class frmSettingsHolder
             With Me.ofdBrowse
                 .FileName = "TeraCopy.exe"
                 .Filter = "TeraCopy|*.exe"
-                If .ShowDialog = Windows.Forms.DialogResult.OK Then
+                If .ShowDialog = System.Windows.Forms.DialogResult.OK Then
                     If Not String.IsNullOrEmpty(.FileName) Then
                         Me.txtTeraCopyPath.Text = .FileName
                     End If
@@ -116,7 +116,15 @@ Public Class frmSettingsHolder
     End Sub
 
     Private Sub lblTeraCopyLink_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles lblTeraCopyLink.LinkClicked
-        Process.Start("https://codesector.com/teracopy")
+        If Master.isWindows Then
+            Process.Start("https://codesector.com/teracopy")
+        Else
+            Using Explorer As New Process
+                Explorer.StartInfo.FileName = "xdg-open"
+                Explorer.StartInfo.Arguments = "https://codesector.com/teracopy"
+                Explorer.Start()
+            End Using
+        End If
     End Sub
 
     Private Sub lvPaths_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lvPaths.SelectedIndexChanged

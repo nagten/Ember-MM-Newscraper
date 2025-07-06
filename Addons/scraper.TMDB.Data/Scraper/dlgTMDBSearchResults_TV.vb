@@ -107,7 +107,7 @@ Public Class dlgTMDBSearchResults_TV
             _InfoCache.Clear()
             _PosterCache.Clear()
             ClearInfo()
-            lblLoading.Text = String.Concat(Master.eLang.GetString(758, "Please wait"), "...")
+            Label3.Text = Master.eLang.GetString(934, "Searching TMDB...")
             pnlLoading.Visible = True
             chkManual.Enabled = False
             _TMDB.CancelAsync()
@@ -129,8 +129,14 @@ Public Class dlgTMDBSearchResults_TV
             Dim fPath As String = Directory.GetParent(txtFileName.Text).FullName
             If Not String.IsNullOrEmpty(fPath) Then
                 Using Explorer As New Diagnostics.Process
-                    Explorer.StartInfo.FileName = "explorer.exe"
-                    Explorer.StartInfo.Arguments = String.Format("/select,""{0}""", fPath)
+
+                    If Master.isWindows Then
+                        Explorer.StartInfo.FileName = "explorer.exe"
+                        Explorer.StartInfo.Arguments = String.Format("/select,""{0}""", fPath)
+                    Else
+                        Explorer.StartInfo.FileName = "xdg-open"
+                        Explorer.StartInfo.Arguments = String.Format("""{0}""", fPath)
+                    End If
                     Explorer.Start()
                 End Using
             End If
@@ -329,7 +335,7 @@ Public Class dlgTMDBSearchResults_TV
         lblGenreHeader.Text = String.Concat(Master.eLang.GetString(725, "Genres"), ":")
         lblTMDBHeader.Text = String.Concat(Master.eLang.GetString(933, "TMDB ID"), ":")
         lblPlotHeader.Text = Master.eLang.GetString(242, "Plot Outline:")
-        lblLoading.Text = String.Concat(Master.eLang.GetString(758, "Please wait"), "...")
+        Label3.Text = Master.eLang.GetString(934, "Searching TMDB...")
     End Sub
 
     Private Sub tmrLoad_Tick(ByVal sender As Object, ByVal e As EventArgs) Handles tmrLoad.Tick
@@ -339,7 +345,7 @@ Public Class dlgTMDBSearchResults_TV
         tmrWait.Stop()
         tmrLoad.Stop()
         pnlLoading.Visible = True
-        lblLoading.Text = Master.eLang.GetString(875, "Downloading details...")
+        Label3.Text = Master.eLang.GetString(875, "Downloading details...")
 
         _TMDB.GetSearchTVShowInfoAsync(tvResults.SelectedNode.Tag.ToString, pOpt)
     End Sub

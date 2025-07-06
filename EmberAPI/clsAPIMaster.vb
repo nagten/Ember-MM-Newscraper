@@ -38,9 +38,10 @@ Public Class Master
     Public Shared DefaultOptions_TV As New Structures.ScrapeOptions
     Public Shared SettingsPath As String = Path.Combine(Functions.AppPath, "Profiles\Default")
     Public Shared TempPath As String = Path.Combine(Functions.AppPath, "Temp")
-    Public Shared eLang As New clsXmlTranslations
+    Public Shared eLang As New Localization
     Public Shared eProfiles As New Profiles
     Public Shared eSettings As New Settings
+    Public Shared isWindows As Boolean = Functions.CheckIfWindows
 
 #End Region 'Fields
 

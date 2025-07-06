@@ -100,14 +100,14 @@ Public Class NFO
             If (Not DBMovie.Movie.CertificationsSpecified OrElse Not Master.eSettings.MovieLockCert) AndAlso ScrapeOptions.bMainCertifications AndAlso
                 scrapedmovie.CertificationsSpecified AndAlso Master.eSettings.MovieScraperCert AndAlso Not new_Certification Then
 
-                If Master.eSettings.MovieScraperCertCountry = Master.eLang.All Then
+                If Master.eSettings.MovieScraperCertLang = Master.eLang.All Then
                     DBMovie.Movie.Certifications = scrapedmovie.Certifications
                     new_Certification = True
                 Else
-                    Dim Country = Localization.Countries.Items.FirstOrDefault(Function(l) l.Alpha2 = Master.eSettings.MovieScraperCertCountry)
-                    If Country IsNot Nothing AndAlso Country.Name IsNot Nothing AndAlso Not String.IsNullOrEmpty(Country.Name) Then
+                    Dim CertificationLanguage = APIXML.CertificationLanguages.Languages.FirstOrDefault(Function(l) l.Abbreviation = Master.eSettings.MovieScraperCertLang)
+                    If CertificationLanguage IsNot Nothing AndAlso CertificationLanguage.Name IsNot Nothing AndAlso Not String.IsNullOrEmpty(CertificationLanguage.Name) Then
                         For Each tCert In scrapedmovie.Certifications
-                            If tCert.StartsWith(Country.Name) Then
+                            If tCert.StartsWith(CertificationLanguage.Name) Then
                                 DBMovie.Movie.Certifications.Clear()
                                 DBMovie.Movie.Certifications.Add(tCert)
                                 new_Certification = True
@@ -144,8 +144,8 @@ Public Class NFO
             'Collections
             If (Not DBMovie.Movie.SetsSpecified OrElse Not Master.eSettings.MovieLockCollections) AndAlso
                 scrapedmovie.SetsSpecified AndAlso Master.eSettings.MovieScraperCollectionsAuto AndAlso Not new_Collections Then
-                DBMovie.Movie.Sets.Items.Clear()
-                For Each movieset In scrapedmovie.Sets.Items
+                DBMovie.Movie.Sets.Clear()
+                For Each movieset In scrapedmovie.Sets
                     If Not String.IsNullOrEmpty(movieset.Title) Then
                         For Each sett As AdvancedSettingsSetting In AdvancedSettings.GetAllSettings.Where(Function(y) y.Name.StartsWith("MovieSetTitleRenamer:"))
                             movieset.Title = movieset.Title.Replace(sett.Name.Substring(21), sett.Value)
@@ -350,7 +350,7 @@ Public Class NFO
              Not new_MPAA AndAlso (Not DBMovie.Movie.MPAASpecified OrElse Not Master.eSettings.MovieLockMPAA)) Then
 
             Dim tmpstring As String = String.Empty
-            tmpstring = If(Master.eSettings.MovieScraperCertCountry = "us", StringUtils.USACertToMPAA(String.Join(" / ", DBMovie.Movie.Certifications.ToArray)), If(Master.eSettings.MovieScraperCertOnlyValue, String.Join(" / ", DBMovie.Movie.Certifications.ToArray).Split(Convert.ToChar(":"))(1), String.Join(" / ", DBMovie.Movie.Certifications.ToArray)))
+            tmpstring = If(Master.eSettings.MovieScraperCertLang = "us", StringUtils.USACertToMPAA(String.Join(" / ", DBMovie.Movie.Certifications.ToArray)), If(Master.eSettings.MovieScraperCertOnlyValue, String.Join(" / ", DBMovie.Movie.Certifications.ToArray).Split(Convert.ToChar(":"))(1), String.Join(" / ", DBMovie.Movie.Certifications.ToArray)))
             'only update DBMovie if scraped result is not empty/nothing!
             If Not String.IsNullOrEmpty(tmpstring) Then
                 DBMovie.Movie.MPAA = tmpstring
@@ -497,14 +497,14 @@ Public Class NFO
             If (Not DBTV.TVShow.CertificationsSpecified OrElse Not Master.eSettings.TVLockShowCert) AndAlso ScrapeOptions.bMainCertifications AndAlso
                 scrapedshow.CertificationsSpecified AndAlso Master.eSettings.TVScraperShowCert AndAlso Not new_Certification Then
 
-                If Master.eSettings.TVScraperShowCertCountry = Master.eLang.All Then
+                If Master.eSettings.TVScraperShowCertLang = Master.eLang.All Then
                     DBTV.TVShow.Certifications = scrapedshow.Certifications
                     new_Certification = True
                 Else
-                    Dim Country = Localization.Countries.Items.FirstOrDefault(Function(l) l.Alpha2 = Master.eSettings.TVScraperShowCertCountry)
-                    If Country IsNot Nothing AndAlso Country.Name IsNot Nothing AndAlso Not String.IsNullOrEmpty(Country.Name) Then
+                    Dim CertificationLanguage = APIXML.CertificationLanguages.Languages.FirstOrDefault(Function(l) l.Abbreviation = Master.eSettings.TVScraperShowCertLang)
+                    If CertificationLanguage IsNot Nothing AndAlso CertificationLanguage.Name IsNot Nothing AndAlso Not String.IsNullOrEmpty(CertificationLanguage.Name) Then
                         For Each tCert In scrapedshow.Certifications
-                            If tCert.StartsWith(Country.Name) Then
+                            If tCert.StartsWith(CertificationLanguage.Name) Then
                                 DBTV.TVShow.Certifications.Clear()
                                 DBTV.TVShow.Certifications.Add(tCert)
                                 new_Certification = True
@@ -713,7 +713,7 @@ Public Class NFO
              Not new_MPAA AndAlso (Not DBTV.TVShow.MPAASpecified OrElse Not Master.eSettings.TVLockShowMPAA)) Then
 
             Dim tmpstring As String = String.Empty
-            tmpstring = If(Master.eSettings.TVScraperShowCertCountry = "us", StringUtils.USACertToMPAA(String.Join(" / ", DBTV.TVShow.Certifications.ToArray)), If(Master.eSettings.TVScraperShowCertOnlyValue, String.Join(" / ", DBTV.TVShow.Certifications.ToArray).Split(Convert.ToChar(":"))(1), String.Join(" / ", DBTV.TVShow.Certifications.ToArray)))
+            tmpstring = If(Master.eSettings.TVScraperShowCertLang = "us", StringUtils.USACertToMPAA(String.Join(" / ", DBTV.TVShow.Certifications.ToArray)), If(Master.eSettings.TVScraperShowCertOnlyValue, String.Join(" / ", DBTV.TVShow.Certifications.ToArray).Split(Convert.ToChar(":"))(1), String.Join(" / ", DBTV.TVShow.Certifications.ToArray)))
             'only update DBMovie if scraped result is not empty/nothing!
             If Not String.IsNullOrEmpty(tmpstring) Then
                 DBTV.TVShow.MPAA = tmpstring
@@ -1181,19 +1181,19 @@ Public Class NFO
             If mNFO.FileInfoSpecified Then
                 If mNFO.FileInfo.StreamDetails.AudioSpecified Then
                     For Each aStream In mNFO.FileInfo.StreamDetails.Audio.Where(Function(f) f.LanguageSpecified AndAlso Not f.LongLanguageSpecified)
-                        aStream.LongLanguage = Localization.Languages.Get_Name_By_Alpha3(aStream.Language)
+                        aStream.LongLanguage = Localization.ISOGetLangByCode3(aStream.Language)
                     Next
                 End If
                 If mNFO.FileInfo.StreamDetails.SubtitleSpecified Then
                     For Each sStream In mNFO.FileInfo.StreamDetails.Subtitle.Where(Function(f) f.LanguageSpecified AndAlso Not f.LongLanguageSpecified)
-                        sStream.LongLanguage = Localization.Languages.Get_Name_By_Alpha3(sStream.Language)
+                        sStream.LongLanguage = Localization.ISOGetLangByCode3(sStream.Language)
                     Next
                 End If
             End If
             If mNFO.SetsSpecified Then
-                For i = mNFO.Sets.Items.Count - 1 To 0 Step -1
-                    If Not mNFO.Sets.Items(i).TitleSpecified Then
-                        mNFO.Sets.Items.RemoveAt(i)
+                For i = mNFO.Sets.Count - 1 To 0 Step -1
+                    If Not mNFO.Sets(i).TitleSpecified Then
+                        mNFO.Sets.RemoveAt(i)
                     End If
                 Next
             End If
@@ -1225,12 +1225,12 @@ Public Class NFO
             If eNFO.FileInfoSpecified Then
                 If eNFO.FileInfo.StreamDetails.AudioSpecified Then
                     For Each aStream In eNFO.FileInfo.StreamDetails.Audio.Where(Function(f) f.LanguageSpecified AndAlso Not f.LongLanguageSpecified)
-                        aStream.LongLanguage = Localization.Languages.Get_Name_By_Alpha3(aStream.Language)
+                        aStream.LongLanguage = Localization.ISOGetLangByCode3(aStream.Language)
                     Next
                 End If
                 If eNFO.FileInfo.StreamDetails.SubtitleSpecified Then
                     For Each sStream In eNFO.FileInfo.StreamDetails.Subtitle.Where(Function(f) f.LanguageSpecified AndAlso Not f.LongLanguageSpecified)
-                        sStream.LongLanguage = Localization.Languages.Get_Name_By_Alpha3(sStream.Language)
+                        sStream.LongLanguage = Localization.ISOGetLangByCode3(sStream.Language)
                     Next
                 End If
             End If
@@ -1288,7 +1288,7 @@ Public Class NFO
                 End If
             Next
         Catch ex As Exception
-            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(Windows.Forms.Keys.Tab) & "<" & DBMovie.Filename & ">")
+            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(System.Windows.Forms.Keys.Tab) & "<" & DBMovie.Filename & ">")
         End Try
     End Sub
     ''' <summary>
@@ -1306,7 +1306,7 @@ Public Class NFO
                 End If
             Next
         Catch ex As Exception
-            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(Windows.Forms.Keys.Tab) & "<" & DBMovieSet.Filename & ">")
+            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(System.Windows.Forms.Keys.Tab) & "<" & DBMovieSet.Filename & ">")
         End Try
     End Sub
 
@@ -1949,12 +1949,12 @@ Public Class NFO
                                 If xmlEp.FileInfoSpecified Then
                                     If xmlEp.FileInfo.StreamDetails.AudioSpecified Then
                                         For Each aStream In xmlEp.FileInfo.StreamDetails.Audio.Where(Function(f) f.LanguageSpecified AndAlso Not f.LongLanguageSpecified)
-                                            aStream.LongLanguage = Localization.Languages.Get_Name_By_Alpha3(aStream.Language)
+                                            aStream.LongLanguage = Localization.ISOGetLangByCode3(aStream.Language)
                                         Next
                                     End If
                                     If xmlEp.FileInfo.StreamDetails.SubtitleSpecified Then
                                         For Each sStream In xmlEp.FileInfo.StreamDetails.Subtitle.Where(Function(f) f.LanguageSpecified AndAlso Not f.LongLanguageSpecified)
-                                            sStream.LongLanguage = Localization.Languages.Get_Name_By_Alpha3(sStream.Language)
+                                            sStream.LongLanguage = Localization.ISOGetLangByCode3(sStream.Language)
                                         Next
                                     End If
                                 End If
@@ -2014,12 +2014,12 @@ Public Class NFO
                                 If xmlEp.FileInfoSpecified Then
                                     If xmlEp.FileInfo.StreamDetails.AudioSpecified Then
                                         For Each aStream In xmlEp.FileInfo.StreamDetails.Audio.Where(Function(f) f.LanguageSpecified AndAlso Not f.LongLanguageSpecified)
-                                            aStream.LongLanguage = Localization.Languages.Get_Name_By_Alpha3(aStream.Language)
+                                            aStream.LongLanguage = Localization.ISOGetLangByCode3(aStream.Language)
                                         Next
                                     End If
                                     If xmlEp.FileInfo.StreamDetails.SubtitleSpecified Then
                                         For Each sStream In xmlEp.FileInfo.StreamDetails.Subtitle.Where(Function(f) f.LanguageSpecified AndAlso Not f.LongLanguageSpecified)
-                                            sStream.LongLanguage = Localization.Languages.Get_Name_By_Alpha3(sStream.Language)
+                                            sStream.LongLanguage = Localization.ISOGetLangByCode3(sStream.Language)
                                         Next
                                     End If
                                 End If

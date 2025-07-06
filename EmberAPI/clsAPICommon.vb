@@ -18,11 +18,12 @@
 ' # along with Ember Media Manager.  If not, see <http://www.gnu.org/licenses/>. #
 ' ################################################################################
 
-Imports NLog
 Imports System.IO
 Imports System.Text.RegularExpressions
 Imports System.Xml.Serialization
 Imports System.Drawing
+Imports System.Windows.Forms
+Imports NLog
 
 Public Class Containers
 
@@ -221,34 +222,137 @@ Public Class Containers
 
     Public Class SettingsPanel
 
+#Region "Fields"
+
+        Dim _imageindex As Integer
+        Dim _image As Image
+        Dim _name As String
+        Dim _order As Integer
+        Dim _panel As Panel
+        Dim _parent As String
+        Dim _prefix As String
+        Dim _text As String
+        Dim _type As String
+
+#End Region 'Fields
+
+#Region "Constructors"
+        ''' <summary>
+        ''' Overload the default New() method to provide proper initialization of fields
+        ''' </summary>
+        ''' <remarks></remarks>
+        Public Sub New()
+            Clear()
+        End Sub
+
+#End Region 'Constructors
+
 #Region "Properties"
 
-        Public Property ImageIndex() As Integer = 0
+        Public Property ImageIndex() As Integer
+            Get
+                Return _imageindex
+            End Get
+            Set(ByVal value As Integer)
+                _imageindex = value
+            End Set
+        End Property
 
         <XmlIgnore()>
-        Public Property Image() As Image = Nothing
+        Public Property Image() As Image
+            Get
+                Return _image
+            End Get
+            Set(ByVal value As Image)
+                _image = value
+            End Set
+        End Property
 
-        Public Property Name() As String = String.Empty
+        Public Property Name() As String
+            Get
+                Return _name
+            End Get
+            Set(ByVal value As String)
+                _name = value
+            End Set
+        End Property
 
-        Public Property Order() As Integer = 0
+        Public Property Order() As Integer
+            Get
+                Return _order
+            End Get
+            Set(ByVal value As Integer)
+                _order = value
+            End Set
+        End Property
 
         <XmlIgnore()>
-        Public Property Panel() As Panel = New Panel
+        Public Property Panel() As Panel
+            Get
+                Return _panel
+            End Get
+            Set(ByVal value As Panel)
+                _panel = value
+            End Set
+        End Property
 
-        Public Property Parent() As String = String.Empty
+        Public Property Parent() As String
+            Get
+                Return _parent
+            End Get
+            Set(ByVal value As String)
+                _parent = value
+            End Set
+        End Property
 
-        Public Property Prefix() As String = String.Empty
+        Public Property Prefix() As String
+            Get
+                Return _prefix
+            End Get
+            Set(ByVal value As String)
+                _prefix = value
+            End Set
+        End Property
 
-        Public Property Text() As String = String.Empty
+        Public Property Text() As String
+            Get
+                Return _text
+            End Get
+            Set(ByVal value As String)
+                _text = value
+            End Set
+        End Property
 
-        Public Property Type() As String = String.Empty
+        Public Property Type() As String
+            Get
+                Return _type
+            End Get
+            Set(ByVal value As String)
+                _type = value
+            End Set
+        End Property
 
-#End Region 'Properties 
+#End Region 'Properties
+
+#Region "Methods"
+
+        Public Sub Clear()
+            _imageindex = 0
+            _image = Nothing
+            _name = String.Empty
+            _order = 0
+            _panel = New Panel
+            _parent = String.Empty
+            _prefix = String.Empty
+            _text = String.Empty
+            _type = String.Empty
+        End Sub
+
+#End Region 'Methods
 
     End Class 'SettingsPanel
 
     Public Class Addon
-
 #Region "Fields"
         Private _id As Integer
         Private _name As String
@@ -718,6 +822,22 @@ Public Class Enums
         ScannerEnded
         ScannerStarted
     End Enum
+
+    Public Enum ScraperEventType As Integer
+        BannerItem = 0
+        CharacterArtItem = 1
+        ClearArtItem = 2
+        ClearLogoItem = 3
+        DiscArtItem = 4
+        ExtrafanartsItem = 5
+        ExtrathumbsItem = 6
+        FanartItem = 7
+        LandscapeItem = 8
+        NFOItem = 9
+        PosterItem = 10
+        ThemeItem = 11
+        TrailerItem = 12
+    End Enum
     ''' <summary>
     ''' Enum representing which Movies/TVShows should be scraped,
     ''' and whether results should be automatically chosen or asked of the user.
@@ -898,6 +1018,18 @@ Public Class Functions
     ''' <remarks>Note that the value of IntPtr.Size is 4 in a 32-bit process, and 8 in a 64-bit process</remarks>
     Public Shared Function Check64Bit() As Boolean
         Return (IntPtr.Size = 8)
+    End Function
+    ''' <summary>
+    ''' Are we running on a Windows operating system?
+    ''' </summary>
+    ''' <returns><c>True</c>if we are running on Windows, <c>False</c> otherwise</returns>
+    Public Shared Function CheckIfWindows() As Boolean
+        Dim os As OperatingSystem = Environment.OSVersion
+        Dim pid As PlatformID = os.Platform
+        If pid = PlatformID.Win32NT OrElse pid = PlatformID.Win32Windows OrElse pid = PlatformID.Win32S OrElse pid = PlatformID.WinCE Then
+            Return True
+        End If
+        Return False
     End Function
     ''' <summary>
     ''' Determine whether this instance is intended as a beta test version
@@ -1142,7 +1274,7 @@ Public Class Functions
             End If
 
         Catch ex As Exception
-            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(Windows.Forms.Keys.Tab) & "Failed trying to identify last Extrafanart from path: " & sPath)
+            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(System.Windows.Forms.Keys.Tab) & "Failed trying to identify last Extrafanart from path: " & sPath)
         End Try
 
         Return iMod
@@ -1175,7 +1307,7 @@ Public Class Functions
             End If
 
         Catch ex As Exception
-            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(Windows.Forms.Keys.Tab) & "Failed trying to identify last Extrathumb from path: " & sPath)
+            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(System.Windows.Forms.Keys.Tab) & "Failed trying to identify last Extrathumb from path: " & sPath)
         End Try
 
         Return iMod
@@ -1187,7 +1319,11 @@ Public Class Functions
     ''' <remarks>Windows distributions have ffmpeg in the Bin subdirectory.
     ''' Note that no validation is done to ensure that ffmpeg actually exists.</remarks>
     Public Shared Function GetFFMpeg() As String
-        Return String.Concat(AppPath, "Bin", Path.DirectorySeparatorChar, "ffmpeg.exe")
+        If Master.isWindows Then
+            Return String.Concat(Functions.AppPath, "Bin", Path.DirectorySeparatorChar, "ffmpeg.exe")
+        Else
+            Return "ffmpeg"
+        End If
     End Function
 
     ''' <summary>
@@ -1197,7 +1333,11 @@ Public Class Functions
     ''' <remarks>Windows distributions have FFProbe in the Bin subdirectory.
     ''' Note that no validation is done to ensure that FFProbe actually exists.</remarks>
     Public Shared Function GetFFProbe() As String
-        Return String.Concat(AppPath, "Bin", Path.DirectorySeparatorChar, "ffprobe.exe")
+        If Master.isWindows Then
+            Return String.Concat(Functions.AppPath, "Bin", Path.DirectorySeparatorChar, "ffprobe.exe")
+        Else
+            Return "ffprobe"
+        End If
     End Function
     ''' <summary>
     ''' Determines the path to the desired season of a given show
@@ -1222,7 +1362,7 @@ Public Class Functions
                                 Return sDir.FullName
                             End If
                         Catch ex As Exception
-                            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(Windows.Forms.Keys.Tab) & " Failed to determine path for season " & iSeason & " in path: " & ShowPath)
+                            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(System.Windows.Forms.Keys.Tab) & " Failed to determine path for season " & iSeason & " in path: " & ShowPath)
                         End Try
                     Next
                 Next
@@ -1274,96 +1414,94 @@ Public Class Functions
     ''' <summary>
     ''' Determine the Structures.MovieScrapeOptions options that are in common between the two parameters
     ''' </summary>
-    ''' <param name="options">Base Structures.MovieScrapeOptions</param>
-    ''' <param name="options2">Secondary Structures.MovieScrapeOptions</param>
+    ''' <param name="Options">Base Structures.MovieScrapeOptions</param>
+    ''' <param name="Options2">Secondary Structures.MovieScrapeOptions</param>
     ''' <returns>Structures.MovieScrapeOptions representing the AndAlso union of the two parameters</returns>
     ''' <remarks></remarks>
-    Public Shared Function ScrapeOptionsAndAlso(ByVal options As Structures.ScrapeOptions, ByVal options2 As Structures.ScrapeOptions) As Structures.ScrapeOptions
-        Dim FilteredOptions As New Structures.ScrapeOptions With {
-            .bEpisodeActors = options.bEpisodeActors AndAlso options2.bEpisodeActors,
-            .bEpisodeAired = options.bEpisodeAired AndAlso options2.bEpisodeAired,
-            .bEpisodeCredits = options.bEpisodeCredits AndAlso options2.bEpisodeCredits,
-            .bEpisodeDirectors = options.bEpisodeDirectors AndAlso options2.bEpisodeDirectors,
-            .bEpisodeGuestStars = options.bEpisodeGuestStars AndAlso options2.bEpisodeGuestStars,
-            .bEpisodePlot = options.bEpisodePlot AndAlso options2.bEpisodePlot,
-            .bEpisodeRating = options.bEpisodeRating AndAlso options2.bEpisodeRating,
-            .bEpisodeRuntime = options.bEpisodeRuntime AndAlso options2.bEpisodeRuntime,
-            .bEpisodeTitle = options.bEpisodeTitle AndAlso options2.bEpisodeTitle,
-            .bEpisodeUserRating = options.bEpisodeUserRating AndAlso options2.bEpisodeUserRating,
-            .bMainActors = options.bMainActors AndAlso options2.bMainActors,
-            .bMainCertifications = options.bMainCertifications AndAlso options2.bMainCertifications,
-            .bMainCollectionID = options.bMainCollectionID AndAlso options2.bMainCollectionID,
-            .bMainCountries = options.bMainCountries AndAlso options2.bMainCountries,
-            .bMainCreators = options.bMainCreators AndAlso options2.bMainCreators,
-            .bMainDirectors = options.bMainDirectors AndAlso options2.bMainDirectors,
-            .bMainEpisodeGuide = options.bMainEpisodeGuide AndAlso options2.bMainEpisodeGuide,
-            .bMainGenres = options.bMainGenres AndAlso options2.bMainGenres,
-            .bMainMPAA = options.bMainMPAA AndAlso options2.bMainMPAA,
-            .bMainOriginalTitle = options.bMainOriginalTitle AndAlso options2.bMainOriginalTitle,
-            .bMainOutline = options.bMainOutline AndAlso options2.bMainOutline,
-            .bMainPlot = options.bMainPlot AndAlso options2.bMainPlot,
-            .bMainPremiered = options.bMainPremiered AndAlso options2.bMainPremiered,
-            .bMainRating = options.bMainRating AndAlso options2.bMainRating,
-            .bMainRuntime = options.bMainRuntime AndAlso options2.bMainRuntime,
-            .bMainStatus = options.bMainStatus AndAlso options2.bMainStatus,
-            .bMainStudios = options.bMainStudios AndAlso options2.bMainStudios,
-            .bMainTagline = options.bMainTagline AndAlso options2.bMainTagline,
-            .bMainTitle = options.bMainTitle AndAlso options2.bMainTitle,
-            .bMainTop250 = options.bMainTop250 AndAlso options2.bMainTop250,
-            .bMainTrailer = options.bMainTrailer AndAlso options2.bMainTrailer,
-            .bMainUserRating = options.bMainUserRating AndAlso options2.bMainUserRating,
-            .bMainWriters = options.bMainWriters AndAlso options2.bMainWriters,
-            .bSeasonAired = options.bSeasonAired AndAlso options2.bSeasonAired,
-            .bSeasonPlot = options.bSeasonPlot AndAlso options2.bSeasonPlot,
-            .bSeasonTitle = options.bSeasonTitle AndAlso options2.bSeasonTitle
-        }
+    Public Shared Function ScrapeOptionsAndAlso(ByVal Options As Structures.ScrapeOptions, ByVal Options2 As Structures.ScrapeOptions) As Structures.ScrapeOptions
+        Dim FilteredOptions As New Structures.ScrapeOptions
+        FilteredOptions.bEpisodeActors = Options.bEpisodeActors AndAlso Options2.bEpisodeActors
+        FilteredOptions.bEpisodeAired = Options.bEpisodeAired AndAlso Options2.bEpisodeAired
+        FilteredOptions.bEpisodeCredits = Options.bEpisodeCredits AndAlso Options2.bEpisodeCredits
+        FilteredOptions.bEpisodeDirectors = Options.bEpisodeDirectors AndAlso Options2.bEpisodeDirectors
+        FilteredOptions.bEpisodeGuestStars = Options.bEpisodeGuestStars AndAlso Options2.bEpisodeGuestStars
+        FilteredOptions.bEpisodePlot = Options.bEpisodePlot AndAlso Options2.bEpisodePlot
+        FilteredOptions.bEpisodeRating = Options.bEpisodeRating AndAlso Options2.bEpisodeRating
+        FilteredOptions.bEpisodeRuntime = Options.bEpisodeRuntime AndAlso Options2.bEpisodeRuntime
+        FilteredOptions.bEpisodeTitle = Options.bEpisodeTitle AndAlso Options2.bEpisodeTitle
+        FilteredOptions.bEpisodeUserRating = Options.bEpisodeUserRating AndAlso Options2.bEpisodeUserRating
+        FilteredOptions.bMainActors = Options.bMainActors AndAlso Options2.bMainActors
+        FilteredOptions.bMainCertifications = Options.bMainCertifications AndAlso Options2.bMainCertifications
+        FilteredOptions.bMainCollectionID = Options.bMainCollectionID AndAlso Options2.bMainCollectionID
+        FilteredOptions.bMainCountries = Options.bMainCountries AndAlso Options2.bMainCountries
+        FilteredOptions.bMainCreators = Options.bMainCreators AndAlso Options2.bMainCreators
+        FilteredOptions.bMainDirectors = Options.bMainDirectors AndAlso Options2.bMainDirectors
+        FilteredOptions.bMainEpisodeGuide = Options.bMainEpisodeGuide AndAlso Options2.bMainEpisodeGuide
+        FilteredOptions.bMainGenres = Options.bMainGenres AndAlso Options2.bMainGenres
+        FilteredOptions.bMainMPAA = Options.bMainMPAA AndAlso Options2.bMainMPAA
+        FilteredOptions.bMainOriginalTitle = Options.bMainOriginalTitle AndAlso Options2.bMainOriginalTitle
+        FilteredOptions.bMainOutline = Options.bMainOutline AndAlso Options2.bMainOutline
+        FilteredOptions.bMainPlot = Options.bMainPlot AndAlso Options2.bMainPlot
+        FilteredOptions.bMainPremiered = Options.bMainPremiered AndAlso Options2.bMainPremiered
+        FilteredOptions.bMainRating = Options.bMainRating AndAlso Options2.bMainRating
+        FilteredOptions.bMainRuntime = Options.bMainRuntime AndAlso Options2.bMainRuntime
+        FilteredOptions.bMainStatus = Options.bMainStatus AndAlso Options2.bMainStatus
+        FilteredOptions.bMainStudios = Options.bMainStudios AndAlso Options2.bMainStudios
+        FilteredOptions.bMainTagline = Options.bMainTagline AndAlso Options2.bMainTagline
+        FilteredOptions.bMainTitle = Options.bMainTitle AndAlso Options2.bMainTitle
+        FilteredOptions.bMainTop250 = Options.bMainTop250 AndAlso Options2.bMainTop250
+        FilteredOptions.bMainTrailer = Options.bMainTrailer AndAlso Options2.bMainTrailer
+        FilteredOptions.bMainUserRating = Options.bMainUserRating AndAlso Options2.bMainUserRating
+        FilteredOptions.bMainWriters = Options.bMainWriters AndAlso Options2.bMainWriters
+        FilteredOptions.bSeasonAired = Options.bSeasonAired AndAlso Options2.bSeasonAired
+        FilteredOptions.bSeasonPlot = Options.bSeasonPlot AndAlso Options2.bSeasonPlot
+        FilteredOptions.bSeasonTitle = Options.bSeasonTitle AndAlso Options2.bSeasonTitle
         Return FilteredOptions
     End Function
 
-    Public Shared Function ScrapeModifiersAndAlso(ByVal options As Structures.ScrapeModifiers, ByVal options2 As Structures.ScrapeModifiers) As Structures.ScrapeModifiers
-        Dim FilteredModifiers As New Structures.ScrapeModifiers With {
-            .AllSeasonsBanner = options.AllSeasonsBanner AndAlso options2.AllSeasonsBanner,
-            .AllSeasonsFanart = options.AllSeasonsFanart AndAlso options2.AllSeasonsFanart,
-            .AllSeasonsLandscape = options.AllSeasonsLandscape AndAlso options2.AllSeasonsLandscape,
-            .AllSeasonsPoster = options.AllSeasonsPoster AndAlso options2.AllSeasonsPoster,
-            .DoSearch = options.DoSearch AndAlso options2.DoSearch,
-            .EpisodeActorThumbs = options.EpisodeActorThumbs AndAlso options2.EpisodeActorThumbs,
-            .EpisodeFanart = options.EpisodeFanart AndAlso options2.EpisodeFanart,
-            .EpisodeMeta = options.EpisodeMeta AndAlso options2.EpisodeMeta,
-            .EpisodeNFO = options.EpisodeNFO AndAlso options2.EpisodeNFO,
-            .EpisodePoster = options.EpisodePoster AndAlso options2.EpisodePoster,
-            .EpisodeSubtitles = options.EpisodeSubtitles AndAlso options2.EpisodeSubtitles,
-            .EpisodeWatchedFile = options.EpisodeWatchedFile AndAlso options2.EpisodeWatchedFile,
-            .MainActorthumbs = options.MainActorthumbs AndAlso options2.MainActorthumbs,
-            .MainBanner = options.MainBanner AndAlso options2.MainBanner,
-            .MainCharacterArt = options.MainCharacterArt AndAlso options2.MainCharacterArt,
-            .MainClearArt = options.MainClearArt AndAlso options2.MainClearArt,
-            .MainClearLogo = options.MainClearLogo AndAlso options2.MainClearLogo,
-            .MainDiscArt = options.MainDiscArt AndAlso options2.MainDiscArt,
-            .MainExtrafanarts = options.MainExtrafanarts AndAlso options2.MainExtrafanarts,
-            .MainExtrathumbs = options.MainExtrathumbs AndAlso options2.MainExtrathumbs,
-            .MainFanart = options.MainFanart AndAlso options2.MainFanart,
-            .MainKeyart = options.MainKeyart AndAlso options2.MainKeyart,
-            .MainLandscape = options.MainLandscape AndAlso options2.MainLandscape,
-            .MainNFO = options.MainNFO AndAlso options2.MainNFO,
-            .MainPoster = options.MainPoster AndAlso options2.MainPoster,
-            .MainSubtitles = options.MainSubtitles AndAlso options2.MainSubtitles,
-            .MainTheme = options.MainTheme AndAlso options2.MainTheme,
-            .MainTrailer = options.MainTrailer AndAlso options2.MainTrailer,
-            .MainWatchedFile = options.MainWatchedFile AndAlso options2.MainWatchedFile,
-            .SeasonBanner = options.SeasonBanner AndAlso options2.SeasonBanner,
-            .SeasonFanart = options.SeasonFanart AndAlso options2.SeasonFanart,
-            .SeasonLandscape = options.SeasonLandscape AndAlso options2.SeasonLandscape,
-            .SeasonNFO = options.SeasonNFO AndAlso options2.SeasonNFO,
-            .SeasonPoster = options.SeasonPoster AndAlso options2.SeasonPoster,
-            .withEpisodes = options.withEpisodes AndAlso options2.withEpisodes,
-            .withSeasons = options.withSeasons AndAlso options2.withSeasons
-        }
+    Public Shared Function ScrapeModifiersAndAlso(ByVal Options As Structures.ScrapeModifiers, ByVal Options2 As Structures.ScrapeModifiers) As Structures.ScrapeModifiers
+        Dim FilteredModifiers As New Structures.ScrapeModifiers
+        FilteredModifiers.AllSeasonsBanner = Options.AllSeasonsBanner AndAlso Options2.AllSeasonsBanner
+        FilteredModifiers.AllSeasonsFanart = Options.AllSeasonsFanart AndAlso Options2.AllSeasonsFanart
+        FilteredModifiers.AllSeasonsLandscape = Options.AllSeasonsLandscape AndAlso Options2.AllSeasonsLandscape
+        FilteredModifiers.AllSeasonsPoster = Options.AllSeasonsPoster AndAlso Options2.AllSeasonsPoster
+        FilteredModifiers.DoSearch = Options.DoSearch AndAlso Options2.DoSearch
+        FilteredModifiers.EpisodeActorThumbs = Options.EpisodeActorThumbs AndAlso Options2.EpisodeActorThumbs
+        FilteredModifiers.EpisodeFanart = Options.EpisodeFanart AndAlso Options2.EpisodeFanart
+        FilteredModifiers.EpisodeMeta = Options.EpisodeMeta AndAlso Options2.EpisodeMeta
+        FilteredModifiers.EpisodeNFO = Options.EpisodeNFO AndAlso Options2.EpisodeNFO
+        FilteredModifiers.EpisodePoster = Options.EpisodePoster AndAlso Options2.EpisodePoster
+        FilteredModifiers.EpisodeSubtitles = Options.EpisodeSubtitles AndAlso Options2.EpisodeSubtitles
+        FilteredModifiers.EpisodeWatchedFile = Options.EpisodeWatchedFile AndAlso Options2.EpisodeWatchedFile
+        FilteredModifiers.MainActorthumbs = Options.MainActorthumbs AndAlso Options2.MainActorthumbs
+        FilteredModifiers.MainBanner = Options.MainBanner AndAlso Options2.MainBanner
+        FilteredModifiers.MainCharacterArt = Options.MainCharacterArt AndAlso Options2.MainCharacterArt
+        FilteredModifiers.MainClearArt = Options.MainClearArt AndAlso Options2.MainClearArt
+        FilteredModifiers.MainClearLogo = Options.MainClearLogo AndAlso Options2.MainClearLogo
+        FilteredModifiers.MainDiscArt = Options.MainDiscArt AndAlso Options2.MainDiscArt
+        FilteredModifiers.MainExtrafanarts = Options.MainExtrafanarts AndAlso Options2.MainExtrafanarts
+        FilteredModifiers.MainExtrathumbs = Options.MainExtrathumbs AndAlso Options2.MainExtrathumbs
+        FilteredModifiers.MainFanart = Options.MainFanart AndAlso Options2.MainFanart
+        FilteredModifiers.MainKeyart = Options.MainKeyart AndAlso Options2.MainKeyart
+        FilteredModifiers.MainLandscape = Options.MainLandscape AndAlso Options2.MainLandscape
+        FilteredModifiers.MainNFO = Options.MainNFO AndAlso Options2.MainNFO
+        FilteredModifiers.MainPoster = Options.MainPoster AndAlso Options2.MainPoster
+        FilteredModifiers.MainSubtitles = Options.MainSubtitles AndAlso Options2.MainSubtitles
+        FilteredModifiers.MainTheme = Options.MainTheme AndAlso Options2.MainTheme
+        FilteredModifiers.MainTrailer = Options.MainTrailer AndAlso Options2.MainTrailer
+        FilteredModifiers.MainWatchedFile = Options.MainWatchedFile AndAlso Options2.MainWatchedFile
+        FilteredModifiers.SeasonBanner = Options.SeasonBanner AndAlso Options2.SeasonBanner
+        FilteredModifiers.SeasonFanart = Options.SeasonFanart AndAlso Options2.SeasonFanart
+        FilteredModifiers.SeasonLandscape = Options.SeasonLandscape AndAlso Options2.SeasonLandscape
+        FilteredModifiers.SeasonNFO = Options.SeasonNFO AndAlso Options2.SeasonNFO
+        FilteredModifiers.SeasonPoster = Options.SeasonPoster AndAlso Options2.SeasonPoster
+        FilteredModifiers.withEpisodes = Options.withEpisodes AndAlso Options2.withEpisodes
+        FilteredModifiers.withSeasons = Options.withSeasons AndAlso Options2.withSeasons
         Return FilteredModifiers
     End Function
 
-    Public Shared Function ScrapeModifiersAnyEnabled(ByVal options As Structures.ScrapeModifiers) As Boolean
-        With options
+    Public Shared Function ScrapeModifiersAnyEnabled(ByVal Options As Structures.ScrapeModifiers) As Boolean
+        With Options
             If .AllSeasonsBanner OrElse
                 .AllSeasonsFanart OrElse
                 .AllSeasonsLandscape OrElse
@@ -1405,121 +1543,121 @@ Public Class Functions
         Return False
     End Function
 
-    Public Shared Sub SetScrapeModifiers(ByRef scrapeModifiers As Structures.ScrapeModifiers, ByVal type As Enums.ModifierType, ByVal enabled As Boolean)
-        With scrapeModifiers
-            Select Case type
+    Public Shared Sub SetScrapeModifiers(ByRef ScrapeModifiers As Structures.ScrapeModifiers, ByVal MType As Enums.ModifierType, ByVal MValue As Boolean)
+        With ScrapeModifiers
+            Select Case MType
                 Case Enums.ModifierType.All
-                    .AllSeasonsBanner = enabled
-                    .AllSeasonsFanart = enabled
-                    .AllSeasonsLandscape = enabled
-                    .AllSeasonsPoster = enabled
+                    .AllSeasonsBanner = MValue
+                    .AllSeasonsFanart = MValue
+                    .AllSeasonsLandscape = MValue
+                    .AllSeasonsPoster = MValue
                     '.DoSearch should not be set here as it is only needed for a re-search of a movie (first scraping or movie change).
-                    .EpisodeActorThumbs = enabled
-                    .EpisodeFanart = enabled
-                    .EpisodeMeta = enabled
-                    .EpisodeNFO = enabled
-                    .EpisodePoster = enabled
-                    .EpisodeSubtitles = enabled
-                    .EpisodeWatchedFile = enabled
-                    .MainActorthumbs = enabled
-                    .MainBanner = enabled
-                    .MainCharacterArt = enabled
-                    .MainClearArt = enabled
-                    .MainClearLogo = enabled
-                    .MainDiscArt = enabled
-                    .MainExtrafanarts = enabled
-                    .MainExtrathumbs = enabled
-                    .MainFanart = enabled
-                    .MainKeyart = enabled
-                    .MainLandscape = enabled
-                    .MainMeta = enabled
-                    .MainNFO = enabled
-                    .MainPoster = enabled
-                    .MainSubtitles = enabled
-                    .MainTheme = enabled
-                    .MainTrailer = enabled
-                    .MainWatchedFile = enabled
-                    .SeasonBanner = enabled
-                    .SeasonFanart = enabled
-                    .SeasonLandscape = enabled
-                    .SeasonNFO = enabled
-                    .SeasonPoster = enabled
+                    .EpisodeActorThumbs = MValue
+                    .EpisodeFanart = MValue
+                    .EpisodeMeta = MValue
+                    .EpisodeNFO = MValue
+                    .EpisodePoster = MValue
+                    .EpisodeSubtitles = MValue
+                    .EpisodeWatchedFile = MValue
+                    .MainActorthumbs = MValue
+                    .MainBanner = MValue
+                    .MainCharacterArt = MValue
+                    .MainClearArt = MValue
+                    .MainClearLogo = MValue
+                    .MainDiscArt = MValue
+                    .MainExtrafanarts = MValue
+                    .MainExtrathumbs = MValue
+                    .MainFanart = MValue
+                    .MainKeyart = MValue
+                    .MainLandscape = MValue
+                    .MainMeta = MValue
+                    .MainNFO = MValue
+                    .MainPoster = MValue
+                    .MainSubtitles = MValue
+                    .MainTheme = MValue
+                    .MainTrailer = MValue
+                    .MainWatchedFile = MValue
+                    .SeasonBanner = MValue
+                    .SeasonFanart = MValue
+                    .SeasonLandscape = MValue
+                    .SeasonNFO = MValue
+                    .SeasonPoster = MValue
                 '.withEpisodes should not be set here
                 '.withSeasons should not be set here
                 Case Enums.ModifierType.AllSeasonsBanner
-                    .AllSeasonsBanner = enabled
+                    .AllSeasonsBanner = MValue
                 Case Enums.ModifierType.AllSeasonsFanart
-                    .AllSeasonsFanart = enabled
+                    .AllSeasonsFanart = MValue
                 Case Enums.ModifierType.AllSeasonsLandscape
-                    .AllSeasonsLandscape = enabled
+                    .AllSeasonsLandscape = MValue
                 Case Enums.ModifierType.AllSeasonsPoster
-                    .AllSeasonsPoster = enabled
+                    .AllSeasonsPoster = MValue
                 Case Enums.ModifierType.DoSearch
-                    .DoSearch = enabled
+                    .DoSearch = MValue
                 Case Enums.ModifierType.EpisodeActorThumbs
-                    .EpisodeActorThumbs = enabled
+                    .EpisodeActorThumbs = MValue
                 Case Enums.ModifierType.EpisodeFanart
-                    .EpisodeFanart = enabled
+                    .EpisodeFanart = MValue
                 Case Enums.ModifierType.EpisodeMeta
-                    .EpisodeMeta = enabled
+                    .EpisodeMeta = MValue
                 Case Enums.ModifierType.EpisodeNFO
-                    .EpisodeNFO = enabled
+                    .EpisodeNFO = MValue
                 Case Enums.ModifierType.EpisodePoster
-                    .EpisodePoster = enabled
+                    .EpisodePoster = MValue
                 Case Enums.ModifierType.EpisodeSubtitle
-                    .EpisodeSubtitles = enabled
+                    .EpisodeSubtitles = MValue
                 Case Enums.ModifierType.EpisodeWatchedFile
-                    .EpisodeWatchedFile = enabled
+                    .EpisodeWatchedFile = MValue
                 Case Enums.ModifierType.MainActorThumbs
-                    .MainActorthumbs = enabled
+                    .MainActorthumbs = MValue
                 Case Enums.ModifierType.MainBanner
-                    .MainBanner = enabled
+                    .MainBanner = MValue
                 Case Enums.ModifierType.MainCharacterArt
-                    .MainCharacterArt = enabled
+                    .MainCharacterArt = MValue
                 Case Enums.ModifierType.MainClearArt
-                    .MainClearArt = enabled
+                    .MainClearArt = MValue
                 Case Enums.ModifierType.MainClearLogo
-                    .MainClearLogo = enabled
+                    .MainClearLogo = MValue
                 Case Enums.ModifierType.MainDiscArt
-                    .MainDiscArt = enabled
+                    .MainDiscArt = MValue
                 Case Enums.ModifierType.MainExtrafanarts
-                    .MainExtrafanarts = enabled
+                    .MainExtrafanarts = MValue
                 Case Enums.ModifierType.MainExtrathumbs
-                    .MainExtrathumbs = enabled
+                    .MainExtrathumbs = MValue
                 Case Enums.ModifierType.MainFanart
-                    .MainFanart = enabled
+                    .MainFanart = MValue
                 Case Enums.ModifierType.MainKeyart
-                    .MainKeyart = enabled
+                    .MainKeyart = MValue
                 Case Enums.ModifierType.MainLandscape
-                    .MainLandscape = enabled
+                    .MainLandscape = MValue
                 Case Enums.ModifierType.MainMeta
-                    .MainMeta = enabled
+                    .MainMeta = MValue
                 Case Enums.ModifierType.MainNFO
-                    .MainNFO = enabled
+                    .MainNFO = MValue
                 Case Enums.ModifierType.MainPoster
-                    .MainPoster = enabled
+                    .MainPoster = MValue
                 Case Enums.ModifierType.MainSubtitle
-                    .MainSubtitles = enabled
+                    .MainSubtitles = MValue
                 Case Enums.ModifierType.MainTheme
-                    .MainTheme = enabled
+                    .MainTheme = MValue
                 Case Enums.ModifierType.MainTrailer
-                    .MainTrailer = enabled
+                    .MainTrailer = MValue
                 Case Enums.ModifierType.MainWatchedFile
-                    .MainWatchedFile = enabled
+                    .MainWatchedFile = MValue
                 Case Enums.ModifierType.SeasonBanner
-                    .SeasonBanner = enabled
+                    .SeasonBanner = MValue
                 Case Enums.ModifierType.SeasonFanart
-                    .SeasonFanart = enabled
+                    .SeasonFanart = MValue
                 Case Enums.ModifierType.SeasonLandscape
-                    .SeasonLandscape = enabled
+                    .SeasonLandscape = MValue
                 Case Enums.ModifierType.SeasonNFO
-                    .SeasonNFO = enabled
+                    .SeasonNFO = MValue
                 Case Enums.ModifierType.SeasonPoster
-                    .SeasonPoster = enabled
+                    .SeasonPoster = MValue
                 Case Enums.ModifierType.withEpisodes
-                    .withEpisodes = enabled
+                    .withEpisodes = MValue
                 Case Enums.ModifierType.withSeasons
-                    .withSeasons = enabled
+                    .withSeasons = MValue
             End Select
         End With
     End Sub
@@ -1552,16 +1690,32 @@ Public Class Functions
                         logger.Error("Destination is a file, but it does not exist <{0}>", Destination)
                         Return False
                     Else
-                        Process.Start(uriDestination.LocalPath)
+                        If Master.isWindows Then
+                            Process.Start(uriDestination.LocalPath)
+                        Else
+                            Using Explorer As New Process
+                                Explorer.StartInfo.FileName = "xdg-open"
+                                Explorer.StartInfo.Arguments = uriDestination.LocalPath
+                                Explorer.Start()
+                            End Using
+                        End If
                         Return True
                     End If
                 End If
             End If
 
             'If we got this far, everything is OK, so we can go ahead and launch it!
-            Process.Start(uriDestination.AbsoluteUri())
+            If Master.isWindows Then
+                Process.Start(uriDestination.AbsoluteUri())
+            Else
+                Using Explorer As New Process
+                    Explorer.StartInfo.FileName = "xdg-open"
+                    Explorer.StartInfo.Arguments = uriDestination.AbsoluteUri()
+                    Explorer.Start()
+                End Using
+            End If
         Catch ex As Exception
-            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(Windows.Forms.Keys.Tab) & "Could not launch <" & Destination & ">")
+            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(System.Windows.Forms.Keys.Tab) & "Could not launch <" & Destination & ">")
             Return False
         End Try
         'If you got here, everything went fine
@@ -1592,7 +1746,7 @@ Public Class Functions
             'End If
 
         Catch ex As Exception
-            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(Windows.Forms.Keys.Tab) & "Could not launch <" & dllPath & ">")
+            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(System.Windows.Forms.Keys.Tab) & "Could not launch <" & dllPath & ">")
         End Try
     End Sub
 
@@ -1639,7 +1793,7 @@ Public Class Functions
                 My_Process.Close()
             End Using
         Catch ex As Exception
-            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(Windows.Forms.Keys.Tab) & "Could not launch <" & Process_Name & ">")
+            logger.Error(ex, New StackFrame().GetMethod().Name & Convert.ToChar(System.Windows.Forms.Keys.Tab) & "Could not launch <" & Process_Name & ">")
         End Try
 
         Return OutputString
@@ -1676,9 +1830,6 @@ Public Class Structures
     End Structure
 
     Public Structure ScrapeModifiers
-
-#Region "Fields"
-
         Dim AllSeasonsBanner As Boolean
         Dim AllSeasonsFanart As Boolean
         Dim AllSeasonsLandscape As Boolean
@@ -1716,54 +1867,6 @@ Public Class Structures
         Dim SeasonPoster As Boolean
         Dim withEpisodes As Boolean
         Dim withSeasons As Boolean
-
-#End Region 'Fields
-
-#Region "Properties"
-
-        Public ReadOnly Property AnyEnabled As Boolean
-            Get
-                Return AllSeasonsBanner OrElse
-                    AllSeasonsFanart OrElse
-                    AllSeasonsLandscape OrElse
-                    AllSeasonsPoster OrElse
-                    DoSearch OrElse
-                    EpisodeActorThumbs OrElse
-                    EpisodeFanart OrElse
-                    EpisodePoster OrElse
-                    EpisodeMeta OrElse
-                    EpisodeNFO OrElse
-                    EpisodeSubtitles OrElse
-                    EpisodeWatchedFile OrElse
-                    MainActorthumbs OrElse
-                    MainBanner OrElse
-                    MainCharacterArt OrElse
-                    MainClearArt OrElse
-                    MainClearLogo OrElse
-                    MainDiscArt OrElse
-                    MainExtrafanarts OrElse
-                    MainExtrathumbs OrElse
-                    MainFanart OrElse
-                    MainKeyart OrElse
-                    MainLandscape OrElse
-                    MainMeta OrElse
-                    MainNFO OrElse
-                    MainPoster OrElse
-                    MainSubtitles OrElse
-                    MainTheme OrElse
-                    MainTrailer OrElse
-                    MainWatchedFile OrElse
-                    SeasonBanner OrElse
-                    SeasonFanart OrElse
-                    SeasonLandscape OrElse
-                    SeasonNFO OrElse
-                    SeasonPoster OrElse
-                    withEpisodes OrElse
-                    withSeasons
-            End Get
-        End Property
-#End Region 'Properties
-
     End Structure
     ''' <summary>
     ''' Structure representing posible scrape fields
