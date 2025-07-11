@@ -774,23 +774,23 @@ Public Class Scraper
 
                 If bwIMDB.CancellationPending Then Return Nothing
 
-                'Seasons and Episodes
-                Dim htmldSeasonsAndEpisodes As HtmlDocument = webParsing.Load(String.Concat("https://www.imdb.com/title/", id, "/episodes/"))
+                If scrapemodifier.withEpisodes OrElse scrapemodifier.withSeasons Then
+                    'Seasons and Episodes
+                    Dim htmldSeasonsAndEpisodes As HtmlDocument = webParsing.Load(String.Concat("https://www.imdb.com/title/", id, "/episodes/"))
 
-                If webParsing.StatusCode <> 200 Then
-                    logger.Trace(String.Format("[IMDB] [GetTVShowInfo] [ID:""{0}""] failed to retrieve imdb episodes page", id))
-                    'Do nothing
-                Else
-                    'Get our React JSON next_data
-                    json_IMBD_next_data = DeserializeJsonObject(Of IMDBJson)(htmldSeasonsAndEpisodes.DocumentNode.SelectSingleNode("//script[@id='__NEXT_DATA__']").InnerHtml)
+                    If webParsing.StatusCode <> 200 Then
+                        logger.Trace(String.Format("[IMDB] [GetTVShowInfo] [ID:""{0}""] failed to retrieve imdb episodes page", id))
+                        'Do nothing
+                    Else
+                        'Get our React JSON next_data
+                        json_IMBD_next_data = DeserializeJsonObject(Of IMDBJson)(htmldSeasonsAndEpisodes.DocumentNode.SelectSingleNode("//script[@id='__NEXT_DATA__']").InnerHtml)
 
-                    If json_IMBD_next_data.props.PageProps.ContentData IsNot Nothing Then
-                        If scrapemodifier.withEpisodes OrElse scrapemodifier.withSeasons Then
+                        If json_IMBD_next_data.props.PageProps.ContentData IsNot Nothing Then
                             Dim lstSeasons As New List(Of Integer)
                             Dim SeasonItems As List(Of Seasons) = json_IMBD_next_data.props.PageProps.ContentData.Section.Seasons
 
                             For Each Season In SeasonItems
-                                lstSeasons.Add(Season.value)
+                                lstSeasons.Add(Season.ValueAsInteger)
                             Next
 
                             For Each tSeason In lstSeasons
@@ -803,8 +803,8 @@ Public Class Scraper
                                 End If
                             Next
                         End If
-                    End If
 
+                    End If
                 End If
 
                 Return nTVShow
@@ -962,24 +962,39 @@ Public Class Scraper
 
     Private Function ParseActors(ByRef json_data As IMDBJson) As List(Of MediaContainers.Person)
         Dim nActors As New List(Of MediaContainers.Person)
-        Dim CreditCategories As List(Of TitleCreditCategoryWithCredits) = json_data.props.PageProps.MainColumnData.CreditCategories
+        Dim CreditCategoriesList As List(Of Category) = json_data.props.PageProps.MainColumnData.Categories
 
-        If CreditCategories Is Nothing Then Return Nothing
+        If CreditCategoriesList Is Nothing Then Return Nothing
 
-        For Each CreditCategorie In CreditCategories
-            If String.Equals(CreditCategorie.Category.Id, "cast", StringComparison.OrdinalIgnoreCase) Then
-                'Loop through all creditconnection edges wich contains cast members
-                For Each json_creditconnectionedge As CreditEdge In CreditCategorie.Credits.Edges
-                    Dim ndName = json_creditconnectionedge.Node.Name.NameText.Text
-                    Dim ndCharacter = json_creditconnectionedge.Node.Characters.Item(0).Name
-                    Dim ndThumb As String = Nothing
-
-                    If json_creditconnectionedge.Node.Name.PrimaryImage IsNot Nothing Then
-                        ndThumb = json_creditconnectionedge.Node.Name.PrimaryImage.Url
-                    End If
-
-                    If ndName IsNot Nothing AndAlso ndCharacter IsNot Nothing Then
+        For Each CreditCategory In CreditCategoriesList
+            If CreditCategory.Id IsNot Nothing AndAlso CreditCategory.Section IsNot Nothing Then
+                If String.Equals(CreditCategory.Id, "cast", StringComparison.OrdinalIgnoreCase) Then
+                    'Loop through all creditconnection edges wich contains cast members
+                    For Each json_section_item As CategoryItem In CreditCategory.Section.Items
                         Dim nActor As New MediaContainers.Person
+                        Dim ndName = json_section_item.RowTitle
+                        Dim ndThumb As String = Nothing
+                        Dim ndCharacter As String = String.Empty
+
+                        'Get the thumb some cast members don't have a thumb image
+                        If json_section_item.ImageProps IsNot Nothing AndAlso json_section_item.ImageProps.ImageModel IsNot Nothing Then
+                            ndThumb = json_section_item.ImageProps.ImageModel.Url
+                        End If
+
+                        If json_section_item.Characters IsNot Nothing Then
+                            'Loop the character/role a cast member plays
+                            If json_section_item.Characters.Count = 1 Then
+                                ndCharacter = json_section_item.Characters(0)
+                            Else
+                                'Actor with multiple roles so we combine them
+                                ndCharacter = String.Join(" / ", json_section_item.Characters)
+                            End If
+                        End If
+
+                        'Append attributes (e.g. (voice), (credit-only), ... ) if available
+                        If json_section_item.attributes IsNot Nothing Then
+                            ndCharacter = ndCharacter + " " + json_section_item.attributes
+                        End If
 
                         nActor.Name = ndName
                         nActor.Role = ndCharacter
@@ -989,8 +1004,8 @@ Public Class Scraper
                         End If
 
                         nActors.Add(nActor)
-                        End If
-                Next
+                    Next
+                End If
             End If
         Next
 
@@ -998,64 +1013,57 @@ Public Class Scraper
     End Function
 
     Private Function ParseCertifications(ByRef json_data As IMDBJson) As List(Of String)
-        Dim lstCertifications As New List(Of String)
-        Dim Certifications As List(Of CertificatesEdge) = json_data.props.PageProps.MainColumnData.Certificates.Edges
+        If json_data.props.PageProps.MainColumnData.Certificates IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Certificates.Edges IsNot Nothing Then
+            Dim lstCertifications As New List(Of String)
+            Dim Certifications As List(Of CertificatesEdge) = json_data.props.PageProps.MainColumnData.Certificates.Edges
 
-        If Certifications Is Nothing Then Return Nothing
+            If Certifications Is Nothing Then Return Nothing
 
-        For Each certificate In Certifications
-            If String.Equals(certificate.Node.country.id, "GB", StringComparison.OrdinalIgnoreCase) Or String.Equals(certificate.Node.country.id, "US", StringComparison.OrdinalIgnoreCase) Then
-                lstCertifications.Add(certificate.Node.rating)
-            End If
-        Next
+            For Each certificate In Certifications
+                If certificate.Node IsNot Nothing Then
+                    lstCertifications.Add(certificate.Node.rating)
+                End If
+            Next
 
-        lstCertifications = lstCertifications.Distinct.ToList
-        lstCertifications.Sort()
+            lstCertifications = lstCertifications.Distinct.ToList
+            lstCertifications.Sort()
 
-        Return lstCertifications
+            Return lstCertifications
+        End If
+
+        Return Nothing
     End Function
 
     Private Function ParseCountries(ByRef json_data As IMDBJson) As List(Of String)
-        Dim Countries As List(Of CountryOfOrigin)
-        Dim nCountries As New List(Of String)
+        If json_data.props.PageProps.MainColumnData.CountriesDetails IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.CountriesDetails.Countries IsNot Nothing Then
+            Dim Countries As List(Of CountryOfOrigin)
+            Dim nCountries As New List(Of String)
 
-        Countries = json_data.props.PageProps.MainColumnData.CountriesDetails.Countries
+            Countries = json_data.props.PageProps.MainColumnData.CountriesDetails.Countries
 
-        If Countries IsNot Nothing Then
-            For Each nCountry In Countries
-                nCountries.Add(nCountry.text)
-            Next
+            If Countries IsNot Nothing Then
+                For Each nCountry In Countries
+                    nCountries.Add(nCountry.text)
+                Next
 
-            Return nCountries
+                Return nCountries
+            End If
         End If
 
         Return Nothing
     End Function
 
     Private Function ParseCreators(ByRef json_data As IMDBJson) As List(Of String)
-        Dim CreatorsCrewList As List(Of CreatorPrincipalCreditsForCategory)
-        Dim CreatorPageTitle As List(Of CreatorPrincipalCreditsForCategory)
-
+        Dim Creators As List(Of CreatorPrincipalCreditsForCategory)
         Dim nCreators As New List(Of String)
 
-        CreatorsCrewList = json_data.props.PageProps.MainColumnData.Creators
-        CreatorPageTitle = json_data.props.PageProps.MainColumnData.CreatorsPageTitle
+        If json_data.props.PageProps.MainColumnData.CreatorsPageTitle IsNot Nothing Then
+            Creators = json_data.props.PageProps.MainColumnData.CreatorsPageTitle
 
-        'Movie creators are in creators element 
-        If CreatorsCrewList IsNot Nothing Then
-            For Each nCreator In CreatorsCrewList
-                nCreators.Add(nCreator.Credits(0).Name.NameText.Text)
-            Next
-
-            If nCreators IsNot Nothing Then
-                Return nCreators
-            End If
-        End If
-
-        'TV Show creators are in another json element named CreatorsPageTitle
-        If CreatorPageTitle IsNot Nothing Then
-            For Each nCreator In CreatorPageTitle
-                nCreators.Add(nCreator.Credits(0).Name.NameText.Text)
+            For Each nCreator In Creators
+                For Each nCredit In nCreator.Credits
+                    nCreators.Add(nCredit.Name.NameText.Text)
+                Next
             Next
 
             If nCreators IsNot Nothing Then
@@ -1068,45 +1076,51 @@ Public Class Scraper
     End Function
 
     Private Function ParseCredits(ByRef json_data As IMDBJson) As List(Of String)
-        Dim nCredits As New List(Of String)
-        Dim CreditCategories As List(Of TitleCreditCategoryWithCredits)
-        CreditCategories = json_data.props.PageProps.MainColumnData.CreditCategories
+        If json_data.props.PageProps.MainColumnData.Categories IsNot Nothing Then
+            Dim nCredits As New List(Of String)
+            Dim CreditCategoriesList As List(Of Category) = json_data.props.PageProps.MainColumnData.Categories
 
-        If CreditCategories IsNot Nothing Then
-            For Each CreditCategorie In CreditCategories
-                If String.Equals(CreditCategorie.Category.Id, "writer", StringComparison.OrdinalIgnoreCase) Then
-                    'Loop all creditconnection edges wich contains writer members
-                    For Each json_creditconnectionedge As CreditEdge In CreditCategorie.Credits.Edges
-                        nCredits.Add(json_creditconnectionedge.Node.Name.NameText.Text)
-                    Next
+            If CreditCategoriesList IsNot Nothing Then
+                For Each CreditCategory In CreditCategoriesList
+                    If CreditCategory.Id IsNot Nothing AndAlso CreditCategory.Section IsNot Nothing Then
+                        If String.Equals(CreditCategory.Id, "writer", StringComparison.OrdinalIgnoreCase) Then
+                            'Loop all creditconnection edges wich contains writer members
 
-                    Return nCredits
-                End If
-            Next
+                            For Each json_section_item As CategoryItem In CreditCategory.Section.Items
+                                nCredits.Add(json_section_item.RowTitle)
+                            Next
+
+                            Return nCredits
+                        End If
+                    End If
+                Next
+            End If
         End If
 
         Return Nothing
     End Function
 
     Private Function ParseDirectors(ByRef json_data As IMDBJson) As List(Of String)
-        Dim DirectorCrewList As List(Of PrincipalCreditsForCategory)
-        Dim nDirectors As New List(Of String)
+        If json_data.props.PageProps.AboveTheFoldData.DirectorsPageTitle IsNot Nothing Then
+            Dim DirectorCrewList As List(Of PrincipalCreditsForCategory)
+            Dim nDirectors As New List(Of String)
 
-        DirectorCrewList = json_data.props.PageProps.AboveTheFoldData.DirectorsPageTitle
+            DirectorCrewList = json_data.props.PageProps.AboveTheFoldData.DirectorsPageTitle
 
-        If DirectorCrewList IsNot Nothing Then
-            For Each nDirector In DirectorCrewList
-                nDirectors.Add(nDirector.Credits(0).Name.NameText.Text)
-            Next
+            If DirectorCrewList IsNot Nothing Then
+                For Each nDirector In DirectorCrewList
+                    nDirectors.Add(nDirector.Credits(0).Name.NameText.Text)
+                Next
 
-            Return nDirectors
+                Return nDirectors
+            End If
         End If
 
         Return Nothing
     End Function
 
     Private Function ParseDuration(ByRef json_data As IMDBJson) As String
-        If json_data.props.PageProps.MainColumnData.Runtime.DisplayableProperty.Value IsNot Nothing Then
+        If json_data.props.PageProps.MainColumnData.Runtime IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Runtime.DisplayableProperty IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Runtime.DisplayableProperty.Value IsNot Nothing Then
             Return json_data.props.PageProps.MainColumnData.Runtime.DisplayableProperty.Value.PlainText
         End If
 
@@ -1114,18 +1128,20 @@ Public Class Scraper
     End Function
 
     Private Function ParseGenres(ByRef json_data As IMDBJson) As List(Of String)
-        Dim TitleGenresList As List(Of TitleGenre)
-        Dim nGenres As New List(Of String)
+        If json_data.props.PageProps.AboveTheFoldData.TitleGenres IsNot Nothing AndAlso json_data.props.PageProps.AboveTheFoldData.TitleGenres.Genres IsNot Nothing Then
+            Dim TitleGenresList As List(Of TitleGenre)
+            Dim nGenres As New List(Of String)
 
-        If json_data.props.PageProps.AboveTheFoldData.TitleGenres IsNot Nothing Then
-            TitleGenresList = json_data.props.PageProps.AboveTheFoldData.TitleGenres.Genres
+            If json_data.props.PageProps.AboveTheFoldData.TitleGenres IsNot Nothing Then
+                TitleGenresList = json_data.props.PageProps.AboveTheFoldData.TitleGenres.Genres
 
-            If TitleGenresList IsNot Nothing Then
-                For Each nGenre In TitleGenresList
-                    nGenres.Add(nGenre.Genre.Text)
-                Next
+                If TitleGenresList IsNot Nothing Then
+                    For Each nGenre In TitleGenresList
+                        nGenres.Add(nGenre.Genre.Text)
+                    Next
 
-                Return nGenres
+                    Return nGenres
+                End If
             End If
         End If
 
@@ -1135,24 +1151,18 @@ Public Class Scraper
     Private Function ParseMPAA(ByRef json_data As IMDBJson, id As String) As String
         'Try to get the full MPAA
         If _SpecialSettings.MPAADescription Then
-            Dim Certifications As List(Of CertificatesEdge) = json_data.props.PageProps.MainColumnData.Certificates.Edges
+            If json_data.props.PageProps.MainColumnData.Certificates IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Certificates.Edges IsNot Nothing Then
+                Dim Certifications As List(Of CertificatesEdge) = json_data.props.PageProps.MainColumnData.Certificates.Edges
 
-            If Certifications Is Nothing Then Return Nothing
+                If Certifications Is Nothing Then Return Nothing
 
-            For Each certificate In Certifications
-
-                If certificate.Node.ratingsBody.id = "MPAA" Then
-                    Return certificate.Node.ratingReason
-                End If
-            Next
-        End If
-
-        If _SpecialSettings.MPAADescription Then
-            logger.Trace(String.Format("[IMDB] [ParseMPAA] [ID:""{0}""] can't parse full MPAA, try to parse the short rating", id))
-
-            'Try to get short Rating from "reference" page
-            If json_data.props.PageProps.AboveTheFoldData.Certificate.rating IsNot Nothing Then
-                Return json_data.props.PageProps.AboveTheFoldData.Certificate.rating
+                For Each certificate In Certifications
+                    If certificate.Node IsNot Nothing AndAlso certificate.Node.ratingsBody IsNot Nothing Then
+                        If certificate.Node.ratingsBody.id = "MPAA" Then
+                            Return certificate.Node.ratingReason
+                        End If
+                    End If
+                Next
             End If
         End If
 
@@ -1160,7 +1170,7 @@ Public Class Scraper
     End Function
 
     Private Function ParseOutline(ByRef json_data As IMDBJson) As String
-        If json_data.props.PageProps.AboveTheFoldData.Plot IsNot Nothing Then
+        If json_data.props.PageProps.AboveTheFoldData.Plot IsNot Nothing AndAlso json_data.props.PageProps.AboveTheFoldData.Plot.PlotText IsNot Nothing Then
             Dim strOutline = json_data.props.PageProps.AboveTheFoldData.Plot.PlotText.PlainText
 
             If Not String.IsNullOrEmpty(strOutline) AndAlso Not strOutline.ToLower = "know what this is about?" Then
@@ -1172,7 +1182,7 @@ Public Class Scraper
     End Function
 
     Private Function ParsePlot(ByRef json_data As IMDBJson) As String
-        If json_data.props.PageProps.MainColumnData.Synopses.Edges IsNot Nothing Then
+        If json_data.props.PageProps.MainColumnData.Synopses IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Synopses.Edges IsNot Nothing Then
             Dim ndPlotEdges = json_data.props.PageProps.MainColumnData.Synopses.Edges
 
             For Each ndPlot In ndPlotEdges
@@ -1192,16 +1202,20 @@ Public Class Scraper
     End Sub
 
     Private Function ParseRating(ByRef json_data As IMDBJson) As MediaContainers.RatingDetails
-        Return New MediaContainers.RatingDetails With {
+        If json_data.props.PageProps.AboveTheFoldData.RatingsSummary IsNot Nothing Then
+            Return New MediaContainers.RatingDetails With {
                 .Max = 10,
                 .Type = "imdb",
                 .Value = json_data.props.PageProps.AboveTheFoldData.RatingsSummary.GetAggregateRating,
                 .Votes = json_data.props.PageProps.AboveTheFoldData.RatingsSummary.voteCount
             }
+        End If
+
+        Return Nothing
     End Function
 
     Private Function ParseRuntime(ByRef json_data As IMDBJson) As String
-        If json_data.props.PageProps.MainColumnData.Runtime.DisplayableProperty.Value IsNot Nothing Then
+        If json_data.props.PageProps.MainColumnData.Runtime IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Runtime.DisplayableProperty IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Runtime.DisplayableProperty.Value IsNot Nothing Then
             Return json_data.props.PageProps.MainColumnData.Runtime.DisplayableProperty.Value.PlainText
         End If
 
@@ -1209,22 +1223,24 @@ Public Class Scraper
     End Function
 
     Private Function ParseStudios(ByRef json_data As IMDBJson) As List(Of String)
-        Dim nCompanies As New List(Of String)
-        Dim CompanyCredits As List(Of CompanyCreditEdge) = json_data.props.PageProps.MainColumnData.Production.Edges
+        If json_data.props.PageProps.MainColumnData.Production IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Production.Edges IsNot Nothing Then
+            Dim nCompanies As New List(Of String)
+            Dim CompanyCredits As List(Of CompanyCreditEdge) = json_data.props.PageProps.MainColumnData.Production.Edges
 
-        If CompanyCredits IsNot Nothing Then
-            For Each CompanyCredit In CompanyCredits
-                nCompanies.Add(CompanyCredit.Node.company.CompanyText.Text)
-            Next
+            If CompanyCredits IsNot Nothing Then
+                For Each CompanyCredit In CompanyCredits
+                    nCompanies.Add(CompanyCredit.Node.company.CompanyText.Text)
+                Next
 
-            Return nCompanies
+                Return nCompanies
+            End If
         End If
 
         Return Nothing
     End Function
 
     Private Function ParseTagline(ByRef json_data As IMDBJson) As String
-        If json_data.props.PageProps.MainColumnData.Taglines IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Taglines.Edges.Count > 0 Then
+        If json_data.props.PageProps.MainColumnData.Taglines IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Taglines.Edges IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Taglines.Edges.Count > 0 Then
             Return json_data.props.PageProps.MainColumnData.Taglines.Edges(0).Node.Text
         End If
 

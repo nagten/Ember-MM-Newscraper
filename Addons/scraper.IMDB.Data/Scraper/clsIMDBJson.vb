@@ -23,12 +23,6 @@ Public Class AboveTheFoldData
     Public Property DirectorsPageTitle As List(Of PrincipalCreditsForCategory)
     Public Property Series As Series
     Public Property Certificate As AboveTheFoldDataCertificate
-    Public Property ReleaseYear As ReleaseYear
-End Class
-
-Public Class ReleaseYear
-    Public Property year As Nullable(Of Integer)
-    Public Property __typename As String
 End Class
 
 Public Class TitleText
@@ -123,6 +117,7 @@ Public Class MainColumnData
     Public Property RatingsSummary As MainColumnDataRatingsSummary
     Public Property Runtime As mainColumnDataRuntime
     Public Property Production As CompanyCreditConnection
+    Public Property Categories As List(Of Category)
 End Class
 
 Public Class MainColumnDataRatingsSummary
@@ -166,7 +161,7 @@ Public Class ReleaseDate
     Public Property Day As Nullable(Of Integer)
     Public Property Month As Nullable(Of Integer)
     Public Property Year As Nullable(Of Integer)
-    Public Property Country As LocalizedDisplayableCountry
+    Public Property __typename As String
 
     Public Function GetFullReleaseDate(Optional format As String = "yyyy-MM-dd") As String
         If Year.HasValue AndAlso Month.HasValue AndAlso Day.HasValue Then
@@ -176,12 +171,6 @@ Public Class ReleaseDate
             Return Nothing
         End If
     End Function
-End Class
-
-Public Class LocalizedDisplayableCountry
-    Public Property Text As String
-    Public Property Id As String
-    Public Property __typename As String
 End Class
 
 Public Class CertificatesConnection
@@ -289,7 +278,23 @@ End Class
 
 Public Class Seasons
     Public Property id As String
-    Public Property value As Integer
+    Public Property value As String
+
+    'Season value can be "unknown" in imdb see for example https://www.imdb.com/title/tt1305826/episodes/ (https://www.imdb.com/title/tt1305826/episodes/?season=Unknown)
+    Public ReadOnly Property ValueAsInteger As Integer
+        Get
+            If String.IsNullOrEmpty(value) OrElse value.ToLower() = "unknown" Then
+                Return -1
+            Else
+                Dim intValue As Integer = -1
+                If Integer.TryParse(value, intValue) Then
+                    Return intValue
+                Else
+                    Throw New InvalidCastException($"Cannot convert season value '{value}' to an integer.")
+                End If
+            End If
+        End Get
+    End Property
 End Class
 
 Public Class Episodes
@@ -306,19 +311,11 @@ Public Class EpisodeItem
     Public Property season As String
     Public Property episode As String
     Public Property titleText As String
-    Public Property releaseDate As EpisodeItem_ReleaseDate
-    Public Property releaseYear As Integer
+    Public Property releaseDate As ReleaseDate
     Public Property image As EpisodeItemImage
     Public Property plot As String
     Public Property aggregateRating As Single
     Public Property voteCount As Integer
-End Class
-
-Public Class EpisodeItem_ReleaseDate
-    Public Property month As Integer
-    Public Property day As Integer
-    Public Property year As Integer
-    Public Property __typename As String
 End Class
 
 Public Class EpisodeItemImage
@@ -406,4 +403,33 @@ End Class
 Public Class CompanyText
     Public Property Text As String
     Public Property __typename As String
+End Class
+
+Public Class Category
+    Public Property Id As String
+    Public Property Name As String
+    Public Property Section As CategorySection
+End Class
+
+Public Class CategorySection
+    Public Property Items As List(Of CategoryItem)
+End Class
+
+Public Class CategoryItem
+    Public Property Id As String
+    Public Property RowTitle As String 'Actor name
+    Public Property Characters As List(Of String)
+    Public Property attributes As String
+    Public Property ImageProps As ImageProps
+End Class
+
+Public Class ImageProps
+    Public Property ImageModel As ImageModel
+End Class
+
+Public Class ImageModel
+    Public Property Url As String
+    Public Property MaxHeight As Integer
+    Public Property MaxWidth As Integer
+    Public Property Caption As String
 End Class
