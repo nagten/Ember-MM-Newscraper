@@ -282,9 +282,9 @@ Public Class Scraper
 
                 'Duration
                 If filteredoptions.bMainRuntime Then
-                    Dim strDuration = ParseDuration(json_IMBD_next_data)
-                    If strDuration IsNot Nothing Then
-                        nMovie.Runtime = strDuration
+                    Dim strRuntime = ParseRuntime(json_IMBD_next_data)
+                    If strRuntime IsNot Nothing Then
+                        nMovie.Runtime = strRuntime
                     Else
                         logger.Trace(String.Format("[IMDB] [GetMovieInfo] [ID:""{0}""] can't parse Runtime", id))
                     End If
@@ -1119,14 +1119,6 @@ Public Class Scraper
         Return Nothing
     End Function
 
-    Private Function ParseDuration(ByRef json_data As IMDBJson) As String
-        If json_data.props.PageProps.MainColumnData.Runtime IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Runtime.DisplayableProperty IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Runtime.DisplayableProperty.Value IsNot Nothing Then
-            Return json_data.props.PageProps.MainColumnData.Runtime.DisplayableProperty.Value.PlainText
-        End If
-
-        Return Nothing
-    End Function
-
     Private Function ParseGenres(ByRef json_data As IMDBJson) As List(Of String)
         If json_data.props.PageProps.AboveTheFoldData.TitleGenres IsNot Nothing AndAlso json_data.props.PageProps.AboveTheFoldData.TitleGenres.Genres IsNot Nothing Then
             Dim TitleGenresList As List(Of TitleGenre)
@@ -1215,8 +1207,9 @@ Public Class Scraper
     End Function
 
     Private Function ParseRuntime(ByRef json_data As IMDBJson) As String
-        If json_data.props.PageProps.MainColumnData.Runtime IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Runtime.DisplayableProperty IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Runtime.DisplayableProperty.Value IsNot Nothing Then
-            Return json_data.props.PageProps.MainColumnData.Runtime.DisplayableProperty.Value.PlainText
+        If json_data.props.PageProps.MainColumnData.Runtime IsNot Nothing Then
+            'Nfo file expects minutes
+            Return Math.Round((json_data.props.PageProps.MainColumnData.Runtime.Seconds / 60), 0).ToString
         End If
 
         Return Nothing
