@@ -24,9 +24,7 @@ Public Class Nameresults
 End Class
 
 Public Class Titleresults
-    ' Public Property results() As Result
     Public Property results() As List(Of Result)
-
     Public Property hasExactMatches As Boolean
 End Class
 
@@ -36,7 +34,6 @@ Public Class Result
     Public Property titleReleaseText As String
     Public Property titleTypeText As String
     Public Property titlePosterImageModel As Titleposterimagemodel
-    'Public Property topCredits() As String
     Public Property imageType As String
 End Class
 
