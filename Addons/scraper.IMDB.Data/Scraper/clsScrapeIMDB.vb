@@ -454,90 +454,94 @@ Public Class Scraper
             If json_IMBD_next_data IsNot Nothing Then
 
                 'Get season and episode number
-                nTVEpisode.Episode = json_IMBD_next_data.props.PageProps.AboveTheFoldData.Series.episodeNumber.episodeNumber
-                nTVEpisode.Season = json_IMBD_next_data.props.PageProps.AboveTheFoldData.Series.episodeNumber.seasonNumber
+                If json_IMBD_next_data.props.PageProps.MainColumnData.Series.episodeNumber IsNot Nothing Then
+                    nTVEpisode.Episode = json_IMBD_next_data.props.PageProps.MainColumnData.Series.episodeNumber.episodeNumber
+                    nTVEpisode.Season = json_IMBD_next_data.props.PageProps.MainColumnData.Series.episodeNumber.seasonNumber
+                Else
+                    logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] can't parse Episode number", id))
+                End If
 
                 'Original Title
                 If filteredoptions.bEpisodeOriginalTitle Then
-                    nTVEpisode.OriginalTitle = json_IMBD_next_data.props.PageProps.MainColumnData.OriginalTitleText.Text
-                End If
-
-                'Title
-                If filteredoptions.bEpisodeTitle Then
-                    If Not String.IsNullOrEmpty(_SpecialSettings.ForceTitleLanguage) Then
-                        'Translated English title
-                        nTVEpisode.Title = json_IMBD_next_data.props.PageProps.MainColumnData.TitleText.Text
-                    Else
-                        nTVEpisode.Title = json_IMBD_next_data.props.PageProps.MainColumnData.OriginalTitleText.Text
+                        nTVEpisode.OriginalTitle = json_IMBD_next_data.props.PageProps.MainColumnData.OriginalTitleText.Text
                     End If
-                End If
 
-                'Actors
-                If filteredoptions.bEpisodeActors Then
-                    Dim lstActors = ParseActors(json_IMBD_next_data)
-                    If lstActors IsNot Nothing Then
-                        nTVEpisode.Actors = lstActors
-                    Else
-                        logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] can't parse Actors", id))
+                    'Title
+                    If filteredoptions.bEpisodeTitle Then
+                        If Not String.IsNullOrEmpty(_SpecialSettings.ForceTitleLanguage) Then
+                            'Translated English title
+                            nTVEpisode.Title = json_IMBD_next_data.props.PageProps.MainColumnData.TitleText.Text
+                        Else
+                            nTVEpisode.Title = json_IMBD_next_data.props.PageProps.MainColumnData.OriginalTitleText.Text
+                        End If
                     End If
-                End If
 
-                'AiredDate
-                If filteredoptions.bEpisodeAired Then
-                    If json_IMBD_next_data.props.PageProps.MainColumnData.ReleaseDate IsNot Nothing Then
-                        nTVEpisode.Aired = json_IMBD_next_data.props.PageProps.MainColumnData.ReleaseDate.GetFullReleaseDate()
+                    'Actors
+                    If filteredoptions.bEpisodeActors Then
+                        Dim lstActors = ParseActors(json_IMBD_next_data)
+                        If lstActors IsNot Nothing Then
+                            nTVEpisode.Actors = lstActors
+                        Else
+                            logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] can't parse Actors", id))
+                        End If
                     End If
-                End If
 
-                'Credits (writers)
-                If filteredoptions.bEpisodeCredits Then
-                    Dim lstCredits = ParseCredits(json_IMBD_next_data)
-                    If lstCredits IsNot Nothing Then
-                        nTVEpisode.Credits = lstCredits
-                    Else
-                        logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] can't parse Credits (Writers)", id))
+                    'AiredDate
+                    If filteredoptions.bEpisodeAired Then
+                        If json_IMBD_next_data.props.PageProps.MainColumnData.ReleaseDate IsNot Nothing Then
+                            nTVEpisode.Aired = json_IMBD_next_data.props.PageProps.MainColumnData.ReleaseDate.GetFullReleaseDate()
+                        End If
                     End If
-                End If
 
-                'Directors
-                If filteredoptions.bEpisodeDirectors Then
-                    Dim lstDirectors = ParseDirectors(json_IMBD_next_data)
-                    If lstDirectors IsNot Nothing Then
-                        nTVEpisode.Directors = lstDirectors
-                    Else
-                        logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] can't parse Directors", id))
+                    'Credits (writers)
+                    If filteredoptions.bEpisodeCredits Then
+                        Dim lstCredits = ParseCredits(json_IMBD_next_data)
+                        If lstCredits IsNot Nothing Then
+                            nTVEpisode.Credits = lstCredits
+                        Else
+                            logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] can't parse Credits (Writers)", id))
+                        End If
                     End If
-                End If
 
-                'Plot
-                If filteredoptions.bEpisodePlot AndAlso bIsScraperLanguage Then
-                    Dim strPlot = ParsePlot(json_IMBD_next_data)
+                    'Directors
+                    If filteredoptions.bEpisodeDirectors Then
+                        Dim lstDirectors = ParseDirectors(json_IMBD_next_data)
+                        If lstDirectors IsNot Nothing Then
+                            nTVEpisode.Directors = lstDirectors
+                        Else
+                            logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] can't parse Directors", id))
+                        End If
+                    End If
 
-                    If Not String.IsNullOrEmpty(strPlot) Then
-                        nTVEpisode.Plot = strPlot
-                    Else
-                        strPlot = ParseOutline(json_IMBD_next_data)
+                    'Plot
+                    If filteredoptions.bEpisodePlot AndAlso bIsScraperLanguage Then
+                        Dim strPlot = ParsePlot(json_IMBD_next_data)
+
                         If Not String.IsNullOrEmpty(strPlot) Then
                             nTVEpisode.Plot = strPlot
                         Else
-                            logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] no result from ""plotsummary"" page for Plot", id))
+                            strPlot = ParseOutline(json_IMBD_next_data)
+                            If Not String.IsNullOrEmpty(strPlot) Then
+                                nTVEpisode.Plot = strPlot
+                            Else
+                                logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] no result from ""plotsummary"" page for Plot", id))
+                            End If
                         End If
                     End If
-                End If
 
-                'Rating
-                If filteredoptions.bEpisodeRating Then
-                    Dim nRating = ParseRating(json_IMBD_next_data)
-                    If nRating IsNot Nothing Then
-                        nTVEpisode.Ratings.Add(nRating)
-                    Else
-                        logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] can't parse Rating", id))
+                    'Rating
+                    If filteredoptions.bEpisodeRating Then
+                        Dim nRating = ParseRating(json_IMBD_next_data)
+                        If nRating IsNot Nothing Then
+                            nTVEpisode.Ratings.Add(nRating)
+                        Else
+                            logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] can't parse Rating", id))
+                        End If
                     End If
-                End If
 
-                Return nTVEpisode
-            Else
-                Return Nothing
+                    Return nTVEpisode
+                Else
+                    Return Nothing
             End If
         Catch ex As Exception
             logger.Error(ex, New StackFrame().GetMethod().Name)
@@ -1021,7 +1025,11 @@ Public Class Scraper
 
             For Each certificate In Certifications
                 If certificate.Node IsNot Nothing Then
-                    lstCertifications.Add(certificate.Node.rating)
+                    Dim ConvertedCountry As String = certificate.Node.country.text.Trim().Replace("United Kingdom", "UK") _
+                                       .Replace("United States", "USA") _
+                                       .Replace("West", "")
+
+                    lstCertifications.Add(ConvertedCountry.Trim() & ":" & certificate.Node.rating.Trim())
                 End If
             Next
 
@@ -1057,6 +1065,7 @@ Public Class Scraper
         Dim Creators As List(Of CreatorPrincipalCreditsForCategory)
         Dim nCreators As New List(Of String)
 
+        'Creators for series is only stored in CreatorsPageTitle, it's not present in MainColumnData.Categories
         If json_data.props.PageProps.MainColumnData.CreatorsPageTitle IsNot Nothing Then
             Creators = json_data.props.PageProps.MainColumnData.CreatorsPageTitle
 
@@ -1072,7 +1081,6 @@ Public Class Scraper
         End If
 
         Return Nothing
-
     End Function
 
     Private Function ParseCredits(ByRef json_data As IMDBJson) As List(Of String)
@@ -1101,11 +1109,11 @@ Public Class Scraper
     End Function
 
     Private Function ParseDirectors(ByRef json_data As IMDBJson) As List(Of String)
-        If json_data.props.PageProps.AboveTheFoldData.DirectorsPageTitle IsNot Nothing Then
+        If json_data.props.PageProps.MainColumnData.DirectorsPageTitle IsNot Nothing Then
             Dim DirectorCrewList As List(Of PrincipalCreditsForCategory)
             Dim nDirectors As New List(Of String)
 
-            DirectorCrewList = json_data.props.PageProps.AboveTheFoldData.DirectorsPageTitle
+            DirectorCrewList = json_data.props.PageProps.MainColumnData.DirectorsPageTitle
 
             If DirectorCrewList IsNot Nothing Then
                 For Each nDirector In DirectorCrewList
@@ -1120,16 +1128,16 @@ Public Class Scraper
     End Function
 
     Private Function ParseGenres(ByRef json_data As IMDBJson) As List(Of String)
-        If json_data.props.PageProps.AboveTheFoldData.TitleGenres IsNot Nothing AndAlso json_data.props.PageProps.AboveTheFoldData.TitleGenres.Genres IsNot Nothing Then
-            Dim TitleGenresList As List(Of TitleGenre)
+        If json_data.props.PageProps.MainColumnData.Genres IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Genres.Genres IsNot Nothing Then
+            Dim GenresList As List(Of Genre)
             Dim nGenres As New List(Of String)
 
-            If json_data.props.PageProps.AboveTheFoldData.TitleGenres IsNot Nothing Then
-                TitleGenresList = json_data.props.PageProps.AboveTheFoldData.TitleGenres.Genres
+            If json_data.props.PageProps.MainColumnData.Genres IsNot Nothing Then
+                GenresList = json_data.props.PageProps.MainColumnData.Genres.Genres
 
-                If TitleGenresList IsNot Nothing Then
-                    For Each nGenre In TitleGenresList
-                        nGenres.Add(nGenre.Genre.Text)
+                If GenresList IsNot Nothing Then
+                    For Each nGenre In GenresList
+                        nGenres.Add(nGenre.Text)
                     Next
 
                     Return nGenres
@@ -1141,20 +1149,34 @@ Public Class Scraper
     End Function
 
     Private Function ParseMPAA(ByRef json_data As IMDBJson, id As String) As String
-        'Try to get the full MPAA
-        If _SpecialSettings.MPAADescription Then
-            If json_data.props.PageProps.MainColumnData.Certificates IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Certificates.Edges IsNot Nothing Then
-                Dim Certifications As List(Of CertificatesEdge) = json_data.props.PageProps.MainColumnData.Certificates.Edges
+        'Try to get the full MPAA from MainColumnData.Certificates
+        If json_data.props.PageProps.MainColumnData.Certificates IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Certificates.Edges IsNot Nothing Then
+            Dim Certifications As List(Of CertificatesEdge) = json_data.props.PageProps.MainColumnData.Certificates.Edges
 
-                If Certifications Is Nothing Then Return Nothing
+            If Certifications Is Nothing Then Return Nothing
 
-                For Each certificate In Certifications
-                    If certificate.Node IsNot Nothing AndAlso certificate.Node.ratingsBody IsNot Nothing Then
-                        If certificate.Node.ratingsBody.id = "MPAA" Then
-                            Return certificate.Node.ratingReason
+            For Each certificate In Certifications
+                If certificate.Node IsNot Nothing AndAlso certificate.Node.ratingsBody IsNot Nothing Then
+                    If certificate.Node.ratingsBody.id.ToUpper = "MPAA" Then
+                        If _SpecialSettings.MPAADescription Then
+                            Return certificate.Node.ratingReason.Trim()
+                        Else
+                            Return String.Format("Rated {0}", certificate.Node.rating.Trim())
                         End If
                     End If
-                Next
+                End If
+            Next
+        End If
+
+        If _SpecialSettings.MPAADescription Then logger.Trace(String.Format("[IMDB] [ParseMPAA] [ID:""{0}""] can't parse full MPAA or MPAA description, try to parse the short rating", id))
+
+        If json_data.props.PageProps.MainColumnData.Certificate IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Certificate.rating IsNot Nothing Then
+            Dim allowedRatings As String() = {"G", "PG", "PG-13", "R", "NC-17"}
+
+            If allowedRatings.Contains(json_data.props.PageProps.MainColumnData.Certificate.rating.ToUpper) Then
+                Return String.Format("Rated {0}", json_data.props.PageProps.MainColumnData.Certificate.rating)
+            Else
+                Return "NR"
             End If
         End If
 
@@ -1162,8 +1184,8 @@ Public Class Scraper
     End Function
 
     Private Function ParseOutline(ByRef json_data As IMDBJson) As String
-        If json_data.props.PageProps.AboveTheFoldData.Plot IsNot Nothing AndAlso json_data.props.PageProps.AboveTheFoldData.Plot.PlotText IsNot Nothing Then
-            Dim strOutline = json_data.props.PageProps.AboveTheFoldData.Plot.PlotText.PlainText
+        If json_data.props.PageProps.MainColumnData.Plot IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Plot.PlotText IsNot Nothing Then
+            Dim strOutline = json_data.props.PageProps.MainColumnData.Plot.PlotText.PlainText
 
             If Not String.IsNullOrEmpty(strOutline) AndAlso Not strOutline.ToLower = "know what this is about?" Then
                 Return strOutline
@@ -1194,12 +1216,12 @@ Public Class Scraper
     End Sub
 
     Private Function ParseRating(ByRef json_data As IMDBJson) As MediaContainers.RatingDetails
-        If json_data.props.PageProps.AboveTheFoldData.RatingsSummary IsNot Nothing Then
+        If json_data.props.PageProps.MainColumnData.RatingsSummary IsNot Nothing Then
             Return New MediaContainers.RatingDetails With {
                 .Max = 10,
                 .Type = "imdb",
-                .Value = json_data.props.PageProps.AboveTheFoldData.RatingsSummary.GetAggregateRating,
-                .Votes = json_data.props.PageProps.AboveTheFoldData.RatingsSummary.voteCount
+                .Value = json_data.props.PageProps.MainColumnData.RatingsSummary.GetAggregateRating,
+                .Votes = json_data.props.PageProps.MainColumnData.RatingsSummary.voteCount
             }
         End If
 
