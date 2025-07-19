@@ -1287,13 +1287,13 @@ Public Class Scraper
         Dim strResponseUri = webParsing.ResponseUri.ToString
 
         If _SpecialSettings.SearchTvTitles Then
-            htmldResultsTvTitles = webParsing.Load(String.Concat("https://www.imdb.com/search/title/?title=", HttpUtility.UrlEncode(strTitle), "&title_type=tv_movie"))
+            htmldResultsTvTitles = webParsing.Load(String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&title_type=tv_movie"))
         End If
         If _SpecialSettings.SearchVideoTitles Then
-            htmldResultsVideoTitles = webParsing.Load(String.Concat("https://www.imdb.com/search/title/?title=", HttpUtility.UrlEncode(strTitle), "&title_type=video"))
+            htmldResultsVideoTitles = webParsing.Load(String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&title_type=video"))
         End If
         If _SpecialSettings.SearchShortTitles Then
-            htmldResultsShortTitles = webParsing.Load(String.Concat("https://www.imdb.com/search/title/?title=", HttpUtility.UrlEncode(strTitle), "&title_type=short"))
+            htmldResultsShortTitles = webParsing.Load(String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&title_type=short"))
         End If
         If _SpecialSettings.SearchPartialTitles Then
             htmldResultsPartialTitles = webParsing.Load(String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&s=tt&ttype=ft&ref_=fn_ft"))
@@ -1315,7 +1315,7 @@ Public Class Scraper
         If htmldResultsExact IsNot Nothing Then
             json_IMDB_Search_Results_next_data = DeserializeJsonObject(Of IMDBSearchResultsJson)(htmldResultsExact.DocumentNode.SelectSingleNode("//script[@id='__NEXT_DATA__']").InnerHtml)
 
-            If json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results IsNot Nothing Then
+            If json_IMDB_Search_Results_next_data.props.pageProps.titleResults IsNot Nothing AndAlso json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results IsNot Nothing Then
                 Dim searchResults As List(Of Result)
                 searchResults = json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results
 
@@ -1334,7 +1334,7 @@ Public Class Scraper
         If htmldResultsPopularTitles IsNot Nothing Then
             json_IMDB_Search_Results_next_data = DeserializeJsonObject(Of IMDBSearchResultsJson)(htmldResultsPopularTitles.DocumentNode.SelectSingleNode("//script[@id='__NEXT_DATA__']").InnerHtml)
 
-            If json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results IsNot Nothing Then
+            If json_IMDB_Search_Results_next_data.props.pageProps.titleResults IsNot Nothing AndAlso json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results IsNot Nothing Then
                 Dim searchResults As List(Of Result)
                 searchResults = json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results
 
@@ -1353,7 +1353,7 @@ Public Class Scraper
         If htmldResultsPartialTitles IsNot Nothing Then
             json_IMDB_Search_Results_next_data = DeserializeJsonObject(Of IMDBSearchResultsJson)(htmldResultsPartialTitles.DocumentNode.SelectSingleNode("//script[@id='__NEXT_DATA__']").InnerHtml)
 
-            If json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results IsNot Nothing Then
+            If json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results IsNot Nothing AndAlso json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results IsNot Nothing Then
                 Dim searchResults As List(Of Result)
                 searchResults = json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results
 
@@ -1373,7 +1373,7 @@ Public Class Scraper
         If htmldResultsTvTitles IsNot Nothing Then
             json_IMDB_Search_Results_next_data = DeserializeJsonObject(Of IMDBSearchResultsJson)(htmldResultsTvTitles.DocumentNode.SelectSingleNode("//script[@id='__NEXT_DATA__']").InnerHtml)
 
-            If json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results IsNot Nothing Then
+            If json_IMDB_Search_Results_next_data.props.pageProps.titleResults IsNot Nothing AndAlso json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results IsNot Nothing Then
                 Dim searchResults As List(Of Result)
                 searchResults = json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results
 
@@ -1392,7 +1392,7 @@ Public Class Scraper
         If htmldResultsVideoTitles IsNot Nothing Then
             json_IMDB_Search_Results_next_data = DeserializeJsonObject(Of IMDBSearchResultsJson)(htmldResultsVideoTitles.DocumentNode.SelectSingleNode("//script[@id='__NEXT_DATA__']").InnerHtml)
 
-            If json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results IsNot Nothing Then
+            If json_IMDB_Search_Results_next_data.props.pageProps.titleResults IsNot Nothing AndAlso json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results IsNot Nothing Then
                 Dim searchResults As List(Of Result)
                 searchResults = json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results
 
@@ -1411,7 +1411,7 @@ Public Class Scraper
         If htmldResultsShortTitles IsNot Nothing Then
             json_IMDB_Search_Results_next_data = DeserializeJsonObject(Of IMDBSearchResultsJson)(htmldResultsShortTitles.DocumentNode.SelectSingleNode("//script[@id='__NEXT_DATA__']").InnerHtml)
 
-            If json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results IsNot Nothing Then
+            If json_IMDB_Search_Results_next_data.props.pageProps.titleResults IsNot Nothing AndAlso json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results IsNot Nothing Then
                 Dim searchResults As List(Of Result)
                 searchResults = json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results
 
@@ -1445,7 +1445,6 @@ Public Class Scraper
         Dim R As New SearchResults_TVShow
 
         Dim webParsing As New HtmlWeb
-        ' Dim htmldSearchResults As HtmlDocument = webParsing.Load(String.Concat("https://www.imdb.com/search/title/?title=", HttpUtility.UrlEncode(title), "&title_type=tv_series"))
         Dim htmldSearchResults As HtmlDocument = webParsing.Load(String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(title), "&s=tt&ttype=tv"))
 
         If webParsing.StatusCode <> 200 Then
@@ -1456,7 +1455,7 @@ Public Class Scraper
                 json_IMDB_Search_Results_next_data = DeserializeJsonObject(Of IMDBSearchResultsJson)(htmldSearchResults.DocumentNode.SelectSingleNode("//script[@id='__NEXT_DATA__']").InnerHtml)
             End If
 
-            If json_IMDB_Search_Results_next_data.props.pageProps.titleResults IsNot Nothing Then
+            If json_IMDB_Search_Results_next_data.props.pageProps.titleResults IsNot Nothing AndAlso json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results IsNot Nothing Then
                 Dim searchResults As List(Of Result)
                 searchResults = json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results
 
