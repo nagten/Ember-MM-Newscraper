@@ -22,6 +22,7 @@ Public Class MainColumnData
     Public Property TitleText As TitleText 'Title (Movie, Serie) e.g. "The Shawshank Redemption"
     Public Property OriginalTitleText As TitleText 'Title in original language e.g. "Ying xiong" for movie "Hero"
     Public Property Plot As Plot 'Plot summary
+    Public Property Outlines As PlotConnection 'Plot Outline
     Public Property Synopses As PlotConnection 'Complete plot text in Edge node
     Public Property PrimaryImage As PrimaryImage 'URL and details of the primary image
     Public Property ReleaseDate As ReleaseDate 'Release date 
@@ -32,11 +33,11 @@ Public Class MainColumnData
     Public Property CreatorsPageTitle As List(Of CreatorPrincipalCreditsForCategory) 'Creator of the TV-serie, empty for movies
     Public Property RatingsSummary As RatingsSummary 'Aggregate rating "9.3" and vote count "3068475"
     Public Property Runtime As MainColumnDataRuntime 'Duration of the movie in seconds e.g. "8520"
-    Public Property Production As CompanyCreditConnection 'Companies that produced the movie e.g. "Castle Rock Entertainment"
     Public Property Categories As List(Of Category) 'Contains all cast data
     Public Property DirectorsPageTitle As List(Of PrincipalCreditsForCategory) 'Directors details
     Public Property Genres As Genres 'List of genres e.g. "Action", "Comedy", "Crime"
     Public Property Certificate As MainColumnDataCertificate 'Rating information (R), (TV-MA)
+    Public Property CompanyCreditCategories As List(Of CompanyCreditCategoryWithCompanyCredits) 'All companies involved ordered by company catergory e.g. "Castle Rock Entertainment" when Category is "production"
 End Class
 
 Public Class ContentData
@@ -87,7 +88,17 @@ Public Class PlotConnection
 End Class
 
 Public Class PlotEdge
-    Public Property Node As Plot
+    Public Property Node As PlotText
+    Public Property __typename As String
+End Class
+
+Public Class PlotText
+    Public Property PlotText As PlotMarkdown
+    Public Property __typename As String
+End Class
+
+Public Class PlotMarkdown
+    Public Property plaidHtml As String
     Public Property __typename As String
 End Class
 
@@ -228,32 +239,6 @@ Public Class DisplayableTitleRuntimeProperty
     Public Property __typename As String
 End Class
 
-Public Class CompanyCreditConnection
-    Public Property Edges As List(Of CompanyCreditEdge)
-    Public Property __typename As String
-End Class
-
-Public Class CompanyCreditEdge
-    Public Property Node As CompanyCredit
-    Public Property __typename As String
-End Class
-
-Public Class CompanyCredit
-    Public Property company As Company
-    Public Property __typename As String
-End Class
-
-Public Class Company
-    Public Property Id As String
-    Public Property CompanyText As CompanyText
-    Public Property __typename As String
-End Class
-
-Public Class CompanyText
-    Public Property Text As String
-    Public Property __typename As String
-End Class
-
 Public Class Category
     Public Property Id As String
     Public Property Name As String
@@ -374,4 +359,40 @@ Public Class EpisodeItemImage
     Public Property maxHeight As Integer
     Public Property maxWidth As Integer
     Public Property caption As String
+End Class
+
+Public Class CompanyCreditCategoryWithCompanyCredits
+    Public Property Category As CompanyCreditCategory
+    Public Property CompanyCredits As CompanyCreditConnection
+End Class
+
+Public Class CompanyCreditCategory
+    Public Property Id As String 'e.g production, sales, distribution
+    Public Property Text As String
+    Public Property __typename As String
+End Class
+
+Public Class CompanyCreditConnection
+    Public Property Edges As List(Of CompanyCreditEdge)
+    'Total
+    Public Property __typename As String
+End Class
+
+Public Class CompanyCreditEdge
+    Public Property Node As CompanyCredit
+End Class
+
+Public Class CompanyCredit
+    Public Property company As Company
+    Public Property DisplayableProperty As DisplayableTitleCompanyCreditProperty
+    Public Property __typename As String
+End Class
+
+Public Class Company
+    Public Property Id As String
+    Public Property __typename As String
+End Class
+
+Public Class DisplayableTitleCompanyCreditProperty
+    Public Property Value As Markdown
 End Class

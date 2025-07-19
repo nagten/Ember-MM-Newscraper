@@ -1184,26 +1184,27 @@ Public Class Scraper
     End Function
 
     Private Function ParseOutline(ByRef json_data As IMDBJson) As String
-        If json_data.props.PageProps.MainColumnData.Plot IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Plot.PlotText IsNot Nothing Then
-            Dim strOutline = json_data.props.PageProps.MainColumnData.Plot.PlotText.PlainText
+        If json_data.props.PageProps.MainColumnData.Outlines IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Outlines.Edges IsNot Nothing Then
+            Dim ndPlotEdges = json_data.props.PageProps.MainColumnData.Outlines.Edges
 
-            If Not String.IsNullOrEmpty(strOutline) AndAlso Not strOutline.ToLower = "know what this is about?" Then
-                Return strOutline
-            End If
+            For Each ndPlot In ndPlotEdges
+                'Only return the first outline
+                If ndPlot IsNot Nothing AndAlso ndPlot.Node IsNot Nothing AndAlso ndPlot.Node.PlotText IsNot Nothing Then
+                    Return ndPlot.Node.PlotText.plaidHtml
+                End If
+            Next
         End If
 
         Return Nothing
     End Function
 
     Private Function ParsePlot(ByRef json_data As IMDBJson) As String
-        If json_data.props.PageProps.MainColumnData.Synopses IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Synopses.Edges IsNot Nothing Then
-            Dim ndPlotEdges = json_data.props.PageProps.MainColumnData.Synopses.Edges
+        If json_data.props.PageProps.MainColumnData.Plot IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Plot.PlotText IsNot Nothing Then
+            Dim strPlot = json_data.props.PageProps.MainColumnData.Plot.PlotText.PlainText
 
-            For Each ndPlot In ndPlotEdges
-                If ndPlot IsNot Nothing Then
-                    Return ndPlot.Node.PlotText.PlainText
-                End If
-            Next
+            If Not String.IsNullOrEmpty(strPlot) AndAlso Not strPlot.ToLower = "know what this is about?" Then
+                Return strPlot
+            End If
         End If
 
         Return Nothing
@@ -1238,17 +1239,25 @@ Public Class Scraper
     End Function
 
     Private Function ParseStudios(ByRef json_data As IMDBJson) As List(Of String)
-        If json_data.props.PageProps.MainColumnData.Production IsNot Nothing AndAlso json_data.props.PageProps.MainColumnData.Production.Edges IsNot Nothing Then
-            Dim nCompanies As New List(Of String)
-            Dim CompanyCredits As List(Of CompanyCreditEdge) = json_data.props.PageProps.MainColumnData.Production.Edges
+        If json_data.props.PageProps.MainColumnData.CompanyCreditCategories IsNot Nothing Then
+            Dim CompanyCreditsCategories As List(Of CompanyCreditCategoryWithCompanyCredits) = json_data.props.PageProps.MainColumnData.CompanyCreditCategories
 
-            If CompanyCredits IsNot Nothing Then
-                For Each CompanyCredit In CompanyCredits
-                    nCompanies.Add(CompanyCredit.Node.company.CompanyText.Text)
-                Next
+            For Each CompanyCreditCategory In CompanyCreditsCategories
+                If CompanyCreditCategory.Category IsNot Nothing Then
+                    If String.Equals(CompanyCreditCategory.Category.Id, "production", StringComparison.OrdinalIgnoreCase) Then
+                        If CompanyCreditCategory.CompanyCredits IsNot Nothing AndAlso CompanyCreditCategory.CompanyCredits.Edges IsNot Nothing Then
+                            Dim nCompanies As New List(Of String)
+                            Dim CompanyCredits As List(Of CompanyCreditEdge) = CompanyCreditCategory.CompanyCredits.Edges
 
-                Return nCompanies
-            End If
+                            For Each CompanyCredit In CompanyCredits
+                                nCompanies.Add(CompanyCredit.Node.DisplayableProperty.Value.PlainText)
+                            Next
+
+                            Return nCompanies
+                        End If
+                    End If
+                End If
+            Next
         End If
 
         Return Nothing
