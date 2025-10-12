@@ -398,7 +398,9 @@ Public Class Scraper
 
                 'Top250
                 If filteredoptions.bMainTop250 AndAlso json_IMBD_next_data.props.PageProps.MainColumnData.RatingsSummary IsNot Nothing AndAlso json_IMBD_next_data.props.PageProps.MainColumnData.RatingsSummary.topRanking IsNot Nothing Then
-                    nMovie.Top250 = json_IMBD_next_data.props.PageProps.MainColumnData.RatingsSummary.topRanking.rank
+                    If json_IMBD_next_data.props.PageProps.MainColumnData.RatingsSummary.topRanking.rank <= 250 Then
+                        nMovie.Top250 = json_IMBD_next_data.props.PageProps.MainColumnData.RatingsSummary.topRanking.rank
+                    End If
                 Else
                     logger.Trace(String.Format("[IMDB] [GetMovieInfo] [ID:""{0}""] can't parse Top250", id))
                 End If
