@@ -398,7 +398,9 @@ Public Class Scraper
 
                 'Top250
                 If filteredoptions.bMainTop250 AndAlso json_IMBD_next_data.props.PageProps.MainColumnData.RatingsSummary IsNot Nothing AndAlso json_IMBD_next_data.props.PageProps.MainColumnData.RatingsSummary.topRanking IsNot Nothing Then
-                    nMovie.Top250 = json_IMBD_next_data.props.PageProps.MainColumnData.RatingsSummary.topRanking.rank
+                    If json_IMBD_next_data.props.PageProps.MainColumnData.RatingsSummary.topRanking.rank <= 250 Then
+                        nMovie.Top250 = json_IMBD_next_data.props.PageProps.MainColumnData.RatingsSummary.topRanking.rank
+                    End If
                 Else
                     logger.Trace(String.Format("[IMDB] [GetMovieInfo] [ID:""{0}""] can't parse Top250", id))
                 End If
@@ -1241,23 +1243,36 @@ Public Class Scraper
     Private Function ParseStudios(ByRef json_data As IMDBJson) As List(Of String)
         If json_data.props.PageProps.MainColumnData.CompanyCreditCategories IsNot Nothing Then
             Dim CompanyCreditsCategories As List(Of CompanyCreditCategoryWithCompanyCredits) = json_data.props.PageProps.MainColumnData.CompanyCreditCategories
+            Dim nCompanies As New List(Of String)
 
             For Each CompanyCreditCategory In CompanyCreditsCategories
                 If CompanyCreditCategory.Category IsNot Nothing Then
                     If String.Equals(CompanyCreditCategory.Category.Id, "production", StringComparison.OrdinalIgnoreCase) Then
                         If CompanyCreditCategory.CompanyCredits IsNot Nothing AndAlso CompanyCreditCategory.CompanyCredits.Edges IsNot Nothing Then
-                            Dim nCompanies As New List(Of String)
-                            Dim CompanyCredits As List(Of CompanyCreditEdge) = CompanyCreditCategory.CompanyCredits.Edges
+                            Dim CompanyCreditsProduction As List(Of CompanyCreditEdge) = CompanyCreditCategory.CompanyCredits.Edges
 
-                            For Each CompanyCredit In CompanyCredits
+                            For Each CompanyCredit In CompanyCreditsProduction
                                 nCompanies.Add(CompanyCredit.Node.DisplayableProperty.Value.PlainText)
                             Next
+                        End If
+                    End If
 
-                            Return nCompanies
+                    If _SpecialSettings.StudiowithDistributors Then
+                        If String.Equals(CompanyCreditCategory.Category.Id, "distribution", StringComparison.OrdinalIgnoreCase) Then
+                            If CompanyCreditCategory.CompanyCredits IsNot Nothing AndAlso CompanyCreditCategory.CompanyCredits.Edges IsNot Nothing Then
+                                Dim CompanyCreditsDistribution As List(Of CompanyCreditEdge) = CompanyCreditCategory.CompanyCredits.Edges
+
+                                For Each CompanyCredit In CompanyCreditsDistribution
+                                    nCompanies.Add(CompanyCredit.Node.DisplayableProperty.Value.PlainText)
+                                Next
+
+                            End If
                         End If
                     End If
                 End If
             Next
+
+            Return nCompanies.Distinct.ToList
         End If
 
         Return Nothing
