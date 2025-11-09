@@ -456,7 +456,7 @@ Public Class Scraper
             If json_IMBD_next_data IsNot Nothing Then
 
                 'Get season and episode number
-                If json_IMBD_next_data.props.PageProps.MainColumnData.Series.episodeNumber IsNot Nothing Then
+                If json_IMBD_next_data.props.PageProps.MainColumnData.Series IsNot Nothing AndAlso json_IMBD_next_data.props.PageProps.MainColumnData.Series.episodeNumber IsNot Nothing Then
                     nTVEpisode.Episode = json_IMBD_next_data.props.PageProps.MainColumnData.Series.episodeNumber.episodeNumber
                     nTVEpisode.Season = json_IMBD_next_data.props.PageProps.MainColumnData.Series.episodeNumber.seasonNumber
                 Else
@@ -974,7 +974,7 @@ Public Class Scraper
 
         For Each CreditCategory In CreditCategoriesList
             If CreditCategory.Id IsNot Nothing AndAlso CreditCategory.Section IsNot Nothing Then
-                If String.Equals(CreditCategory.Id, "cast", StringComparison.OrdinalIgnoreCase) Then
+                If String.Equals(CreditCategory.Name, "cast", StringComparison.OrdinalIgnoreCase) Then
                     'Loop through all creditconnection edges wich contains cast members
                     For Each json_section_item As CategoryItem In CreditCategory.Section.Items
                         Dim nActor As New MediaContainers.Person
@@ -1093,7 +1093,7 @@ Public Class Scraper
             If CreditCategoriesList IsNot Nothing Then
                 For Each CreditCategory In CreditCategoriesList
                     If CreditCategory.Id IsNot Nothing AndAlso CreditCategory.Section IsNot Nothing Then
-                        If String.Equals(CreditCategory.Id, "writer", StringComparison.OrdinalIgnoreCase) Then
+                        If String.Equals(CreditCategory.Name, "writer", StringComparison.OrdinalIgnoreCase) Then
                             'Loop all creditconnection edges wich contains writer members
 
                             For Each json_section_item As CategoryItem In CreditCategory.Section.Items
