@@ -1335,12 +1335,14 @@ Public Class Scraper
                 searchResults = json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results
 
                 For Each nResult In searchResults
-                    R.PopularTitles.Add(New MediaContainers.Movie With {
-                                    .Lev = StringUtils.ComputeLevenshtein(StringUtils.FilterYear(strTitle).ToLower, nResult.titleNameText),
-                                    .Title = nResult.titleNameText,
-                                    .UniqueIDs = New MediaContainers.UniqueidContainer(Enums.ContentType.Movie) With {.IMDbId = nResult.id},
-                                    .Year = nResult.titleReleaseText
-                                    })
+                    If nResult.listItem IsNot Nothing Then
+                        R.PopularTitles.Add(New MediaContainers.Movie With {
+                            .Lev = StringUtils.ComputeLevenshtein(StringUtils.FilterYear(strTitle).ToLower, nResult.listItem.originalTitleText),
+                            .Title = nResult.listItem.originalTitleText,
+                            .UniqueIDs = New MediaContainers.UniqueidContainer(Enums.ContentType.Movie) With {.IMDbId = nResult.listItem.titleId},
+                            .Year = nResult.listItem.releaseYear
+                            })
+                    End If
                 Next
             End If
         End If
@@ -1354,12 +1356,14 @@ Public Class Scraper
                 searchResults = json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results
 
                 For Each nResult In searchResults
-                    R.PopularTitles.Add(New MediaContainers.Movie With {
-                                        .Lev = StringUtils.ComputeLevenshtein(StringUtils.FilterYear(strTitle).ToLower, nResult.titleNameText),
-                                        .Title = nResult.titleNameText,
-                                        .UniqueIDs = New MediaContainers.UniqueidContainer(Enums.ContentType.Movie) With {.IMDbId = nResult.id},
-                                        .Year = nResult.titleReleaseText
-                                        })
+                    If nResult.listItem IsNot Nothing Then
+                        R.PopularTitles.Add(New MediaContainers.Movie With {
+                            .Lev = StringUtils.ComputeLevenshtein(StringUtils.FilterYear(strTitle).ToLower, nResult.listItem.originalTitleText),
+                            .Title = nResult.listItem.originalTitleText,
+                            .UniqueIDs = New MediaContainers.UniqueidContainer(Enums.ContentType.Movie) With {.IMDbId = nResult.listItem.titleId},
+                            .Year = nResult.listItem.releaseYear
+                            })
+                    End If
                 Next
             End If
         End If
@@ -1373,12 +1377,14 @@ Public Class Scraper
                 searchResults = json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results
 
                 For Each nResult In searchResults
-                    R.PartialMatches.Add(New MediaContainers.Movie With {
-                                         .Lev = StringUtils.ComputeLevenshtein(StringUtils.FilterYear(strTitle).ToLower, nResult.titleNameText),
-                                         .Title = nResult.titleNameText,
-                                         .UniqueIDs = New MediaContainers.UniqueidContainer(Enums.ContentType.Movie) With {.IMDbId = nResult.id},
-                                         .Year = nResult.titleReleaseText
-                                         })
+                    If nResult.listItem IsNot Nothing Then
+                        R.PartialMatches.Add(New MediaContainers.Movie With {
+                             .Lev = StringUtils.ComputeLevenshtein(StringUtils.FilterYear(strTitle).ToLower, nResult.listItem.originalTitleText),
+                             .Title = nResult.listItem.originalTitleText,
+                             .UniqueIDs = New MediaContainers.UniqueidContainer(Enums.ContentType.Movie) With {.IMDbId = nResult.listItem.titleId},
+                             .Year = nResult.listItem.releaseYear
+                             })
+                    End If
                 Next
             End If
 
@@ -1393,12 +1399,14 @@ Public Class Scraper
                 searchResults = json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results
 
                 For Each nResult In searchResults
-                    R.TvTitles.Add(New MediaContainers.Movie With {
-                                         .Lev = StringUtils.ComputeLevenshtein(StringUtils.FilterYear(strTitle).ToLower, nResult.titleNameText),
-                                         .Title = nResult.titleNameText,
-                                         .UniqueIDs = New MediaContainers.UniqueidContainer(Enums.ContentType.Movie) With {.IMDbId = nResult.id},
-                                         .Year = nResult.titleReleaseText
-                                   })
+                    If nResult.listItem IsNot Nothing Then
+                        R.TvTitles.Add(New MediaContainers.Movie With {
+                             .Lev = StringUtils.ComputeLevenshtein(StringUtils.FilterYear(strTitle).ToLower, nResult.listItem.originalTitleText),
+                             .Title = nResult.listItem.originalTitleText,
+                             .UniqueIDs = New MediaContainers.UniqueidContainer(Enums.ContentType.Movie) With {.IMDbId = nResult.listItem.titleId},
+                             .Year = nResult.listItem.releaseYear
+                             })
+                    End If
                 Next
             End If
         End If
@@ -1412,12 +1420,14 @@ Public Class Scraper
                 searchResults = json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results
 
                 For Each nResult In searchResults
-                    R.VideoTitles.Add(New MediaContainers.Movie With {
-                                         .Lev = StringUtils.ComputeLevenshtein(StringUtils.FilterYear(strTitle).ToLower, nResult.titleNameText),
-                                         .Title = nResult.titleNameText,
-                                         .UniqueIDs = New MediaContainers.UniqueidContainer(Enums.ContentType.Movie) With {.IMDbId = nResult.id},
-                                         .Year = nResult.titleReleaseText
-                                   })
+                    If nResult.listItem IsNot Nothing Then
+                        R.VideoTitles.Add(New MediaContainers.Movie With {
+                             .Lev = StringUtils.ComputeLevenshtein(StringUtils.FilterYear(strTitle).ToLower, nResult.listItem.originalTitleText),
+                             .Title = nResult.listItem.originalTitleText,
+                             .UniqueIDs = New MediaContainers.UniqueidContainer(Enums.ContentType.Movie) With {.IMDbId = nResult.listItem.titleId},
+                             .Year = nResult.listItem.releaseYear
+                             })
+                    End If
                 Next
             End If
         End If
@@ -1431,12 +1441,14 @@ Public Class Scraper
                 searchResults = json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results
 
                 For Each nResult In searchResults
-                    R.ShortTitles.Add(New MediaContainers.Movie With {
-                                         .Lev = StringUtils.ComputeLevenshtein(StringUtils.FilterYear(strTitle).ToLower, nResult.titleNameText),
-                                         .Title = nResult.titleNameText,
-                                         .UniqueIDs = New MediaContainers.UniqueidContainer(Enums.ContentType.Movie) With {.IMDbId = nResult.id},
-                                         .Year = nResult.titleReleaseText
-                                   })
+                    If nResult.listItem IsNot Nothing Then
+                        R.ShortTitles.Add(New MediaContainers.Movie With {
+                                .Lev = StringUtils.ComputeLevenshtein(StringUtils.FilterYear(strTitle).ToLower, nResult.listItem.originalTitleText),
+                                .Title = nResult.listItem.originalTitleText,
+                                .UniqueIDs = New MediaContainers.UniqueidContainer(Enums.ContentType.Movie) With {.IMDbId = nResult.listItem.titleId},
+                                .Year = nResult.listItem.releaseYear
+                                })
+                    End If
                 Next
             End If
         End If
@@ -1475,10 +1487,12 @@ Public Class Scraper
                 searchResults = json_IMDB_Search_Results_next_data.props.pageProps.titleResults.results
 
                 For Each nResult In searchResults
-                    R.Matches.Add(New MediaContainers.TVShow With {
-                                          .Title = nResult.titleNameText,
-                                          .UniqueIDs = New MediaContainers.UniqueidContainer(Enums.ContentType.TVShow) With {.IMDbId = nResult.id}
-                                          })
+                    If nResult.listItem IsNot Nothing Then
+                        R.Matches.Add(New MediaContainers.TVShow With {
+                          .Title = nResult.listItem.originalTitleText,
+                          .UniqueIDs = New MediaContainers.UniqueidContainer(Enums.ContentType.TVShow) With {.IMDbId = nResult.listItem.titleId}
+                          })
+                    End If
                 Next
             End If
         End If
