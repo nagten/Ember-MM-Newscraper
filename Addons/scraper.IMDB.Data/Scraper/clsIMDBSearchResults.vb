@@ -29,17 +29,12 @@ Public Class Titleresults
 End Class
 
 Public Class Result
-    Public Property id As String 'imdbid
-    Public Property titleNameText As String
-    Public Property titleReleaseText As String
-    Public Property titleTypeText As String
-    Public Property titlePosterImageModel As Titleposterimagemodel
-    Public Property imageType As String
+    Public Property index As String 'imdbid
+    Public Property listItem As resultListItem
 End Class
 
-Public Class Titleposterimagemodel
-    Public Property url As String
-    Public Property maxHeight As Integer
-    Public Property maxWidth As Integer
-    Public Property caption As String
+Public Class resultListItem
+    Public Property titleId As String 'imdbid
+    Public Property originalTitleText As String
+    Public Property releaseYear As String
 End Class
