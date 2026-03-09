@@ -38,6 +38,7 @@ Public Class MainColumnData
     Public Property Genres As Genres 'List of genres e.g. "Action", "Comedy", "Crime"
     Public Property Certificate As MainColumnDataCertificate 'Rating information (R), (TV-MA)
     Public Property CompanyCreditCategories As List(Of CompanyCreditCategoryWithCompanyCredits) 'All companies involved ordered by company catergory e.g. "Castle Rock Entertainment" when Category is "production"
+    Public Property principalCreditsV2 As List(Of PrincipalCreditsForGrouping)
 End Class
 
 Public Class ContentData
@@ -275,11 +276,11 @@ Public Class PrincipalCreditsForCategory
 End Class
 
 Public Class Crew
-    Public Property Name As Name
+    Public Property Name As NameWithPrimaryImage
     Public Property __typename As String
 End Class
 
-Public Class Name
+Public Class NameWithPrimaryImage
     Public Property Id As String
     Public Property NameText As NameText
     Public Property PrimaryImage As PrimaryImage
@@ -395,4 +396,26 @@ End Class
 
 Public Class DisplayableTitleCompanyCreditProperty
     Public Property Value As Markdown
+End Class
+
+Public Class PrincipalCreditsForGrouping
+    Public Property totalCredits As Integer
+    Public Property grouping As CreditGrouping
+    Public Property credits As List(Of CreditV2)
+End Class
+
+Public Class CreditGrouping
+    Public Property Text As String 'E.g. Stars, Creator
+    Public Property groupingId As String
+    Public Property __typename As String
+End Class
+
+Public Class CreditV2
+    Public Property name As NameWithouthPrimaryImage
+End Class
+
+Public Class NameWithouthPrimaryImage
+    Public Property Id As String
+    Public Property NameText As NameText
+    Public Property __typename As String
 End Class
