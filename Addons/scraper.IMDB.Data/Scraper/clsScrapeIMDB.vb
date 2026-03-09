@@ -1064,17 +1064,21 @@ Public Class Scraper
     End Function
 
     Private Function ParseCreators(ByRef json_data As IMDBJson) As List(Of String)
-        Dim Creators As List(Of CreatorPrincipalCreditsForCategory)
+        Dim PrincipalCredit As List(Of PrincipalCreditsForGrouping)
         Dim nCreators As New List(Of String)
 
-        'Creators for series is only stored in CreatorsPageTitle, it's not present in MainColumnData.Categories
-        If json_data.props.PageProps.MainColumnData.CreatorsPageTitle IsNot Nothing Then
-            Creators = json_data.props.PageProps.MainColumnData.CreatorsPageTitle
+        'Creators for series is only stored in principalCreditsV2 grouped as "Creator", it's not present in MainColumnData.Categories
+        If json_data.props.PageProps.MainColumnData.principalCreditsV2 IsNot Nothing Then
+            PrincipalCredit = json_data.props.PageProps.MainColumnData.principalCreditsV2
 
-            For Each nCreator In Creators
-                For Each nCredit In nCreator.Credits
-                    nCreators.Add(nCredit.Name.NameText.Text)
-                Next
+            For Each nCreator In PrincipalCredit
+                If nCreator.grouping IsNot Nothing AndAlso nCreator.credits IsNot Nothing Then
+                    If String.Equals(nCreator.grouping.Text, "creator", StringComparison.OrdinalIgnoreCase) Then
+                        For Each nCredit In nCreator.credits
+                            nCreators.Add(nCredit.name.NameText.Text)
+                        Next
+                    End If
+                End If
             Next
 
             If nCreators IsNot Nothing Then
@@ -1111,18 +1115,24 @@ Public Class Scraper
     End Function
 
     Private Function ParseDirectors(ByRef json_data As IMDBJson) As List(Of String)
-        If json_data.props.PageProps.MainColumnData.DirectorsPageTitle IsNot Nothing Then
-            Dim DirectorCrewList As List(Of PrincipalCreditsForCategory)
+        If json_data.props.PageProps.MainColumnData.Categories IsNot Nothing Then
             Dim nDirectors As New List(Of String)
+            Dim CreditCategoriesList As List(Of Category) = json_data.props.PageProps.MainColumnData.Categories
 
-            DirectorCrewList = json_data.props.PageProps.MainColumnData.DirectorsPageTitle
+            If CreditCategoriesList IsNot Nothing Then
+                For Each CreditCategory In CreditCategoriesList
+                    If CreditCategory.Id IsNot Nothing AndAlso CreditCategory.Section IsNot Nothing Then
+                        If String.Equals(CreditCategory.Name, "director", StringComparison.OrdinalIgnoreCase) Then
+                            'Loop all creditconnection edges wich contains director members
 
-            If DirectorCrewList IsNot Nothing Then
-                For Each nDirector In DirectorCrewList
-                    nDirectors.Add(nDirector.Credits(0).Name.NameText.Text)
+                            For Each json_section_item As CategoryItem In CreditCategory.Section.Items
+                                nDirectors.Add(json_section_item.RowTitle)
+                            Next
+
+                            Return nDirectors
+                        End If
+                    End If
                 Next
-
-                Return nDirectors
             End If
         End If
 
