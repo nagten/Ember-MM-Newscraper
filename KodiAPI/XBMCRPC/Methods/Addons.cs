@@ -14,7 +14,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Executes the given addon with the given parameters (if possible)
                 /// </summary>
-        public async Task<string> ExecuteAddon(XBMCRPC.Addons.ExecuteAddon_params1 params_arg, string addonid=null, bool wait=false)
+        public async Task<string> ExecuteAddon(XBMCRPC.Addons.ExecuteAddon_params1 params_arg, string addonid=null, bool? wait=false)
         {
             var jArgs = new JObject();
              if (addonid != null)
@@ -38,7 +38,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Executes the given addon with the given parameters (if possible)
                 /// </summary>
-        public async Task<string> ExecuteAddon(global::System.Collections.Generic.List<string> params_arg, string addonid=null, bool wait=false)
+        public async Task<string> ExecuteAddon(global::System.Collections.Generic.List<string> params_arg, string addonid=null, bool? wait=false)
         {
             var jArgs = new JObject();
              if (addonid != null)
@@ -62,7 +62,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Executes the given addon with the given parameters (if possible)
                 /// </summary>
-        public async Task<string> ExecuteAddon(string params_arg, string addonid=null, bool wait=false)
+        public async Task<string> ExecuteAddon(string params_arg, string addonid=null, bool? wait=false)
         {
             var jArgs = new JObject();
              if (addonid != null)
@@ -86,7 +86,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Executes the given addon with the given parameters (if possible)
                 /// </summary>
-        public async Task<string> ExecuteAddon(string addonid=null, bool wait=false)
+        public async Task<string> ExecuteAddon(string addonid=null, bool? wait=false)
         {
             var jArgs = new JObject();
              if (addonid != null)
@@ -124,7 +124,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Gets all available addons
                 /// </summary>
-        public async Task<XBMCRPC.Addons.GetAddonsResponse> GetAddons(bool enabled, XBMCRPC.Addon.Types type=0, XBMCRPC.Addon.Content content=0, XBMCRPC.Addon.Fields properties=null, XBMCRPC.List.Limits limits=null)
+        public async Task<XBMCRPC.Addons.GetAddonsResponse> GetAddons(bool? enabled, XBMCRPC.Addon.Types type=0, XBMCRPC.Addon.Content content=0, XBMCRPC.Addon.Fields properties=null, XBMCRPC.List.Limits limits=null)
         {
             var jArgs = new JObject();
              if (type != null)
@@ -221,7 +221,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Enables/Disables a specific addon
                 /// </summary>
-        public async Task<string> SetAddonEnabled(bool enabled, string addonid=null)
+        public async Task<string> SetAddonEnabled(bool? enabled, string addonid=null)
         {
             var jArgs = new JObject();
              if (addonid != null)

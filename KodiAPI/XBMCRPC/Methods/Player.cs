@@ -23,7 +23,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Retrieves the currently played item
                 /// </summary>
-        public async Task<XBMCRPC.Player.GetItemResponse> GetItem(int playerid=0, XBMCRPC.List.Fields.All properties=null)
+        public async Task<XBMCRPC.Player.GetItemResponse> GetItem(int? playerid=0, XBMCRPC.List.Fields.All properties=null)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -42,7 +42,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Retrieves the values of the given properties
                 /// </summary>
-        public async Task<XBMCRPC.Player.Property.Value> GetProperties(int playerid=0, XBMCRPC.Player.GetProperties_properties properties=null)
+        public async Task<XBMCRPC.Player.Property.Value> GetProperties(int? playerid=0, XBMCRPC.Player.GetProperties_properties properties=null)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -61,7 +61,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Go to previous/next/specific item in the playlist
                 /// </summary>
-        public async Task<string> GoTo(XBMCRPC.Player.GoTo_to1 to, int playerid=0)
+        public async Task<string> GoTo(XBMCRPC.Player.GoTo_to1 to, int? playerid =0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -80,7 +80,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Go to previous/next/specific item in the playlist
                 /// </summary>
-        public async Task<string> GoTo(int to, int playerid=0)
+        public async Task<string> GoTo(int? to, int? playerid =0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -99,7 +99,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Go to previous/next/specific item in the playlist
                 /// </summary>
-        public async Task<string> GoTo(int playerid=0)
+        public async Task<string> GoTo(int? playerid=0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -113,7 +113,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// If picture is zoomed move viewport left/right/up/down otherwise skip previous/next
                 /// </summary>
-        public async Task<string> Move(int playerid=0, XBMCRPC.Player.Move_direction direction=0)
+        public async Task<string> Move(int? playerid=0, XBMCRPC.Player.Move_direction direction=0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -393,7 +393,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Pauses or unpause playback and returns the new state
                 /// </summary>
-        public async Task<XBMCRPC.Player.Speed> PlayPause(bool play, int playerid=0)
+        public async Task<XBMCRPC.Player.Speed> PlayPause(bool? play, int? playerid =0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -412,7 +412,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Pauses or unpause playback and returns the new state
                 /// </summary>
-        public async Task<XBMCRPC.Player.Speed> PlayPause(XBMCRPC.Global.Toggle2 play, int playerid=0)
+        public async Task<XBMCRPC.Player.Speed> PlayPause(XBMCRPC.Global.Toggle2 play, int? playerid =0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -431,7 +431,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Pauses or unpause playback and returns the new state
                 /// </summary>
-        public async Task<XBMCRPC.Player.Speed> PlayPause(int playerid=0)
+        public async Task<XBMCRPC.Player.Speed> PlayPause(int? playerid=0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -445,7 +445,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Rotates current picture
                 /// </summary>
-        public async Task<string> Rotate(int playerid=0, XBMCRPC.Player.Rotate_value value=0)
+        public async Task<string> Rotate(int? playerid=0, XBMCRPC.Player.Rotate_value value=0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -464,7 +464,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Seek through the playing item
                 /// </summary>
-        public async Task<XBMCRPC.Player.SeekResponse> Seek(double value, int playerid=0)
+        public async Task<XBMCRPC.Player.SeekResponse> Seek(double? value, int? playerid=0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -483,7 +483,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Seek through the playing item
                 /// </summary>
-        public async Task<XBMCRPC.Player.SeekResponse> Seek(XBMCRPC.Player.Position.Time value, int playerid=0)
+        public async Task<XBMCRPC.Player.SeekResponse> Seek(XBMCRPC.Player.Position.Time value, int? playerid=0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -502,7 +502,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Seek through the playing item
                 /// </summary>
-        public async Task<XBMCRPC.Player.SeekResponse> Seek(XBMCRPC.Player.Seek_value1 value, int playerid=0)
+        public async Task<XBMCRPC.Player.SeekResponse> Seek(XBMCRPC.Player.Seek_value1 value, int? playerid=0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -521,7 +521,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Seek through the playing item
                 /// </summary>
-        public async Task<XBMCRPC.Player.SeekResponse> Seek(int playerid=0)
+        public async Task<XBMCRPC.Player.SeekResponse> Seek(int? playerid =0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -535,7 +535,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Set the audio stream played by the player
                 /// </summary>
-        public async Task<string> SetAudioStream(XBMCRPC.Player.SetAudioStream_stream1 stream, int playerid=0)
+        public async Task<string> SetAudioStream(XBMCRPC.Player.SetAudioStream_stream1 stream, int? playerid =0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -554,7 +554,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Set the audio stream played by the player
                 /// </summary>
-        public async Task<string> SetAudioStream(int stream, int playerid=0)
+        public async Task<string> SetAudioStream(int? stream, int? playerid =0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -573,7 +573,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Set the audio stream played by the player
                 /// </summary>
-        public async Task<string> SetAudioStream(int playerid=0)
+        public async Task<string> SetAudioStream(int? playerid =0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -587,7 +587,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Turn partymode on or off
                 /// </summary>
-        public async Task<string> SetPartymode(bool partymode, int playerid=0)
+        public async Task<string> SetPartymode(bool? partymode, int? playerid =0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -606,7 +606,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Turn partymode on or off
                 /// </summary>
-        public async Task<string> SetPartymode(XBMCRPC.Global.Toggle2 partymode, int playerid=0)
+        public async Task<string> SetPartymode(XBMCRPC.Global.Toggle2 partymode, int? playerid=0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -625,7 +625,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Turn partymode on or off
                 /// </summary>
-        public async Task<string> SetPartymode(int playerid=0)
+        public async Task<string> SetPartymode(int? playerid=0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -639,7 +639,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Set the repeat mode of the player
                 /// </summary>
-        public async Task<string> SetRepeat(XBMCRPC.Player.Repeat repeat, int playerid=0)
+        public async Task<string> SetRepeat(XBMCRPC.Player.Repeat repeat, int? playerid=0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -658,7 +658,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Set the repeat mode of the player
                 /// </summary>
-        public async Task<string> SetRepeat(XBMCRPC.Player.SetRepeat_repeat1 repeat, int playerid=0)
+        public async Task<string> SetRepeat(XBMCRPC.Player.SetRepeat_repeat1 repeat, int? playerid=0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -677,7 +677,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Set the repeat mode of the player
                 /// </summary>
-        public async Task<string> SetRepeat(int playerid=0)
+        public async Task<string> SetRepeat(int? playerid =0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -691,7 +691,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Shuffle/Unshuffle items in the player
                 /// </summary>
-        public async Task<string> SetShuffle(bool shuffle, int playerid=0)
+        public async Task<string> SetShuffle(bool? shuffle, int? playerid =0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -710,7 +710,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Shuffle/Unshuffle items in the player
                 /// </summary>
-        public async Task<string> SetShuffle(XBMCRPC.Global.Toggle2 shuffle, int playerid=0)
+        public async Task<string> SetShuffle(XBMCRPC.Global.Toggle2 shuffle, int? playerid =0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -729,7 +729,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Shuffle/Unshuffle items in the player
                 /// </summary>
-        public async Task<string> SetShuffle(int playerid=0)
+        public async Task<string> SetShuffle(int? playerid =0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -743,7 +743,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Set the speed of the current playback
                 /// </summary>
-        public async Task<XBMCRPC.Player.Speed> SetSpeed(int speed, int playerid=0)
+        public async Task<XBMCRPC.Player.Speed> SetSpeed(int? speed, int? playerid =0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -762,7 +762,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Set the speed of the current playback
                 /// </summary>
-        public async Task<XBMCRPC.Player.Speed> SetSpeed(XBMCRPC.Global.IncrementDecrement speed, int playerid=0)
+        public async Task<XBMCRPC.Player.Speed> SetSpeed(XBMCRPC.Global.IncrementDecrement speed, int? playerid=0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -781,7 +781,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Set the speed of the current playback
                 /// </summary>
-        public async Task<XBMCRPC.Player.Speed> SetSpeed(int playerid=0)
+        public async Task<XBMCRPC.Player.Speed> SetSpeed(int? playerid=0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -795,7 +795,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Set the subtitle displayed by the player
                 /// </summary>
-        public async Task<string> SetSubtitle(XBMCRPC.Player.SetSubtitle_subtitle1 subtitle, int playerid=0, bool enable=false)
+        public async Task<string> SetSubtitle(XBMCRPC.Player.SetSubtitle_subtitle1 subtitle, int? playerid =0, bool? enable=false)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -819,7 +819,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Set the subtitle displayed by the player
                 /// </summary>
-        public async Task<string> SetSubtitle(int subtitle, int playerid=0, bool enable=false)
+        public async Task<string> SetSubtitle(int? subtitle, int? playerid =0, bool? enable=false)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -843,7 +843,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Set the subtitle displayed by the player
                 /// </summary>
-        public async Task<string> SetSubtitle(int playerid=0, bool enable=false)
+        public async Task<string> SetSubtitle(int? playerid =0, bool? enable=false)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -862,7 +862,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Stops playback
                 /// </summary>
-        public async Task<string> Stop(int playerid=0)
+        public async Task<string> Stop(int? playerid=0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -876,7 +876,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Zoom current picture
                 /// </summary>
-        public async Task<string> Zoom(XBMCRPC.Player.Zoom_zoom1 zoom, int playerid=0)
+        public async Task<string> Zoom(XBMCRPC.Player.Zoom_zoom1 zoom, int? playerid =0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -895,7 +895,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Zoom current picture
                 /// </summary>
-        public async Task<string> Zoom(int zoom, int playerid=0)
+        public async Task<string> Zoom(int? zoom, int? playerid =0)
         {
             var jArgs = new JObject();
              if (playerid != null)
@@ -914,7 +914,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Zoom current picture
                 /// </summary>
-        public async Task<string> Zoom(int playerid=0)
+        public async Task<string> Zoom(int? playerid =0)
         {
             var jArgs = new JObject();
              if (playerid != null)

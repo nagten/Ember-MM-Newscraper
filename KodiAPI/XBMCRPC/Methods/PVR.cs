@@ -14,7 +14,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Retrieves the details of a specific broadcast
                 /// </summary>
-        public async Task<XBMCRPC.PVR.GetBroadcastDetailsResponse> GetBroadcastDetails(int broadcastid=0, XBMCRPC.PVR.Fields.Broadcast properties=null)
+        public async Task<XBMCRPC.PVR.GetBroadcastDetailsResponse> GetBroadcastDetails(int? broadcastid=0, XBMCRPC.PVR.Fields.Broadcast properties=null)
         {
             var jArgs = new JObject();
              if (broadcastid != null)
@@ -33,7 +33,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Retrieves the program of a specific channel
                 /// </summary>
-        public async Task<XBMCRPC.PVR.GetBroadcastsResponse> GetBroadcasts(int channelid=0, XBMCRPC.PVR.Fields.Broadcast properties=null, XBMCRPC.List.Limits limits=null)
+        public async Task<XBMCRPC.PVR.GetBroadcastsResponse> GetBroadcasts(int? channelid=0, XBMCRPC.PVR.Fields.Broadcast properties=null, XBMCRPC.List.Limits limits=null)
         {
             var jArgs = new JObject();
              if (channelid != null)
@@ -57,7 +57,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Retrieves the details of a specific channel
                 /// </summary>
-        public async Task<XBMCRPC.PVR.GetChannelDetailsResponse> GetChannelDetails(int channelid=0, XBMCRPC.PVR.Fields.Channel properties=null)
+        public async Task<XBMCRPC.PVR.GetChannelDetailsResponse> GetChannelDetails(int? channelid=0, XBMCRPC.PVR.Fields.Channel properties=null)
         {
             var jArgs = new JObject();
              if (channelid != null)
@@ -76,7 +76,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Retrieves the details of a specific channel group
                 /// </summary>
-        public async Task<XBMCRPC.PVR.GetChannelGroupDetailsResponse> GetChannelGroupDetails(int channelgroupid, XBMCRPC.PVR.GetChannelGroupDetails_channels channels=null)
+        public async Task<XBMCRPC.PVR.GetChannelGroupDetailsResponse> GetChannelGroupDetails(int? channelgroupid, XBMCRPC.PVR.GetChannelGroupDetails_channels channels=null)
         {
             var jArgs = new JObject();
              if (channelgroupid != null)
@@ -147,7 +147,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Retrieves the channel list
                 /// </summary>
-        public async Task<XBMCRPC.PVR.GetChannelsResponse> GetChannels(int channelgroupid, XBMCRPC.PVR.Fields.Channel properties=null, XBMCRPC.List.Limits limits=null)
+        public async Task<XBMCRPC.PVR.GetChannelsResponse> GetChannels(int? channelgroupid, XBMCRPC.PVR.Fields.Channel properties=null, XBMCRPC.List.Limits limits=null)
         {
             var jArgs = new JObject();
              if (channelgroupid != null)
@@ -228,7 +228,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Retrieves the details of a specific recording
                 /// </summary>
-        public async Task<XBMCRPC.PVR.GetRecordingDetailsResponse> GetRecordingDetails(int recordingid=0, XBMCRPC.PVR.Fields.Recording properties=null)
+        public async Task<XBMCRPC.PVR.GetRecordingDetailsResponse> GetRecordingDetails(int? recordingid=0, XBMCRPC.PVR.Fields.Recording properties=null)
         {
             var jArgs = new JObject();
              if (recordingid != null)
@@ -266,7 +266,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Retrieves the details of a specific timer
                 /// </summary>
-        public async Task<XBMCRPC.PVR.GetTimerDetailsResponse> GetTimerDetails(int timerid=0, XBMCRPC.PVR.Fields.Timer properties=null)
+        public async Task<XBMCRPC.PVR.GetTimerDetailsResponse> GetTimerDetails(int? timerid=0, XBMCRPC.PVR.Fields.Timer properties=null)
         {
             var jArgs = new JObject();
              if (timerid != null)
@@ -304,7 +304,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Toggle recording of a channel
                 /// </summary>
-        public async Task<string> Record(bool record, object channel=null)
+        public async Task<string> Record(bool? record, object channel=null)
         {
             var jArgs = new JObject();
              if (record != null)

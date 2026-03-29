@@ -2936,13 +2936,14 @@ Public Class Images
             'Next
             logger.Trace("[FindDuplicateImages] Ignore all images with MatchTolerance less/equal then : " & MatchTolerance & "...")
             For i = ImageList.Count - 1 To 0 Step -1
-                If lstCalculatedSimilarity.Any(Function(c) c.Item1 = i AndAlso c.Item2 <= MatchTolerance) Then
-                    If i > 0 Then
-                        logger.Trace("[FindDuplicateImages] Duplicate images found: Image1: " & ImageList.Item(i).URLOriginal & " Image2: " & ImageList.Item(i - 1).URLOriginal)
+                Dim idx = i
+                If lstCalculatedSimilarity.Any(Function(c) c.Item1 = idx AndAlso c.Item2 <= MatchTolerance) Then
+                    If idx > 0 Then
+                        logger.Trace("[FindDuplicateImages] Duplicate images found: Image1: " & ImageList.Item(idx).URLOriginal & " Image2: " & ImageList.Item(idx - 1).URLOriginal)
                     End If
                     'don't remove duplicate images directly, instead "mark" them as duplicate and handle filtering in following methods...
                     'ImageList.RemoveAt(i)
-                    ImageList.Item(i).IsDuplicate = True
+                    ImageList.Item(idx).IsDuplicate = True
                 End If
             Next
         End If

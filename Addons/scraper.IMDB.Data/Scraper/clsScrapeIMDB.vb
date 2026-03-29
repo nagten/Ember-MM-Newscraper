@@ -1329,6 +1329,7 @@ Public Class Scraper
 
         If webParsing.StatusCode <> 200 Then
             logger.Trace(String.Format("[IMDB] [SearchMovie] failed to retrieve imdb search pages"))
+            Return R
         End If
 
         'Check if we've been redirected straight to the movie page

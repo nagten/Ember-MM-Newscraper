@@ -100,7 +100,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Send a generic (unicode) text
                 /// </summary>
-        public async Task<string> SendText(string text=null, bool done=false)
+        public async Task<string> SendText(string text=null, bool? done=false)
         {
             var jArgs = new JObject();
              if (text != null)

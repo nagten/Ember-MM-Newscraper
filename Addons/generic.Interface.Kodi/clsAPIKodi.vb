@@ -25,6 +25,7 @@ Imports XBMCRPC
 Imports System.IO
 Imports System.Text.RegularExpressions
 Imports System.Web
+Imports Globalization = System.Globalization
 
 Namespace Kodi
 

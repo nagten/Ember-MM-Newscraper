@@ -118,7 +118,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Changes the value of a setting
                 /// </summary>
-        public async Task<bool> SetSettingValue(bool value, string setting=null)
+        public async Task<bool> SetSettingValue(bool? value, string setting=null)
         {
             var jArgs = new JObject();
              if (setting != null)
@@ -137,7 +137,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Changes the value of a setting
                 /// </summary>
-        public async Task<bool> SetSettingValue(int value, string setting=null)
+        public async Task<bool> SetSettingValue(int? value, string setting=null)
         {
             var jArgs = new JObject();
              if (setting != null)
@@ -156,7 +156,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Changes the value of a setting
                 /// </summary>
-        public async Task<bool> SetSettingValue(double value, string setting=null)
+        public async Task<bool> SetSettingValue(double? value, string setting=null)
         {
             var jArgs = new JObject();
              if (setting != null)
