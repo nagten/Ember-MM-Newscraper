@@ -160,6 +160,7 @@ Public Class IMDB_Data
         _setup_Movie.chkWriters.Checked = ConfigScrapeOptions_Movie.bMainWriters
 
         _setup_Movie.cbForceTitleLanguage.Text = _SpecialSettings_Movie.ForceTitleLanguage
+        _setup_Movie.cbBrowserPriority.Text = _SpecialSettings_Movie.BrowserPriority
         _setup_Movie.chkFallBackworldwide.Checked = _SpecialSettings_Movie.FallBackWorldwide
         _setup_Movie.chkMPAADescription.Checked = _SpecialSettings_Movie.MPAADescription
         _setup_Movie.chkPartialTitles.Checked = _SpecialSettings_Movie.SearchPartialTitles
@@ -212,6 +213,7 @@ Public Class IMDB_Data
         _setup_TV.chkScraperShowTitle.Checked = ConfigScrapeOptions_TV.bMainTitle
 
         _setup_TV.cbForceTitleLanguage.Text = _SpecialSettings_TV.ForceTitleLanguage
+        _setup_TV.cbBrowserPriority.Text = _SpecialSettings_TV.BrowserPriority
         _setup_TV.chkFallBackworldwide.Checked = _SpecialSettings_TV.FallBackWorldwide
 
         _setup_TV.orderChanged()
@@ -251,6 +253,7 @@ Public Class IMDB_Data
 
         _SpecialSettings_Movie.FallBackWorldwide = AdvancedSettings.GetBooleanSetting("FallBackWorldwide", False, , Enums.ContentType.Movie)
         _SpecialSettings_Movie.ForceTitleLanguage = AdvancedSettings.GetSetting("ForceTitleLanguage", String.Empty, , Enums.ContentType.Movie)
+        _SpecialSettings_Movie.BrowserPriority = AdvancedSettings.GetSetting("BrowserPriority", String.Empty, , Enums.ContentType.Movie)
         _SpecialSettings_Movie.MPAADescription = AdvancedSettings.GetBooleanSetting("MPAADescription", False, , Enums.ContentType.Movie)
         _SpecialSettings_Movie.SearchPartialTitles = AdvancedSettings.GetBooleanSetting("SearchPartialTitles", True, , Enums.ContentType.Movie)
         _SpecialSettings_Movie.SearchPopularTitles = AdvancedSettings.GetBooleanSetting("SearchPopularTitles", True, , Enums.ContentType.Movie)
@@ -283,6 +286,7 @@ Public Class IMDB_Data
 
         _SpecialSettings_TV.FallBackWorldwide = AdvancedSettings.GetBooleanSetting("FallBackWorldwide", False, , Enums.ContentType.TVShow)
         _SpecialSettings_TV.ForceTitleLanguage = AdvancedSettings.GetSetting("ForceTitleLanguage", String.Empty, , Enums.ContentType.TVShow)
+        _SpecialSettings_TV.BrowserPriority = AdvancedSettings.GetSetting("BrowserPriority", String.Empty, , Enums.ContentType.TVShow)
     End Sub
 
     Sub SaveSettings_Movie()
@@ -312,6 +316,7 @@ Public Class IMDB_Data
             settings.SetBooleanSetting("SearchVideoTitles", _SpecialSettings_Movie.SearchVideoTitles, , , Enums.ContentType.Movie)
             settings.SetBooleanSetting("SearchShortTitles", _SpecialSettings_Movie.SearchShortTitles, , , Enums.ContentType.Movie)
             settings.SetSetting("ForceTitleLanguage", _SpecialSettings_Movie.ForceTitleLanguage, , , Enums.ContentType.Movie)
+            settings.SetSetting("BrowserPriority", _SpecialSettings_Movie.BrowserPriority, , , Enums.ContentType.Movie)
             settings.SetBooleanSetting("StudiowithDistributors", _SpecialSettings_Movie.StudiowithDistributors, , , Enums.ContentType.Movie)
         End Using
     End Sub
@@ -339,6 +344,7 @@ Public Class IMDB_Data
             settings.SetBooleanSetting("DoTitle", ConfigScrapeOptions_TV.bMainTitle, , , Enums.ContentType.TVShow)
             settings.SetBooleanSetting("FallBackWorldwide", _SpecialSettings_TV.FallBackWorldwide, , , Enums.ContentType.TVShow)
             settings.SetSetting("ForceTitleLanguage", _SpecialSettings_TV.ForceTitleLanguage, , , Enums.ContentType.TVShow)
+            settings.SetSetting("BrowserPriority", _SpecialSettings_TV.BrowserPriority, , , Enums.ContentType.TVShow)
         End Using
     End Sub
 
@@ -363,6 +369,7 @@ Public Class IMDB_Data
 
         _SpecialSettings_Movie.FallBackWorldwide = _setup_Movie.chkFallBackworldwide.Checked
         _SpecialSettings_Movie.ForceTitleLanguage = _setup_Movie.cbForceTitleLanguage.Text
+        _SpecialSettings_Movie.BrowserPriority = _setup_Movie.cbBrowserPriority.Text
         _SpecialSettings_Movie.MPAADescription = _setup_Movie.chkMPAADescription.Checked
         _SpecialSettings_Movie.SearchPartialTitles = _setup_Movie.chkPartialTitles.Checked
         _SpecialSettings_Movie.SearchPopularTitles = _setup_Movie.chkPopularTitles.Checked
@@ -402,6 +409,7 @@ Public Class IMDB_Data
 
         _SpecialSettings_TV.FallBackWorldwide = _setup_TV.chkFallBackworldwide.Checked
         _SpecialSettings_TV.ForceTitleLanguage = _setup_TV.cbForceTitleLanguage.Text
+        _SpecialSettings_TV.BrowserPriority = _setup_TV.cbBrowserPriority.Text
 
         SaveSettings_TV()
         If DoDispose Then
@@ -594,6 +602,7 @@ Public Class IMDB_Data
 
         Dim FallBackWorldwide As Boolean
         Dim ForceTitleLanguage As String
+        Dim BrowserPriority As String
         Dim MPAADescription As Boolean
         Dim PrefLanguage As String
         Dim SearchPartialTitles As Boolean

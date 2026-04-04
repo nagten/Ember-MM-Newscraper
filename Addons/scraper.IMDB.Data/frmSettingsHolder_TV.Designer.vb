@@ -1,9 +1,9 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class frmSettingsHolder_TV
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
-    <System.Diagnostics.DebuggerNonUserCode()> _
+    <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
@@ -20,7 +20,7 @@ Partial Class frmSettingsHolder_TV
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-    <System.Diagnostics.DebuggerStepThrough()> _
+    <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmSettingsHolder_TV))
         Me.chkEnabled = New System.Windows.Forms.CheckBox()
@@ -62,6 +62,9 @@ Partial Class frmSettingsHolder_TV
         Me.chkScraperEpRating = New System.Windows.Forms.CheckBox()
         Me.chkScraperEpPlot = New System.Windows.Forms.CheckBox()
         Me.chkScraperEpTitle = New System.Windows.Forms.CheckBox()
+        Me.gbBrowserPriority = New System.Windows.Forms.GroupBox()
+        Me.cbBrowserPriority = New System.Windows.Forms.ComboBox()
+        Me.lblForceBrowser = New System.Windows.Forms.Label()
         Me.pnlSettingsBottom = New System.Windows.Forms.Panel()
         Me.tblSettingsBottom = New System.Windows.Forms.TableLayoutPanel()
         Me.pbIconBottom = New System.Windows.Forms.PictureBox()
@@ -79,6 +82,7 @@ Partial Class frmSettingsHolder_TV
         Me.tblScraperFieldsShow.SuspendLayout()
         Me.gbScraperFieldsEpisode.SuspendLayout()
         Me.tblScraperFieldsEpisode.SuspendLayout()
+        Me.gbBrowserPriority.SuspendLayout()
         Me.pnlSettingsBottom.SuspendLayout()
         Me.tblSettingsBottom.SuspendLayout()
         CType(Me.pbIconBottom, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -104,7 +108,7 @@ Partial Class frmSettingsHolder_TV
         Me.pnlSettingsTop.Dock = System.Windows.Forms.DockStyle.Top
         Me.pnlSettingsTop.Location = New System.Drawing.Point(0, 0)
         Me.pnlSettingsTop.Name = "pnlSettingsTop"
-        Me.pnlSettingsTop.Size = New System.Drawing.Size(501, 29)
+        Me.pnlSettingsTop.Size = New System.Drawing.Size(626, 29)
         Me.pnlSettingsTop.TabIndex = 0
         '
         'tblSettingsTop
@@ -127,14 +131,14 @@ Partial Class frmSettingsHolder_TV
         Me.tblSettingsTop.RowCount = 2
         Me.tblSettingsTop.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.tblSettingsTop.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.tblSettingsTop.Size = New System.Drawing.Size(501, 29)
+        Me.tblSettingsTop.Size = New System.Drawing.Size(626, 29)
         Me.tblSettingsTop.TabIndex = 98
         '
         'btnDown
         '
         Me.btnDown.Anchor = System.Windows.Forms.AnchorStyles.Right
         Me.btnDown.Image = CType(resources.GetObject("btnDown.Image"), System.Drawing.Image)
-        Me.btnDown.Location = New System.Drawing.Point(475, 3)
+        Me.btnDown.Location = New System.Drawing.Point(600, 3)
         Me.btnDown.Name = "btnDown"
         Me.btnDown.Size = New System.Drawing.Size(23, 23)
         Me.btnDown.TabIndex = 3
@@ -145,7 +149,7 @@ Partial Class frmSettingsHolder_TV
         Me.lblScraperOrder.Anchor = System.Windows.Forms.AnchorStyles.Right
         Me.lblScraperOrder.AutoSize = True
         Me.lblScraperOrder.Font = New System.Drawing.Font("Segoe UI", 6.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblScraperOrder.Location = New System.Drawing.Point(382, 8)
+        Me.lblScraperOrder.Location = New System.Drawing.Point(507, 8)
         Me.lblScraperOrder.Name = "lblScraperOrder"
         Me.lblScraperOrder.Size = New System.Drawing.Size(58, 12)
         Me.lblScraperOrder.TabIndex = 1
@@ -155,7 +159,7 @@ Partial Class frmSettingsHolder_TV
         '
         Me.btnUp.Anchor = System.Windows.Forms.AnchorStyles.Right
         Me.btnUp.Image = CType(resources.GetObject("btnUp.Image"), System.Drawing.Image)
-        Me.btnUp.Location = New System.Drawing.Point(446, 3)
+        Me.btnUp.Location = New System.Drawing.Point(571, 3)
         Me.btnUp.Name = "btnUp"
         Me.btnUp.Size = New System.Drawing.Size(23, 23)
         Me.btnUp.TabIndex = 2
@@ -170,7 +174,7 @@ Partial Class frmSettingsHolder_TV
         Me.pnlSettings.Dock = System.Windows.Forms.DockStyle.Fill
         Me.pnlSettings.Location = New System.Drawing.Point(0, 0)
         Me.pnlSettings.Name = "pnlSettings"
-        Me.pnlSettings.Size = New System.Drawing.Size(501, 444)
+        Me.pnlSettings.Size = New System.Drawing.Size(626, 555)
         Me.pnlSettings.TabIndex = 0
         '
         'pnlSettingsMain
@@ -180,7 +184,7 @@ Partial Class frmSettingsHolder_TV
         Me.pnlSettingsMain.Dock = System.Windows.Forms.DockStyle.Fill
         Me.pnlSettingsMain.Location = New System.Drawing.Point(0, 29)
         Me.pnlSettingsMain.Name = "pnlSettingsMain"
-        Me.pnlSettingsMain.Size = New System.Drawing.Size(501, 378)
+        Me.pnlSettingsMain.Size = New System.Drawing.Size(626, 489)
         Me.pnlSettingsMain.TabIndex = 98
         '
         'tblSettingsMain
@@ -192,6 +196,7 @@ Partial Class frmSettingsHolder_TV
         Me.tblSettingsMain.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
         Me.tblSettingsMain.Controls.Add(Me.gbScraperOpts, 0, 1)
         Me.tblSettingsMain.Controls.Add(Me.gbScraperFieldsOpts, 0, 0)
+        Me.tblSettingsMain.Controls.Add(Me.gbBrowserPriority, 0, 2)
         Me.tblSettingsMain.Dock = System.Windows.Forms.DockStyle.Fill
         Me.tblSettingsMain.Location = New System.Drawing.Point(0, 0)
         Me.tblSettingsMain.Name = "tblSettingsMain"
@@ -199,7 +204,7 @@ Partial Class frmSettingsHolder_TV
         Me.tblSettingsMain.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.tblSettingsMain.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.tblSettingsMain.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.tblSettingsMain.Size = New System.Drawing.Size(501, 378)
+        Me.tblSettingsMain.Size = New System.Drawing.Size(626, 489)
         Me.tblSettingsMain.TabIndex = 0
         '
         'gbScraperOpts
@@ -208,9 +213,9 @@ Partial Class frmSettingsHolder_TV
         Me.gbScraperOpts.Controls.Add(Me.tblScraperOpts)
         Me.gbScraperOpts.Dock = System.Windows.Forms.DockStyle.Fill
         Me.gbScraperOpts.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.gbScraperOpts.Location = New System.Drawing.Point(3, 195)
+        Me.gbScraperOpts.Location = New System.Drawing.Point(2, 156)
         Me.gbScraperOpts.Name = "gbScraperOpts"
-        Me.gbScraperOpts.Size = New System.Drawing.Size(393, 71)
+        Me.gbScraperOpts.Size = New System.Drawing.Size(314, 57)
         Me.gbScraperOpts.TabIndex = 98
         Me.gbScraperOpts.TabStop = False
         Me.gbScraperOpts.Text = "Scraper Options"
@@ -232,7 +237,7 @@ Partial Class frmSettingsHolder_TV
         Me.tblScraperOpts.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.tblScraperOpts.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.tblScraperOpts.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.tblScraperOpts.Size = New System.Drawing.Size(387, 50)
+        Me.tblScraperOpts.Size = New System.Drawing.Size(308, 36)
         Me.tblScraperOpts.TabIndex = 1
         '
         'chkFallBackworldwide
@@ -280,9 +285,9 @@ Partial Class frmSettingsHolder_TV
         Me.gbScraperFieldsOpts.Controls.Add(Me.tblScraperFieldsOpts)
         Me.gbScraperFieldsOpts.Dock = System.Windows.Forms.DockStyle.Fill
         Me.gbScraperFieldsOpts.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.gbScraperFieldsOpts.Location = New System.Drawing.Point(3, 3)
+        Me.gbScraperFieldsOpts.Location = New System.Drawing.Point(2, 2)
         Me.gbScraperFieldsOpts.Name = "gbScraperFieldsOpts"
-        Me.gbScraperFieldsOpts.Size = New System.Drawing.Size(393, 186)
+        Me.gbScraperFieldsOpts.Size = New System.Drawing.Size(314, 149)
         Me.gbScraperFieldsOpts.TabIndex = 3
         Me.gbScraperFieldsOpts.TabStop = False
         Me.gbScraperFieldsOpts.Text = "Scraper Fields - Scraper specific"
@@ -302,7 +307,7 @@ Partial Class frmSettingsHolder_TV
         Me.tblScraperFieldsOpts.RowCount = 2
         Me.tblScraperFieldsOpts.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.tblScraperFieldsOpts.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.tblScraperFieldsOpts.Size = New System.Drawing.Size(387, 165)
+        Me.tblScraperFieldsOpts.Size = New System.Drawing.Size(308, 128)
         Me.tblScraperFieldsOpts.TabIndex = 99
         '
         'gbScraperFieldsShow
@@ -599,14 +604,50 @@ Partial Class frmSettingsHolder_TV
         Me.chkScraperEpTitle.Text = "Title"
         Me.chkScraperEpTitle.UseVisualStyleBackColor = True
         '
+        'gbBrowserPriority
+        '
+        Me.gbBrowserPriority.Controls.Add(Me.cbBrowserPriority)
+        Me.gbBrowserPriority.Controls.Add(Me.lblForceBrowser)
+        Me.gbBrowserPriority.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.gbBrowserPriority.Location = New System.Drawing.Point(2, 218)
+        Me.gbBrowserPriority.Name = "gbBrowserPriority"
+        Me.gbBrowserPriority.Size = New System.Drawing.Size(274, 43)
+        Me.gbBrowserPriority.TabIndex = 99
+        Me.gbBrowserPriority.TabStop = False
+        Me.gbBrowserPriority.Text = "Browser"
+        '
+        'cbBrowserPriority
+        '
+        Me.cbBrowserPriority.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.cbBrowserPriority.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cbBrowserPriority.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(238, Byte))
+        Me.cbBrowserPriority.FormattingEnabled = True
+        Me.cbBrowserPriority.Items.AddRange(New Object() {"", "Chrome", "Edge", "Firefox"})
+        Me.cbBrowserPriority.Location = New System.Drawing.Point(128, 14)
+        Me.cbBrowserPriority.Name = "cbBrowserPriority"
+        Me.cbBrowserPriority.Size = New System.Drawing.Size(131, 21)
+        Me.cbBrowserPriority.Sorted = True
+        Me.cbBrowserPriority.TabIndex = 78
+        '
+        'lblForceBrowser
+        '
+        Me.lblForceBrowser.Anchor = System.Windows.Forms.AnchorStyles.Left
+        Me.lblForceBrowser.AutoSize = True
+        Me.lblForceBrowser.Font = New System.Drawing.Font("Segoe UI", 8.25!)
+        Me.lblForceBrowser.Location = New System.Drawing.Point(6, 18)
+        Me.lblForceBrowser.Name = "lblForceBrowser"
+        Me.lblForceBrowser.Size = New System.Drawing.Size(92, 13)
+        Me.lblForceBrowser.TabIndex = 5
+        Me.lblForceBrowser.Text = "Browser priority:"
+        '
         'pnlSettingsBottom
         '
         Me.pnlSettingsBottom.AutoSize = True
         Me.pnlSettingsBottom.Controls.Add(Me.tblSettingsBottom)
         Me.pnlSettingsBottom.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.pnlSettingsBottom.Location = New System.Drawing.Point(0, 407)
+        Me.pnlSettingsBottom.Location = New System.Drawing.Point(0, 518)
         Me.pnlSettingsBottom.Name = "pnlSettingsBottom"
-        Me.pnlSettingsBottom.Size = New System.Drawing.Size(501, 37)
+        Me.pnlSettingsBottom.Size = New System.Drawing.Size(626, 37)
         Me.pnlSettingsBottom.TabIndex = 97
         '
         'tblSettingsBottom
@@ -624,7 +665,7 @@ Partial Class frmSettingsHolder_TV
         Me.tblSettingsBottom.RowCount = 2
         Me.tblSettingsBottom.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.tblSettingsBottom.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.tblSettingsBottom.Size = New System.Drawing.Size(501, 37)
+        Me.tblSettingsBottom.Size = New System.Drawing.Size(626, 37)
         Me.tblSettingsBottom.TabIndex = 0
         '
         'pbIconBottom
@@ -658,7 +699,7 @@ Partial Class frmSettingsHolder_TV
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.AutoSize = True
         Me.BackColor = System.Drawing.Color.White
-        Me.ClientSize = New System.Drawing.Size(501, 444)
+        Me.ClientSize = New System.Drawing.Size(626, 555)
         Me.Controls.Add(Me.pnlSettings)
         Me.Font = New System.Drawing.Font("Segoe UI", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
@@ -694,6 +735,8 @@ Partial Class frmSettingsHolder_TV
         Me.gbScraperFieldsEpisode.PerformLayout()
         Me.tblScraperFieldsEpisode.ResumeLayout(False)
         Me.tblScraperFieldsEpisode.PerformLayout()
+        Me.gbBrowserPriority.ResumeLayout(False)
+        Me.gbBrowserPriority.PerformLayout()
         Me.pnlSettingsBottom.ResumeLayout(False)
         Me.pnlSettingsBottom.PerformLayout()
         Me.tblSettingsBottom.ResumeLayout(False)
@@ -746,4 +789,7 @@ Partial Class frmSettingsHolder_TV
     Friend WithEvents chkFallBackworldwide As CheckBox
     Friend WithEvents lblForceTitleLanguage As Label
     Friend WithEvents cbForceTitleLanguage As ComboBox
+    Friend WithEvents gbBrowserPriority As GroupBox
+    Friend WithEvents lblForceBrowser As Label
+    Friend WithEvents cbBrowserPriority As ComboBox
 End Class
