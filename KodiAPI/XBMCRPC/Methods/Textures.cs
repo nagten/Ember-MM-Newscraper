@@ -85,7 +85,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Remove the specified texture
                 /// </summary>
-        public async Task<string> RemoveTexture(int textureid=0)
+        public async Task<string> RemoveTexture(int? textureid=0)
         {
             var jArgs = new JObject();
              if (textureid != null)

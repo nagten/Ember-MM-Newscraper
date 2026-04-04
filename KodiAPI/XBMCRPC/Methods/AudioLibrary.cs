@@ -60,7 +60,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Retrieve details about a specific album
                 /// </summary>
-        public async Task<XBMCRPC.AudioLibrary.GetAlbumDetailsResponse> GetAlbumDetails(int albumid=0, XBMCRPC.Audio.Fields.Album properties=null)
+        public async Task<XBMCRPC.AudioLibrary.GetAlbumDetailsResponse> GetAlbumDetails(int? albumid =0, XBMCRPC.Audio.Fields.Album properties=null)
         {
             var jArgs = new JObject();
              if (albumid != null)
@@ -306,7 +306,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Retrieve details about a specific artist
                 /// </summary>
-        public async Task<XBMCRPC.AudioLibrary.GetArtistDetailsResponse> GetArtistDetails(int artistid=0, XBMCRPC.Audio.Fields.Artist properties=null)
+        public async Task<XBMCRPC.AudioLibrary.GetArtistDetailsResponse> GetArtistDetails(int? artistid =0, XBMCRPC.Audio.Fields.Artist properties=null)
         {
             var jArgs = new JObject();
              if (artistid != null)
@@ -674,7 +674,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Retrieve recently added songs
                 /// </summary>
-        public async Task<XBMCRPC.AudioLibrary.GetRecentlyAddedSongsResponse> GetRecentlyAddedSongs(int albumlimit=0, XBMCRPC.Audio.Fields.Song properties=null, XBMCRPC.List.Limits limits=null, XBMCRPC.List.Sort sort=null)
+        public async Task<XBMCRPC.AudioLibrary.GetRecentlyAddedSongsResponse> GetRecentlyAddedSongs(int? albumlimit =0, XBMCRPC.Audio.Fields.Song properties=null, XBMCRPC.List.Limits limits=null, XBMCRPC.List.Sort sort=null)
         {
             var jArgs = new JObject();
              if (albumlimit != null)
@@ -751,7 +751,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Retrieve details about a specific song
                 /// </summary>
-        public async Task<XBMCRPC.AudioLibrary.GetSongDetailsResponse> GetSongDetails(int songid=0, XBMCRPC.Audio.Fields.Song properties=null)
+        public async Task<XBMCRPC.AudioLibrary.GetSongDetailsResponse> GetSongDetails(int? songid =0, XBMCRPC.Audio.Fields.Song properties=null)
         {
             var jArgs = new JObject();
              if (songid != null)
@@ -1069,7 +1069,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Update the given album with the given details
                 /// </summary>
-        public async Task<string> SetAlbumDetails(int albumid=0, string title=null, global::System.Collections.Generic.List<string> artist=null, string description=null, global::System.Collections.Generic.List<string> genre=null, global::System.Collections.Generic.List<string> theme=null, global::System.Collections.Generic.List<string> mood=null, global::System.Collections.Generic.List<string> style=null, string type=null, string albumlabel=null, int? rating=null, int? year=null)
+        public async Task<string> SetAlbumDetails(int? albumid =0, string title=null, global::System.Collections.Generic.List<string> artist=null, string description=null, global::System.Collections.Generic.List<string> genre=null, global::System.Collections.Generic.List<string> theme=null, global::System.Collections.Generic.List<string> mood=null, global::System.Collections.Generic.List<string> style=null, string type=null, string albumlabel=null, int? rating=null, int? year=null)
         {
             var jArgs = new JObject();
              if (albumid != null)
@@ -1138,7 +1138,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Update the given artist with the given details
                 /// </summary>
-        public async Task<string> SetArtistDetails(int artistid=0, string artist=null, global::System.Collections.Generic.List<string> instrument=null, global::System.Collections.Generic.List<string> style=null, global::System.Collections.Generic.List<string> mood=null, string born=null, string formed=null, string description=null, global::System.Collections.Generic.List<string> genre=null, string died=null, string disbanded=null, global::System.Collections.Generic.List<string> yearsactive=null)
+        public async Task<string> SetArtistDetails(int? artistid =0, string artist=null, global::System.Collections.Generic.List<string> instrument=null, global::System.Collections.Generic.List<string> style=null, global::System.Collections.Generic.List<string> mood=null, string born=null, string formed=null, string description=null, global::System.Collections.Generic.List<string> genre=null, string died=null, string disbanded=null, global::System.Collections.Generic.List<string> yearsactive=null)
         {
             var jArgs = new JObject();
              if (artistid != null)
@@ -1207,7 +1207,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Update the given song with the given details
                 /// </summary>
-        public async Task<string> SetSongDetails(int songid=0, string title=null, global::System.Collections.Generic.List<string> artist=null, global::System.Collections.Generic.List<string> albumartist=null, global::System.Collections.Generic.List<string> genre=null, int? year=null, int? rating=null, string album=null, int? track=null, int? disc=null, int? duration=null, string comment=null, string musicbrainztrackid=null, string musicbrainzartistid=null, string musicbrainzalbumid=null, string musicbrainzalbumartistid=null)
+        public async Task<string> SetSongDetails(int? songid =0, string title=null, global::System.Collections.Generic.List<string> artist=null, global::System.Collections.Generic.List<string> albumartist=null, global::System.Collections.Generic.List<string> genre=null, int? year=null, int? rating=null, string album=null, int? track=null, int? disc=null, int? duration=null, string comment=null, string musicbrainztrackid=null, string musicbrainzartistid=null, string musicbrainzalbumid=null, string musicbrainzalbumartistid=null)
         {
             var jArgs = new JObject();
              if (songid != null)

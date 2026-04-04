@@ -56,7 +56,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Toggle fullscreen/GUI
                 /// </summary>
-        public async Task<bool> SetFullscreen(bool fullscreen)
+        public async Task<bool> SetFullscreen(bool? fullscreen)
         {
             var jArgs = new JObject();
              if (fullscreen != null)
@@ -107,7 +107,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Shows a GUI notification
                 /// </summary>
-        public async Task<string> ShowNotification(XBMCRPC.GUI.ShowNotification_image1 image, string title=null, string message=null, int displaytime=0)
+        public async Task<string> ShowNotification(XBMCRPC.GUI.ShowNotification_image1 image, string title=null, string message=null, int? displaytime =0)
         {
             var jArgs = new JObject();
              if (title != null)
@@ -136,7 +136,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Shows a GUI notification
                 /// </summary>
-        public async Task<string> ShowNotification(string image, string title=null, string message=null, int displaytime=0)
+        public async Task<string> ShowNotification(string image, string title=null, string message=null, int? displaytime=0)
         {
             var jArgs = new JObject();
              if (title != null)
@@ -165,7 +165,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Shows a GUI notification
                 /// </summary>
-        public async Task<string> ShowNotification(string title=null, string message=null, int displaytime=0)
+        public async Task<string> ShowNotification(string title=null, string message=null, int? displaytime =0)
         {
             var jArgs = new JObject();
              if (title != null)

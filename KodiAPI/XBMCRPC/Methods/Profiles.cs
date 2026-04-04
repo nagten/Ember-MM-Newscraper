@@ -52,7 +52,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Load the specified profile
                 /// </summary>
-        public async Task<string> LoadProfile(string profile=null, bool prompt=false, XBMCRPC.Profiles.Password password=null)
+        public async Task<string> LoadProfile(string profile=null, bool? prompt=false, XBMCRPC.Profiles.Password password=null)
         {
             var jArgs = new JObject();
              if (profile != null)
