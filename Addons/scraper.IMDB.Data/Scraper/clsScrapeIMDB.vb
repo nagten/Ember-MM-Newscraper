@@ -218,11 +218,7 @@ Public Class Scraper
                 RetrieveIMDBcookies(strCookieHeaders)
             End If
 
-            Dim getHtmlDocument As Threading.Tasks.Task(Of HtmlDocument)
-
-            getHtmlDocument = GetAsyncHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/title/", id, "/reference/"))
-            getHtmlDocument.Wait()
-            Dim htmldReference = getHtmlDocument.Result
+            Dim htmldReference = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/title/", id, "/reference/"))
 
             If htmldReference Is Nothing Then
                 logger.Trace(String.Format("[IMDB] [GetMovieInfo] [ID:""{0}""] failed to retrieve imdb reference page", id))
@@ -465,11 +461,7 @@ Public Class Scraper
                 RetrieveIMDBcookies(strCookieHeaders)
             End If
 
-            Dim getHtmlDocument As Threading.Tasks.Task(Of HtmlDocument)
-
-            getHtmlDocument = GetAsyncHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/title/", id, "/reference/"))
-            getHtmlDocument.Wait()
-            Dim htmldReference = getHtmlDocument.Result
+            Dim htmldReference = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/title/", id, "/reference/"))
 
             If htmldReference Is Nothing Then
                 logger.Trace(String.Format("[IMDB] [GetTVShowInfo] [ID:""{0}""] failed to retrieve imdb reference page", id))
@@ -584,11 +576,7 @@ Public Class Scraper
             RetrieveIMDBcookies(strCookieHeaders)
         End If
 
-        Dim getHtmlDocument As Threading.Tasks.Task(Of HtmlDocument)
-
-        getHtmlDocument = GetAsyncHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/title/", showid, "/episodes/?season=", season))
-        getHtmlDocument.Wait()
-        Dim htmldEpisodes = getHtmlDocument.Result
+        Dim htmldEpisodes = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/title/", showid, "/episodes/?season=", season))
 
         If htmldEpisodes Is Nothing Then
             logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] failed to retrieve imdb episode/seasons page", showid))
@@ -621,11 +609,7 @@ Public Class Scraper
             RetrieveIMDBcookies(strCookieHeaders)
         End If
 
-        Dim getHtmlDocument As Threading.Tasks.Task(Of HtmlDocument)
-
-        getHtmlDocument = GetAsyncHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/title/", showid, "/episodes/?season=", season))
-        getHtmlDocument.Wait()
-        Dim htmldEpisodes = getHtmlDocument.Result
+        Dim htmldEpisodes = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/title/", showid, "/episodes/?season=", season))
 
         If htmldEpisodes Is Nothing Then
             logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] failed to retrieve imdb episode/seasons page", showid))
@@ -667,11 +651,7 @@ Public Class Scraper
                 RetrieveIMDBcookies(strCookieHeaders)
             End If
 
-            Dim getHtmlDocument As Threading.Tasks.Task(Of HtmlDocument)
-
-            getHtmlDocument = GetAsyncHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/title/", id, "/reference/"))
-            getHtmlDocument.Wait()
-            Dim htmldReference = getHtmlDocument.Result
+            Dim htmldReference = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/title/", id, "/reference/"))
 
             If htmldReference Is Nothing Then
                 logger.Trace(String.Format("[IMDB] [GetTVShowInfo] [ID:""{0}""] failed to retrieve imdb reference page", id))
@@ -835,9 +815,7 @@ Public Class Scraper
                         RetrieveIMDBcookies(strCookieHeaders)
                     End If
 
-                    getHtmlDocument = GetAsyncHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/title/", id, "/episodes/"))
-                    getHtmlDocument.Wait()
-                    Dim htmldSeasonsAndEpisodes = getHtmlDocument.Result
+                    Dim htmldSeasonsAndEpisodes = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/title/", id, "/episodes/"))
 
                     If htmldSeasonsAndEpisodes Is Nothing Then
                         logger.Trace(String.Format("[IMDB] [GetTVShowInfo] [ID:""{0}""] failed to retrieve imdb episodes page", id))
@@ -884,11 +862,7 @@ Public Class Scraper
             RetrieveIMDBcookies(strCookieHeaders)
         End If
 
-        Dim getHtmlDocument As Threading.Tasks.Task(Of HtmlDocument)
-
-        getHtmlDocument = GetAsyncHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/title/", id, "/reference/"))
-        getHtmlDocument.Wait()
-        Dim htmldReference = getHtmlDocument.Result
+        Dim htmldReference = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/title/", id, "/reference/"))
 
         If htmldReference Is Nothing Then
             logger.Trace(String.Format("[IMDB] [GetTVShowInfo] [ID:""{0}""] failed to retrieve imdb reference page", id))
@@ -1623,6 +1597,10 @@ Public Class Scraper
         Return Nothing
     End Function
 
+    Private Function GetHtmlDocumentWithCookieHeader(ByVal cookieHeader As String, ByVal strUrl As String) As HtmlDocument
+        Return GetAsyncHtmlDocumentWithCookieHeader(cookieHeader, strUrl).GetAwaiter.GetResult()
+    End Function
+
     Async Function GetAsyncHtmlDocumentWithCookieHeader(ByVal cookieHeader As String, ByVal strUrl As String) As Threading.Tasks.Task(Of HtmlDocument)
         Dim handler As New HttpClientHandler() With {
             .AutomaticDecompression = DecompressionMethods.GZip Or DecompressionMethods.Deflate,
@@ -1641,12 +1619,12 @@ Public Class Scraper
                     webClient.DefaultRequestHeaders.UserAgent.ParseAdd(strUserAgent)
                 End If
 
-                Using response As HttpResponseMessage = Await webClient.GetAsync(strUrl)
+                Using response As HttpResponseMessage = Await webClient.GetAsync(strUrl).ConfigureAwait(False)
 
-                    logger.Trace(String.Format("[IMDB] [GetAsyncHtmlDocumentWithCookieHeader] Status: {0} {1}", CInt(response.StatusCode), response.StatusCode.ToString()))
+                    logger.Trace(String.Format("[IMDB] [GetAsyncHtmlDocumentWithCookieHeader] Status: {0} {1} {2}", CInt(response.StatusCode), response.StatusCode.ToString(), response.RequestMessage.RequestUri.AbsoluteUri))
 
                     If response.StatusCode.Equals(HttpStatusCode.OK) Then
-                        Dim html As String = Await response.Content.ReadAsStringAsync()
+                        Dim html As String = Await response.Content.ReadAsStringAsync().ConfigureAwait(False)
 
                         If String.IsNullOrWhiteSpace(html) Then
                             logger.Trace(String.Format("[IMDB] [GetAsyncHtmlDocumentWithCookieHeader] Empty HTML response for URL ""{0}""", strUrl))
@@ -1678,7 +1656,6 @@ Public Class Scraper
         Dim htmldResultsTvTitles As HtmlDocument = Nothing
         Dim htmldResultsVideoTitles As HtmlDocument = Nothing
         Dim htmldResultsExact As HtmlDocument = Nothing
-        Dim getHtmlDocument As Threading.Tasks.Task(Of HtmlDocument)
 
         If strCookieHeaders Is String.Empty Then
             RetrieveIMDBcookies(strCookieHeaders)
@@ -1688,44 +1665,26 @@ Public Class Scraper
             End If
         End If
 
-        getHtmlDocument = GetAsyncHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&s=ttexact=true"))
-        getHtmlDocument.Wait()
-        htmldResultsExact = getHtmlDocument.Result
+        htmldResultsExact = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&s=ttexact=true"))
 
         If _SpecialSettings.SearchTvTitles Then
-            'htmldResultsTvTitles = webParsing.Load(String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&title_type=tv_movie"))
-
-            getHtmlDocument = GetAsyncHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&title_type=tv_movie"))
-            getHtmlDocument.Wait()
-            htmldResultsTvTitles = getHtmlDocument.Result
+            htmldResultsTvTitles = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&title_type=tv_movie"))
         End If
+
         If _SpecialSettings.SearchVideoTitles Then
-            'htmldResultsVideoTitles = webParsing.Load(String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&title_type=video"))
-
-            getHtmlDocument = GetAsyncHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&title_type=video"))
-            getHtmlDocument.Wait()
-            htmldResultsVideoTitles = getHtmlDocument.Result
+            htmldResultsVideoTitles = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&title_type=video"))
         End If
+
         If _SpecialSettings.SearchShortTitles Then
-            'htmldResultsShortTitles = webParsing.Load(String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&title_type=short"))
-
-            getHtmlDocument = GetAsyncHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&title_type=short"))
-            getHtmlDocument.Wait()
-            htmldResultsShortTitles = getHtmlDocument.Result
+            htmldResultsShortTitles = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&title_type=short"))
         End If
+
         If _SpecialSettings.SearchPartialTitles Then
-            'htmldResultsPartialTitles = webParsing.Load(String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&s=tt&ttype=ft&ref_=fn_ft"))
-
-            getHtmlDocument = GetAsyncHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&s=tt&ttype=ft&ref_=fn_ft"))
-            getHtmlDocument.Wait()
-            htmldResultsPartialTitles = getHtmlDocument.Result
+            htmldResultsPartialTitles = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&s=tt&ttype=ft&ref_=fn_ft"))
         End If
-        If _SpecialSettings.SearchPopularTitles Then
-            'htmldResultsPopularTitles = webParsing.Load(String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&s=tt"))
 
-            getHtmlDocument = GetAsyncHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&s=tt"))
-            getHtmlDocument.Wait()
-            htmldResultsPopularTitles = getHtmlDocument.Result
+        If _SpecialSettings.SearchPopularTitles Then
+            htmldResultsPopularTitles = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&s=tt"))
         End If
 
         'Exact titles
@@ -1878,11 +1837,7 @@ Public Class Scraper
             RetrieveIMDBcookies(strCookieHeaders)
         End If
 
-        Dim getHtmlDocument As Threading.Tasks.Task(Of HtmlDocument)
-
-        getHtmlDocument = GetAsyncHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(title), "&s=tt&ttype=tv"))
-        getHtmlDocument.Wait()
-        htmldSearchResults = getHtmlDocument.Result
+        htmldSearchResults = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(title), "&s=tt&ttype=tv"))
 
         If htmldSearchResults Is Nothing Then
             logger.Trace(String.Format("[IMDB] [SearchTVShow] failed to retrieve imdb find page"))
