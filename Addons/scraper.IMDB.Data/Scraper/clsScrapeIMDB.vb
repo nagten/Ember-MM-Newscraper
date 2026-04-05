@@ -1361,30 +1361,34 @@ Public Class Scraper
     Private Function GetInstalledBrowsers() As List(Of String)
         Dim browsers As New List(Of String)()
 
-        If IsBrowserInstalledRegistry("SOFTWARE\Microsoft\Edge") Then
+        If IsBrowserInstalledRegistry("msedge.exe") Then
             browsers.Add("Edge")
         End If
 
-        If IsBrowserInstalledRegistry("SOFTWARE\Google\Chrome") Then
+        If IsBrowserInstalledRegistry("chrome.exe") Then
             browsers.Add("Chrome")
         End If
 
-        If IsBrowserInstalledRegistry("SOFTWARE\Mozilla\Mozilla Firefox") Then
+        If IsBrowserInstalledRegistry("firefox.exe") Then
             browsers.Add("Firefox")
         End If
 
         Return browsers
     End Function
 
-    Private Function IsBrowserInstalledRegistry(registryPath As String) As Boolean
-        Using hklm As RegistryKey = Registry.LocalMachine.OpenSubKey(registryPath), hkcu As RegistryKey = Registry.CurrentUser.OpenSubKey(registryPath)
+    Private Function IsBrowserInstalledRegistry(executableName As String) As Boolean
+        Dim paths As String() = {
+        "SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\" & executableName,
+        "SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\" & executableName
+        }
 
-            If hklm IsNot Nothing OrElse hkcu IsNot Nothing Then
-                Return True
-            End If
+        For Each path In paths
+            Using key = Registry.LocalMachine.OpenSubKey(path)
+                If key IsNot Nothing Then Return True
+            End Using
+        Next
 
-            Return False
-        End Using
+        Return False
     End Function
 
     Private Sub RetrieveIMDBcookies(ByRef strCookieHeaders As String)
@@ -1397,6 +1401,8 @@ Public Class Scraper
             strCookieHeaders = ""
             logger.Trace(String.Format("[IMDB] [RetrieveIMDBcookies] No supported browser installed (Chrome, Edge, Firefox)"))
             Exit Sub
+        Else
+            logger.Trace(String.Format("[IMDB] [RetrieveIMDBcookies] following browsers are detected ({0})", String.Join(", ", installedBrowser)))
         End If
 
         If String.IsNullOrEmpty(_SpecialSettings.BrowserPriority) Then
@@ -1537,7 +1543,7 @@ Public Class Scraper
                         'Remove HeadlessChrome from useragent for increased stealth
                         Dim originalUserAgent As String = driver.ExecuteScript("return navigator.userAgent;").ToString()
 
-                        logger.Trace(String.Format("[IMDB] [CreateWebDriver] Original user agent ""{0}""", originalUserAgent))
+                        logger.Trace(String.Format("[IMDB] [CreateWebDriver Edge] Original user agent ""{0}""", originalUserAgent))
 
                         strUserAgent = originalUserAgent.Replace("HeadlessChrome", "Chrome")
 
@@ -1566,7 +1572,7 @@ Public Class Scraper
 
                         'Remove HeadlessChrome from useragent for increased stealth
                         Dim originalUserAgent As String = driver.ExecuteScript("return navigator.userAgent;").ToString()
-                        logger.Trace(String.Format("[IMDB] [CreateWebDriver] Original user agent ""{0}""", originalUserAgent))
+                        logger.Trace(String.Format("[IMDB] [CreateWebDriver Chrome] Original user agent ""{0}""", originalUserAgent))
 
                         strUserAgent = originalUserAgent.Replace("HeadlessChrome", "Chrome")
 

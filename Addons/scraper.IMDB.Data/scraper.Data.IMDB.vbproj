@@ -12,7 +12,7 @@
     <FileAlignment>512</FileAlignment>
     <MyType>Windows</MyType>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-	<TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
+    <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <OptionExplicit>On</OptionExplicit>
     <OptionCompare>Binary</OptionCompare>
     <OptionStrict>On</OptionStrict>
@@ -58,7 +58,7 @@
     <DocumentationFile>
     </DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
-	<RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <DefineTrace>true</DefineTrace>
@@ -71,7 +71,7 @@
     <DocumentationFile>
     </DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
-	<RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -83,7 +83,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109</WarningsAsErrors>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <DefineTrace>true</DefineTrace>
@@ -93,7 +93,7 @@
     <DebugType>None</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <WarningsAsErrors>41998,41999,42004,42016,42017,42018,42019,42020,42021,42022,42024,42025,42026,42029,42030,42031,42032,42036,42099,42104,42105,42106,42107,42108,42109</WarningsAsErrors>
-	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -317,15 +317,10 @@
     <Error Condition="!Exists('..\..\packages\Selenium.WebDriver.4.41.0\build\Selenium.WebDriver.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Selenium.WebDriver.4.41.0\build\Selenium.WebDriver.targets'))" />
   </Target>
   <Target Name="CopySeleniumManager" AfterTargets="Build">
-  <ItemGroup>
-    <SeleniumManager Include="..\..\packages\selenium.webdriver*\runtimes\win\native\selenium-manager.exe" />
-  </ItemGroup>
-
-  <Copy
-    SourceFiles="@(SeleniumManager)"
-    DestinationFolder="$(OutDir)" 
-    SkipUnchangedFiles="true" />
-	<Error Text="Selenium Manager not found in NuGet cache." 
-         Condition="@(SeleniumManager->Count()) == 0" />
-</Target>
+    <ItemGroup>
+      <SeleniumManager Include="..\..\packages\selenium.webdriver*\runtimes\win\native\selenium-manager.exe" />
+    </ItemGroup>
+    <Copy SourceFiles="@(SeleniumManager)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+    <Error Text="Selenium Manager not found in NuGet cache." Condition="@(SeleniumManager-&gt;Count()) == 0" />
+  </Target>
 </Project>
