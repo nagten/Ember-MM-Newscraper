@@ -6,8 +6,9 @@ We decided that was time to give Ember a new home. We've taken it upon ourselves
 To continue development of EmberMM, because its a great product, that in my opinion is the most stable and useful media manager available, I've tried all others, but yet still come back to Ember.
 
 ## Links
-- Main discussion : http://forum.xbmc.org/forumdisplay.php?fid=195
+- Main discussion : [https://forum.kodi.tv/showthread.php?tid=363079](https://forum.kodi.tv/showthread.php?tid=363079)
 - GitHub : https://github.com/DanCooper/Ember-MM-Newscraper (DanCooper is mainaining the most aligned version)
+- Github : https://github.com/nagten/Ember-MM-Newscraper (Nagten is maintaining latest IMDB scraper)
 
 ## Helping the development
 Any help is more than welcome. We do suggest everyone to participate in the forum to be aligned and updated.
