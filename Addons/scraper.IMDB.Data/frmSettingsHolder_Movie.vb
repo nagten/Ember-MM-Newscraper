@@ -229,6 +229,24 @@ Public Class frmSettingsHolder_Movie
         chkStudiowithDistributors.Text = Master.eLang.GetString(1456, "Include Distributors")
     End Sub
 
+    Private Sub cbBrowserPriority_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbBrowserPriority.SelectedIndexChanged
+        RaiseEvent ModuleSettingsChanged()
+    End Sub
+
+    Private Sub cbBrowserPriority_MouseHover(sender As Object, e As EventArgs) Handles cbBrowserPriority.MouseHover
+        Dim buttonToolTip As New ToolTip()
+
+        buttonToolTip.ToolTipTitle = "Select browser priority default order is Edge, Chrome, Firefox"
+        buttonToolTip.UseFading = True
+        buttonToolTip.UseAnimation = True
+        buttonToolTip.IsBalloon = True
+        buttonToolTip.ShowAlways = True
+        buttonToolTip.AutoPopDelay = 5000
+        buttonToolTip.InitialDelay = 500
+        buttonToolTip.ReshowDelay = 0
+
+        buttonToolTip.SetToolTip(cbBrowserPriority, cbBrowserPriority.Text)
+    End Sub
 #End Region 'Methods
 
 End Class

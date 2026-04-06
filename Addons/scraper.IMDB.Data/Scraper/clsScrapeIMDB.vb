@@ -18,12 +18,22 @@
 ' # along with Ember Media Manager.  If not, see <http://www.gnu.org/licenses/>. #
 ' ################################################################################
 
+Imports System.IO
+Imports System.Net
+Imports System.Net.Http
+Imports System.Reflection
+Imports System.Text.RegularExpressions
+Imports System.Web
 Imports EmberAPI
 Imports HtmlAgilityPack
-Imports NLog
-Imports System.IO
-Imports System.Text.RegularExpressions
+Imports Microsoft.Win32
 Imports Newtonsoft.Json
+Imports NLog
+Imports OpenQA.Selenium
+Imports OpenQA.Selenium.Chrome
+Imports OpenQA.Selenium.Edge
+Imports OpenQA.Selenium.Firefox
+Imports OpenQA.Selenium.Support.UI
 
 Public Class SearchResults_Movie
 
@@ -69,7 +79,9 @@ Public Class Scraper
     Private json_IMBD_next_data As IMDBJson = Nothing
     Private json_IMDB_Search_Results_next_data As IMDBSearchResultsJson = Nothing
     Private strPosterURL As String = String.Empty
-
+    Private strCookieHeaders As String = String.Empty
+    Private strUserAgent As String = String.Empty
+    Private onAssemblyResolveEventHandler As ResolveEventHandler
     Private _SpecialSettings As IMDB_Data.SpecialSettings
 
 #End Region 'Fields
@@ -202,10 +214,13 @@ Public Class Scraper
                 .Scrapersource = "IMDB"
             }
 
-            Dim webParsing As New HtmlWeb
-            Dim htmldReference As HtmlDocument = webParsing.Load(String.Concat("https://www.imdb.com/title/", id, "/reference/"))
+            If strCookieHeaders Is String.Empty Then
+                RetrieveIMDBcookies(strCookieHeaders)
+            End If
 
-            If webParsing.StatusCode <> 200 Then
+            Dim htmldReference = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/title/", id, "/reference/"))
+
+            If htmldReference Is Nothing Then
                 logger.Trace(String.Format("[IMDB] [GetMovieInfo] [ID:""{0}""] failed to retrieve imdb reference page", id))
                 Return Nothing
             End If
@@ -418,8 +433,8 @@ Public Class Scraper
                 End If
 
                 Return nMovie
-                Else
-                    Return Nothing
+            Else
+                Return Nothing
             End If
 
         Catch ex As Exception
@@ -442,11 +457,14 @@ Public Class Scraper
                 .UniqueIDs = New MediaContainers.UniqueidContainer(Enums.ContentType.TVEpisode) With {.IMDbId = id}
             }
 
-            Dim webParsingSeasons As New HtmlWeb
-            Dim htmldReference As HtmlDocument = webParsingSeasons.Load(String.Concat("https://www.imdb.com/title/", id, "/reference/"))
+            If strCookieHeaders Is String.Empty Then
+                RetrieveIMDBcookies(strCookieHeaders)
+            End If
 
-            If webParsingSeasons.StatusCode <> 200 Then
-                logger.Trace(String.Format("[IMDB] [GetTVShowInfo] [ID:""{0}""] failed to retrieve imdb page", id))
+            Dim htmldReference = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/title/", id, "/reference/"))
+
+            If htmldReference Is Nothing Then
+                logger.Trace(String.Format("[IMDB] [GetTVShowInfo] [ID:""{0}""] failed to retrieve imdb reference page", id))
                 Return Nothing
             End If
 
@@ -465,85 +483,85 @@ Public Class Scraper
 
                 'Original Title
                 If filteredoptions.bEpisodeOriginalTitle Then
-                        nTVEpisode.OriginalTitle = json_IMBD_next_data.props.PageProps.MainColumnData.OriginalTitleText.Text
+                    nTVEpisode.OriginalTitle = json_IMBD_next_data.props.PageProps.MainColumnData.OriginalTitleText.Text
+                End If
+
+                'Title
+                If filteredoptions.bEpisodeTitle Then
+                    If Not String.IsNullOrEmpty(_SpecialSettings.ForceTitleLanguage) Then
+                        'Translated English title
+                        nTVEpisode.Title = json_IMBD_next_data.props.PageProps.MainColumnData.TitleText.Text
+                    Else
+                        nTVEpisode.Title = json_IMBD_next_data.props.PageProps.MainColumnData.OriginalTitleText.Text
                     End If
+                End If
 
-                    'Title
-                    If filteredoptions.bEpisodeTitle Then
-                        If Not String.IsNullOrEmpty(_SpecialSettings.ForceTitleLanguage) Then
-                            'Translated English title
-                            nTVEpisode.Title = json_IMBD_next_data.props.PageProps.MainColumnData.TitleText.Text
-                        Else
-                            nTVEpisode.Title = json_IMBD_next_data.props.PageProps.MainColumnData.OriginalTitleText.Text
-                        End If
+                'Actors
+                If filteredoptions.bEpisodeActors Then
+                    Dim lstActors = ParseActors(json_IMBD_next_data)
+                    If lstActors IsNot Nothing Then
+                        nTVEpisode.Actors = lstActors
+                    Else
+                        logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] can't parse Actors", id))
                     End If
+                End If
 
-                    'Actors
-                    If filteredoptions.bEpisodeActors Then
-                        Dim lstActors = ParseActors(json_IMBD_next_data)
-                        If lstActors IsNot Nothing Then
-                            nTVEpisode.Actors = lstActors
-                        Else
-                            logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] can't parse Actors", id))
-                        End If
+                'AiredDate
+                If filteredoptions.bEpisodeAired Then
+                    If json_IMBD_next_data.props.PageProps.MainColumnData.ReleaseDate IsNot Nothing Then
+                        nTVEpisode.Aired = json_IMBD_next_data.props.PageProps.MainColumnData.ReleaseDate.GetFullReleaseDate()
                     End If
+                End If
 
-                    'AiredDate
-                    If filteredoptions.bEpisodeAired Then
-                        If json_IMBD_next_data.props.PageProps.MainColumnData.ReleaseDate IsNot Nothing Then
-                            nTVEpisode.Aired = json_IMBD_next_data.props.PageProps.MainColumnData.ReleaseDate.GetFullReleaseDate()
-                        End If
+                'Credits (writers)
+                If filteredoptions.bEpisodeCredits Then
+                    Dim lstCredits = ParseCredits(json_IMBD_next_data)
+                    If lstCredits IsNot Nothing Then
+                        nTVEpisode.Credits = lstCredits
+                    Else
+                        logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] can't parse Credits (Writers)", id))
                     End If
+                End If
 
-                    'Credits (writers)
-                    If filteredoptions.bEpisodeCredits Then
-                        Dim lstCredits = ParseCredits(json_IMBD_next_data)
-                        If lstCredits IsNot Nothing Then
-                            nTVEpisode.Credits = lstCredits
-                        Else
-                            logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] can't parse Credits (Writers)", id))
-                        End If
+                'Directors
+                If filteredoptions.bEpisodeDirectors Then
+                    Dim lstDirectors = ParseDirectors(json_IMBD_next_data)
+                    If lstDirectors IsNot Nothing Then
+                        nTVEpisode.Directors = lstDirectors
+                    Else
+                        logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] can't parse Directors", id))
                     End If
+                End If
 
-                    'Directors
-                    If filteredoptions.bEpisodeDirectors Then
-                        Dim lstDirectors = ParseDirectors(json_IMBD_next_data)
-                        If lstDirectors IsNot Nothing Then
-                            nTVEpisode.Directors = lstDirectors
-                        Else
-                            logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] can't parse Directors", id))
-                        End If
-                    End If
+                'Plot
+                If filteredoptions.bEpisodePlot AndAlso bIsScraperLanguage Then
+                    Dim strPlot = ParsePlot(json_IMBD_next_data)
 
-                    'Plot
-                    If filteredoptions.bEpisodePlot AndAlso bIsScraperLanguage Then
-                        Dim strPlot = ParsePlot(json_IMBD_next_data)
-
+                    If Not String.IsNullOrEmpty(strPlot) Then
+                        nTVEpisode.Plot = strPlot
+                    Else
+                        strPlot = ParseOutline(json_IMBD_next_data)
                         If Not String.IsNullOrEmpty(strPlot) Then
                             nTVEpisode.Plot = strPlot
                         Else
-                            strPlot = ParseOutline(json_IMBD_next_data)
-                            If Not String.IsNullOrEmpty(strPlot) Then
-                                nTVEpisode.Plot = strPlot
-                            Else
-                                logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] no result from ""plotsummary"" page for Plot", id))
-                            End If
+                            logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] no result from ""plotsummary"" page for Plot", id))
                         End If
                     End If
+                End If
 
-                    'Rating
-                    If filteredoptions.bEpisodeRating Then
-                        Dim nRating = ParseRating(json_IMBD_next_data)
-                        If nRating IsNot Nothing Then
-                            nTVEpisode.Ratings.Add(nRating)
-                        Else
-                            logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] can't parse Rating", id))
-                        End If
+                'Rating
+                If filteredoptions.bEpisodeRating Then
+                    Dim nRating = ParseRating(json_IMBD_next_data)
+                    If nRating IsNot Nothing Then
+                        nTVEpisode.Ratings.Add(nRating)
+                    Else
+                        logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] can't parse Rating", id))
                     End If
+                End If
 
-                    Return nTVEpisode
-                Else
-                    Return Nothing
+                Return nTVEpisode
+            Else
+                Return Nothing
             End If
         Catch ex As Exception
             logger.Error(ex, New StackFrame().GetMethod().Name)
@@ -554,10 +572,13 @@ Public Class Scraper
     Public Function GetTVEpisodeInfo(ByVal showid As String, ByVal season As Integer, ByVal episode As Integer, ByRef filteredoptions As Structures.ScrapeOptions) As MediaContainers.EpisodeDetails
         If String.IsNullOrEmpty(showid) OrElse season = -1 OrElse episode = -1 Then Return Nothing
 
-        Dim webParsingSeasons As New HtmlWeb
-        Dim htmldEpisodes As HtmlDocument = webParsingSeasons.Load(String.Concat("https://www.imdb.com/title/", showid, "/episodes/?season=", season))
+        If strCookieHeaders Is String.Empty Then
+            RetrieveIMDBcookies(strCookieHeaders)
+        End If
 
-        If webParsingSeasons.StatusCode <> 200 Then
+        Dim htmldEpisodes = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/title/", showid, "/episodes/?season=", season))
+
+        If htmldEpisodes Is Nothing Then
             logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] failed to retrieve imdb episode/seasons page", showid))
         Else
             'Get our React JSON next_data
@@ -583,11 +604,15 @@ Public Class Scraper
     End Function
 
     Public Sub GetTVSeasonInfo(ByRef nTVShow As MediaContainers.TVShow, ByVal showid As String, ByVal season As Integer, ByRef scrapemodifiers As Structures.ScrapeModifiers, ByRef filteredoptions As Structures.ScrapeOptions)
-        Dim webParsingSeasons As New HtmlWeb
-        Dim htmldEpisodes As HtmlDocument = webParsingSeasons.Load(String.Concat("https://www.imdb.com/title/", showid, "/episodes/?season=", season))
 
-        If webParsingSeasons.StatusCode <> 200 Then
-            logger.Trace(String.Format("[IMDB] [GetTVSeasonInfo] [ID:""{0}""] failed to retrieve imdb episode/seasons page", showid))
+        If strCookieHeaders Is String.Empty Then
+            RetrieveIMDBcookies(strCookieHeaders)
+        End If
+
+        Dim htmldEpisodes = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/title/", showid, "/episodes/?season=", season))
+
+        If htmldEpisodes Is Nothing Then
+            logger.Trace(String.Format("[IMDB] [GetTVEpisodeInfo] [ID:""{0}""] failed to retrieve imdb episode/seasons page", showid))
         Else
             'Get our React JSON next_data
             json_IMBD_next_data = DeserializeJsonObject(Of IMDBJson)(htmldEpisodes.DocumentNode.SelectSingleNode("//script[@id='__NEXT_DATA__']").InnerHtml)
@@ -622,10 +647,13 @@ Public Class Scraper
                 .UniqueIDs = New MediaContainers.UniqueidContainer(Enums.ContentType.TVShow) With {.IMDbId = id}
             }
 
-            Dim webParsing As New HtmlWeb
-            Dim htmldReference As HtmlDocument = webParsing.Load(String.Concat("https://www.imdb.com/title/", id, "/reference/"))
+            If strCookieHeaders Is String.Empty Then
+                RetrieveIMDBcookies(strCookieHeaders)
+            End If
 
-            If webParsing.StatusCode <> 200 Then
+            Dim htmldReference = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/title/", id, "/reference/"))
+
+            If htmldReference Is Nothing Then
                 logger.Trace(String.Format("[IMDB] [GetTVShowInfo] [ID:""{0}""] failed to retrieve imdb reference page", id))
                 Return Nothing
             End If
@@ -782,9 +810,14 @@ Public Class Scraper
 
                 If scrapemodifier.withEpisodes OrElse scrapemodifier.withSeasons Then
                     'Seasons and Episodes
-                    Dim htmldSeasonsAndEpisodes As HtmlDocument = webParsing.Load(String.Concat("https://www.imdb.com/title/", id, "/episodes/"))
 
-                    If webParsing.StatusCode <> 200 Then
+                    If strCookieHeaders Is String.Empty Then
+                        RetrieveIMDBcookies(strCookieHeaders)
+                    End If
+
+                    Dim htmldSeasonsAndEpisodes = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/title/", id, "/episodes/"))
+
+                    If htmldSeasonsAndEpisodes Is Nothing Then
                         logger.Trace(String.Format("[IMDB] [GetTVShowInfo] [ID:""{0}""] failed to retrieve imdb episodes page", id))
                         'Do nothing
                     Else
@@ -825,11 +858,14 @@ Public Class Scraper
     End Function
 
     Public Function GetMovieStudios(ByVal id As String) As List(Of String)
-        Dim webParsingSeasons As New HtmlWeb
-        Dim htmldReference As HtmlDocument = webParsingSeasons.Load(String.Concat("http://www.imdb.com/title/", id, "/reference"))
+        If strCookieHeaders Is String.Empty Then
+            RetrieveIMDBcookies(strCookieHeaders)
+        End If
 
-        If webParsingSeasons.StatusCode <> 200 Then
-            logger.Trace(String.Format("[IMDB] [GetMovieStudios] [ID:""{0}""] failed to retrieve imdb reference page", id))
+        Dim htmldReference = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/title/", id, "/reference/"))
+
+        If htmldReference Is Nothing Then
+            logger.Trace(String.Format("[IMDB] [GetTVShowInfo] [ID:""{0}""] failed to retrieve imdb reference page", id))
         Else
             'Get our React JSON next_data
             json_IMBD_next_data = DeserializeJsonObject(Of IMDBJson)(htmldReference.DocumentNode.SelectSingleNode("//script[@id='__NEXT_DATA__']").InnerHtml)
@@ -1296,6 +1332,319 @@ Public Class Scraper
         Return Nothing
     End Function
 
+    Private Function GetInstalledBrowsers() As List(Of String)
+        Dim browsers As New List(Of String)()
+
+        If IsBrowserInstalledRegistry("msedge.exe") Then
+            browsers.Add("Edge")
+        End If
+
+        If IsBrowserInstalledRegistry("chrome.exe") Then
+            browsers.Add("Chrome")
+        End If
+
+        If IsBrowserInstalledRegistry("firefox.exe") Then
+            browsers.Add("Firefox")
+        End If
+
+        Return browsers
+    End Function
+
+    Private Function IsBrowserInstalledRegistry(executableName As String) As Boolean
+        Dim paths As String() = {
+        "SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\" & executableName,
+        "SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\" & executableName
+        }
+
+        For Each path In paths
+            Using key = Registry.LocalMachine.OpenSubKey(path)
+                If key IsNot Nothing Then Return True
+            End Using
+        Next
+
+        Return False
+    End Function
+
+    Private Sub RetrieveIMDBcookies(ByRef strCookieHeaders As String)
+        Dim url As String = "https://www.imdb.com"
+        Dim browserSelected As New List(Of String)
+
+        Dim installedBrowser As List(Of String) = GetInstalledBrowsers()
+
+        If installedBrowser.Count = 0 Then
+            strCookieHeaders = ""
+            logger.Trace(String.Format("[IMDB] [RetrieveIMDBcookies] No supported browser installed (Chrome, Edge, Firefox)"))
+            Exit Sub
+        Else
+            logger.Trace(String.Format("[IMDB] [RetrieveIMDBcookies] following browsers are detected ({0})", String.Join(", ", installedBrowser)))
+        End If
+
+        If String.IsNullOrEmpty(_SpecialSettings.BrowserPriority) Then
+            'No browser priority preference configured
+            browserSelected = installedBrowser
+        ElseIf installedBrowser.Contains(_SpecialSettings.BrowserPriority, StringComparer.OrdinalIgnoreCase) Then
+            'The priority browser is installed use that one first
+            browserSelected.Add(_SpecialSettings.BrowserPriority)
+        Else
+            'Fallback, try all browsers one by one
+            browserSelected = installedBrowser
+        End If
+
+        Dim browserDriver As IWebDriver = Nothing
+
+        Try
+            browserDriver = CreateWebDriver(browserSelected)
+
+            If browserDriver Is Nothing Then
+                strCookieHeaders = ""
+                Exit Sub
+            End If
+
+            'strCookieHeaders = ExtractCookiesAntiBotTest(browserDriver, url)
+            strCookieHeaders = ExtractCookies(browserDriver, url)
+
+        Catch ex As Exception
+            strCookieHeaders = ""
+            logger.Trace(String.Format("[IMDB] [RetrieveIMDBcookies] Exception: {0}", ex.Message))
+        Finally
+            If onAssemblyResolveEventHandler IsNot Nothing Then
+                RemoveHandler AppDomain.CurrentDomain.AssemblyResolve, onAssemblyResolveEventHandler
+            End If
+
+            If browserDriver IsNot Nothing Then browserDriver.Quit()
+        End Try
+    End Sub
+
+    Private Function ExtractCookiesAntiBotTest(browserDriver As IWebDriver, url As String) As String
+        'Antibot test websites used for testing, this function will take a screenshot antibot_result.png and dump pagesource of the antibottest page to antibot_result.html
+        url = "https://pixelscan.net/bot-check"
+        url = "https://scrapfly.io/web-scraping-tools/automation-detector"
+        url = "https://bot.sannysoft.com/"
+
+        browserDriver.Navigate().GoToUrl(url)
+
+        'Wait for page to load for maximum 10 seconds
+        Dim wait As New WebDriverWait(browserDriver, TimeSpan.FromSeconds(10))
+
+        wait.Until(Function(driverwait)
+                       Dim pageReady As Boolean = CType(driverwait, IJavaScriptExecutor).ExecuteScript("return document.readyState").Equals("complete")
+                       Return pageReady
+                   End Function)
+
+        Dim screenshot As Screenshot = (CType(browserDriver, ITakesScreenshot)).GetScreenshot()
+
+        screenshot.SaveAsFile(".\antibot_result.png")
+        File.WriteAllText(".\antibot_result.html", browserDriver.PageSource)
+
+        Return String.Empty
+    End Function
+
+    Private Function ExtractCookies(browserDriver As IWebDriver, url As String) As String
+        browserDriver.Navigate().GoToUrl(url)
+
+        'Wait for page to load and cookies for maximum 10 seconds
+        Dim wait As New WebDriverWait(browserDriver, TimeSpan.FromSeconds(10))
+
+        wait.Until(Function(driverwait)
+                       Dim pageReady As Boolean = CType(driverwait, IJavaScriptExecutor).ExecuteScript("return document.readyState").Equals("complete")
+                       Dim cookieExists As Boolean = (driverwait.Manage().Cookies.AllCookies.Count > 0)
+                       Return pageReady AndAlso cookieExists
+                   End Function)
+
+        Dim cookieHeader As New Text.StringBuilder()
+
+        If browserDriver.Manage().Cookies.AllCookies.Count > 0 Then
+            For Each cookie In browserDriver.Manage().Cookies.AllCookies
+                cookieHeader.Append($"{cookie.Name}={cookie.Value}; ")
+            Next
+
+            'Trim trailing semicolon + space
+            Return cookieHeader.ToString().TrimEnd(" "c, ";"c)
+        Else
+            logger.Trace(String.Format("[IMDB] [ExtractCookies] Failed to retrieve cookies"))
+            Return String.Empty
+        End If
+    End Function
+
+    Private Function CreateAssemblyResolver(unsafeAsm As Assembly) As ResolveEventHandler
+        Return Function(sender As Object, e As ResolveEventArgs) As Assembly
+                   If e.Name.StartsWith("System.Runtime.CompilerServices", StringComparison.OrdinalIgnoreCase) Then
+                       Return unsafeAsm
+                   End If
+
+                   For Each asm As Assembly In AppDomain.CurrentDomain.GetAssemblies()
+                       If asm.FullName = e.Name Then
+                           Return asm
+                       End If
+                   Next
+
+                   Return Nothing
+               End Function
+    End Function
+
+    Private Function CreateWebDriver(browserList As List(Of String)) As IWebDriver
+        'Disable data collection see https://www.selenium.dev/documentation/selenium_manager/
+        Environment.SetEnvironmentVariable("SE_AVOID_STATS", "1")
+
+        'Load the old System.Runtime.CompilerServices.Unsafe assembly version 4.0.4.1
+        'Selenium switched in version v4.24.0 from `Newtonsoft.Json` to `System.Text.Json` package (#14292) which causes following assembley load error:
+        '"Could not load file or assembly 'System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' or one of its dependencies. The system cannot find the file specified."
+        'See https://github.com/SeleniumHQ/selenium/issues/16539 and https://github.com/SeleniumHQ/selenium/pull/16564
+        'Below workaround avoids that error by loading an older pinned version
+        Dim oldSystemRuntimeCompilerServicesUnsafeAssembly = Assembly.LoadFrom(String.Concat(IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "\System.Runtime.CompilerServices.Unsafe.4.0.4.1.dll"))
+        onAssemblyResolveEventHandler = CreateAssemblyResolver(oldSystemRuntimeCompilerServicesUnsafeAssembly)
+        AddHandler AppDomain.CurrentDomain.AssemblyResolve, onAssemblyResolveEventHandler
+
+        'No BiDi support in .Net yet to change webdriver options https://github.com/SeleniumHQ/selenium/issues/13993 so we use CDP commands
+        For Each browser As String In browserList
+            Try
+                Select Case browser
+                    Case "Edge"
+                        Dim browserService = EdgeDriverService.CreateDefaultService()
+                        browserService.HideCommandPromptWindow = True
+
+                        Dim browserOptions As New EdgeOptions()
+                        browserOptions.AddArgument("--headless=new")
+                        browserOptions.AddArgument("--no-sandbox")
+                        browserOptions.AddArgument("--disable-blink-features=AutomationControlled")
+                        browserOptions.AddArgument("--disable-dev-shm-usage")
+                        browserOptions.AddArgument("--timezone=" & TimeZoneInfo.Local.Id)
+                        browserOptions.AddExcludedArgument("enable-automation")
+                        browserOptions.AddAdditionalOption("useAutomationExtension", False)
+
+                        Dim driver = New EdgeDriver(browserService, browserOptions)
+
+                        'Remove HeadlessChrome from useragent for increased stealth
+                        Dim originalUserAgent As String = driver.ExecuteScript("return navigator.userAgent;").ToString()
+
+                        logger.Trace(String.Format("[IMDB] [CreateWebDriver Edge] Original user agent ""{0}""", originalUserAgent))
+
+                        strUserAgent = originalUserAgent.Replace("HeadlessChrome", "Chrome")
+
+                        driver.ExecuteCdpCommand("Network.setUserAgentOverride",
+                                         New Dictionary(Of String, Object) From {
+                                             {"userAgent", strUserAgent}
+                                         })
+
+                        logger.Trace(String.Format("[IMDB] [CreateWebDriver Edge] Modified user agent ""{0}""", strUserAgent))
+
+                        Return driver
+                    Case "Chrome"
+                        Dim browserService = ChromeDriverService.CreateDefaultService()
+                        browserService.HideCommandPromptWindow = True
+
+                        Dim browserOptions As New ChromeOptions()
+                        browserOptions.AddArgument("--headless=new")
+                        browserOptions.AddArgument("--no-sandbox")
+                        browserOptions.AddArgument("--disable-blink-features=AutomationControlled")
+                        browserOptions.AddArgument("--disable-dev-shm-usage")
+                        browserOptions.AddArgument("--timezone=" & TimeZoneInfo.Local.Id)
+                        browserOptions.AddExcludedArgument("enable-automation")
+                        browserOptions.AddAdditionalOption("useAutomationExtension", False)
+
+                        Dim driver = New ChromeDriver(browserService, browserOptions)
+
+                        'Remove HeadlessChrome from useragent for increased stealth
+                        Dim originalUserAgent As String = driver.ExecuteScript("return navigator.userAgent;").ToString()
+                        logger.Trace(String.Format("[IMDB] [CreateWebDriver Chrome] Original user agent ""{0}""", originalUserAgent))
+
+                        strUserAgent = originalUserAgent.Replace("HeadlessChrome", "Chrome")
+
+                        driver.ExecuteCdpCommand("Network.setUserAgentOverride",
+                                         New Dictionary(Of String, Object) From {
+                                             {"userAgent", strUserAgent}
+                                         })
+
+                        logger.Trace(String.Format("[IMDB] [CreateWebDriver Chrome] Modified user agent ""{0}""", strUserAgent))
+
+                        Return driver
+                    Case "Firefox"
+                        Dim browserService = FirefoxDriverService.CreateDefaultService()
+                        browserService.HideCommandPromptWindow = True
+
+                        Dim browserOptions As New FirefoxOptions()
+                        browserOptions.AddArgument("--headless")
+                        browserOptions.SetPreference("dom.webdriver.enabled", False)
+                        browserOptions.SetPreference("timezone", TimeZoneInfo.Local.Id)
+                        browserOptions.SetPreference("useAutomationExtension", False)
+                        browserOptions.SetPreference("intl.accept_languages", "en-US, en")
+                        browserOptions.SetPreference("marionette.enabled", False) 'Disables most automation options, etc but does also hide the navigator.webdriver flag in some cases
+
+                        Dim driver = New FirefoxDriver(browserService, browserOptions)
+
+                        strUserAgent = driver.ExecuteScript("return navigator.userAgent;").ToString
+                        logger.Trace(String.Format("[IMDB] [CreateWebDriver Firefox] Modified user agent ""{0}""", strUserAgent))
+
+                        'Again try to hide navigator webdriver flag only works in very limited cases, webdriver is a readonly property in Firefox there's no sure way to disable it
+                        Dim script As String = "
+                        Object.defineProperty(navigator, 'webdriver', {
+                            get: () => undefined
+                        });
+                        "
+
+                        CType(driver, IJavaScriptExecutor).ExecuteScript(script)
+
+                        Return driver
+                    Case Else
+                        Return Nothing
+                End Select
+            Catch ex As Exception
+                'Driver failed try next browser in the the browser list
+                logger.Trace(String.Format("[IMDB] [CreateWebDriver] Failed to start ""{0}"" with status {1}", browser, ex.Message))
+            End Try
+        Next
+
+        Return Nothing
+    End Function
+
+    Private Function GetHtmlDocumentWithCookieHeader(ByVal cookieHeader As String, ByVal strUrl As String) As HtmlDocument
+        Return GetAsyncHtmlDocumentWithCookieHeader(cookieHeader, strUrl).GetAwaiter.GetResult()
+    End Function
+
+    Async Function GetAsyncHtmlDocumentWithCookieHeader(ByVal cookieHeader As String, ByVal strUrl As String) As Threading.Tasks.Task(Of HtmlDocument)
+        Dim handler As New HttpClientHandler() With {
+            .AutomaticDecompression = DecompressionMethods.GZip Or DecompressionMethods.Deflate,
+            .UseCookies = False,
+            .AllowAutoRedirect = True
+        }
+        Using handler
+            Using webClient As New HttpClient(handler)
+                webClient.Timeout = TimeSpan.FromSeconds(30)
+
+                'Add the WAF cookieheaders
+                webClient.DefaultRequestHeaders.Add("Cookie", cookieHeader)
+
+                'Pretend to be a real browser by adding the useragent that we used when we retrieved the cookies
+                If Not String.IsNullOrWhiteSpace(strUserAgent) Then
+                    webClient.DefaultRequestHeaders.UserAgent.ParseAdd(strUserAgent)
+                End If
+
+                Using response As HttpResponseMessage = Await webClient.GetAsync(strUrl).ConfigureAwait(False)
+
+                    logger.Trace(String.Format("[IMDB] [GetAsyncHtmlDocumentWithCookieHeader] Status: {0} {1} {2}", CInt(response.StatusCode), response.StatusCode.ToString(), response.RequestMessage.RequestUri.AbsoluteUri))
+
+                    If response.StatusCode.Equals(HttpStatusCode.OK) Then
+                        Dim html As String = Await response.Content.ReadAsStringAsync().ConfigureAwait(False)
+
+                        If String.IsNullOrWhiteSpace(html) Then
+                            logger.Trace(String.Format("[IMDB] [GetAsyncHtmlDocumentWithCookieHeader] Empty HTML response for URL ""{0}""", strUrl))
+                            Return Nothing
+                        Else
+                            'Parse HTML normally via htmlagilitypack
+                            Dim htmlresult As New HtmlDocument()
+                            htmlresult.LoadHtml(html)
+
+                            Return htmlresult
+                        End If
+                    Else
+                        logger.Trace(String.Format("[IMDB] [GetAsyncHtmlDocumentWithCookieHeader] Failed for URL ""{0}"" with status {1} {2}", strUrl, CInt(response.StatusCode), response.StatusCode.ToString()))
+                        Return Nothing
+                    End If
+                End Using
+            End Using
+        End Using
+    End Function
+
     Private Function SearchMovie(ByVal title As String, ByVal year As String) As SearchResults_Movie
         Dim R As New SearchResults_Movie
 
@@ -1306,35 +1655,36 @@ Public Class Scraper
         Dim htmldResultsShortTitles As HtmlDocument = Nothing
         Dim htmldResultsTvTitles As HtmlDocument = Nothing
         Dim htmldResultsVideoTitles As HtmlDocument = Nothing
+        Dim htmldResultsExact As HtmlDocument = Nothing
 
-        Dim webParsing As New HtmlWeb
-        Dim htmldResultsExact As HtmlDocument = webParsing.Load(String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&s=ttexact=true"))
-        Dim strResponseUri = webParsing.ResponseUri.ToString
+        If strCookieHeaders Is String.Empty Then
+            RetrieveIMDBcookies(strCookieHeaders)
+
+            If strCookieHeaders Is String.Empty Then
+                Return R
+            End If
+        End If
+
+        htmldResultsExact = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&s=ttexact=true"))
 
         If _SpecialSettings.SearchTvTitles Then
-            htmldResultsTvTitles = webParsing.Load(String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&title_type=tv_movie"))
+            htmldResultsTvTitles = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&title_type=tv_movie"))
         End If
+
         If _SpecialSettings.SearchVideoTitles Then
-            htmldResultsVideoTitles = webParsing.Load(String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&title_type=video"))
+            htmldResultsVideoTitles = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&title_type=video"))
         End If
+
         If _SpecialSettings.SearchShortTitles Then
-            htmldResultsShortTitles = webParsing.Load(String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&title_type=short"))
+            htmldResultsShortTitles = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&title_type=short"))
         End If
+
         If _SpecialSettings.SearchPartialTitles Then
-            htmldResultsPartialTitles = webParsing.Load(String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&s=tt&ttype=ft&ref_=fn_ft"))
+            htmldResultsPartialTitles = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&s=tt&ttype=ft&ref_=fn_ft"))
         End If
+
         If _SpecialSettings.SearchPopularTitles Then
-            htmldResultsPopularTitles = webParsing.Load(String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&s=tt"))
-        End If
-
-        If webParsing.StatusCode <> 200 Then
-            logger.Trace(String.Format("[IMDB] [SearchMovie] failed to retrieve imdb search pages"))
-            Return R
-        End If
-
-        'Check if we've been redirected straight to the movie page
-        If Regex.IsMatch(strResponseUri, REGEX_IMDBID) Then
-            Return R
+            htmldResultsPopularTitles = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(strTitle), "&s=tt"))
         End If
 
         'Exact titles
@@ -1481,11 +1831,15 @@ Public Class Scraper
 
     Private Function SearchTVShow(ByVal title As String) As SearchResults_TVShow
         Dim R As New SearchResults_TVShow
+        Dim htmldSearchResults As HtmlDocument
 
-        Dim webParsing As New HtmlWeb
-        Dim htmldSearchResults As HtmlDocument = webParsing.Load(String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(title), "&s=tt&ttype=tv"))
+        If strCookieHeaders Is String.Empty Then
+            RetrieveIMDBcookies(strCookieHeaders)
+        End If
 
-        If webParsing.StatusCode <> 200 Then
+        htmldSearchResults = GetHtmlDocumentWithCookieHeader(strCookieHeaders, String.Concat("https://www.imdb.com/find/?q=", HttpUtility.UrlEncode(title), "&s=tt&ttype=tv"))
+
+        If htmldSearchResults Is Nothing Then
             logger.Trace(String.Format("[IMDB] [SearchTVShow] failed to retrieve imdb find page"))
             'Do nothing
         Else

@@ -12,7 +12,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("https://github.com/nagten/Ember-MM-Newscraper")>
 <Assembly: AssemblyCompany("Ember Media Manager")>
 <Assembly: AssemblyProduct("scraper.Data.IMDB")>
-<Assembly: AssemblyCopyright("Copyright © 2025")>
+<Assembly: AssemblyCopyright("Copyright © 2026")>
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)>
@@ -31,5 +31,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("1.11.1.8")>
-<Assembly: AssemblyFileVersion("1.11.1.8")>
+<Assembly: AssemblyVersion("1.11.1.9")>
+<Assembly: AssemblyFileVersion("1.11.1.9")>
