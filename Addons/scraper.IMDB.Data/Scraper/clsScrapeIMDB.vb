@@ -806,6 +806,16 @@ Public Class Scraper
                     End If
                 End If
 
+                'Tagline
+                If filteredoptions.bMainTagline AndAlso bIsScraperLanguage Then
+                    Dim strTagline = ParseTagline(json_IMBD_next_data)
+                    If strTagline IsNot Nothing Then
+                        nTVShow.Tagline = strTagline
+                    Else
+                        logger.Trace(String.Format("[IMDB] [GetTVShowInfo] [ID:""{0}""] can't parse Tagline", id))
+                    End If
+                End If
+
                 If bwIMDB.CancellationPending Then Return Nothing
 
                 If scrapemodifier.withEpisodes OrElse scrapemodifier.withSeasons Then
