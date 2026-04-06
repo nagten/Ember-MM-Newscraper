@@ -211,6 +211,7 @@ Public Class IMDB_Data
         _setup_TV.chkScraperShowRuntime.Checked = ConfigScrapeOptions_TV.bMainRuntime
         _setup_TV.chkScraperShowStudios.Checked = ConfigScrapeOptions_TV.bMainStudios
         _setup_TV.chkScraperShowTitle.Checked = ConfigScrapeOptions_TV.bMainTitle
+        _setup_TV.chkScraperTagLine.Checked = ConfigScrapeOptions_TV.bMainTagline
 
         _setup_TV.cbForceTitleLanguage.Text = _SpecialSettings_TV.ForceTitleLanguage
         _setup_TV.cbBrowserPriority.Text = _SpecialSettings_TV.BrowserPriority
@@ -283,6 +284,7 @@ Public Class IMDB_Data
         ConfigScrapeOptions_TV.bMainRuntime = AdvancedSettings.GetBooleanSetting("DoRuntime", True, , Enums.ContentType.TVShow)
         ConfigScrapeOptions_TV.bMainStudios = AdvancedSettings.GetBooleanSetting("DoStudio", True, , Enums.ContentType.TVShow)
         ConfigScrapeOptions_TV.bMainTitle = AdvancedSettings.GetBooleanSetting("DoTitle", True, , Enums.ContentType.TVShow)
+        ConfigScrapeOptions_TV.bMainTagline = AdvancedSettings.GetBooleanSetting("DoTagline", True, , Enums.ContentType.TVShow)
 
         _SpecialSettings_TV.FallBackWorldwide = AdvancedSettings.GetBooleanSetting("FallBackWorldwide", False, , Enums.ContentType.TVShow)
         _SpecialSettings_TV.ForceTitleLanguage = AdvancedSettings.GetSetting("ForceTitleLanguage", String.Empty, , Enums.ContentType.TVShow)
@@ -342,6 +344,7 @@ Public Class IMDB_Data
             settings.SetBooleanSetting("DoRuntime", ConfigScrapeOptions_TV.bMainRuntime, , , Enums.ContentType.TVShow)
             settings.SetBooleanSetting("DoStudio", ConfigScrapeOptions_TV.bMainStudios, , , Enums.ContentType.TVShow)
             settings.SetBooleanSetting("DoTitle", ConfigScrapeOptions_TV.bMainTitle, , , Enums.ContentType.TVShow)
+            settings.SetBooleanSetting("DoTagline", ConfigScrapeOptions_TV.bMainTagline, , , Enums.ContentType.TVShow)
             settings.SetBooleanSetting("FallBackWorldwide", _SpecialSettings_TV.FallBackWorldwide, , , Enums.ContentType.TVShow)
             settings.SetSetting("ForceTitleLanguage", _SpecialSettings_TV.ForceTitleLanguage, , , Enums.ContentType.TVShow)
             settings.SetSetting("BrowserPriority", _SpecialSettings_TV.BrowserPriority, , , Enums.ContentType.TVShow)
@@ -406,6 +409,7 @@ Public Class IMDB_Data
         ConfigScrapeOptions_TV.bMainRuntime = _setup_TV.chkScraperShowRuntime.Checked
         ConfigScrapeOptions_TV.bMainStudios = _setup_TV.chkScraperShowStudios.Checked
         ConfigScrapeOptions_TV.bMainTitle = _setup_TV.chkScraperShowTitle.Checked
+        ConfigScrapeOptions_TV.bMainTagline = _setup_TV.chkScraperTagLine.Checked
 
         _SpecialSettings_TV.FallBackWorldwide = _setup_TV.chkFallBackworldwide.Checked
         _SpecialSettings_TV.ForceTitleLanguage = _setup_TV.cbForceTitleLanguage.Text

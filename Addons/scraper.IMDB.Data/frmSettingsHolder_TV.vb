@@ -196,6 +196,9 @@ Public Class frmSettingsHolder_TV
         RaiseEvent ModuleSettingsChanged()
     End Sub
 
+    Private Sub chkScraperTagLine_CheckedChanged(sender As Object, e As EventArgs) Handles chkScraperTagLine.CheckedChanged
+        RaiseEvent ModuleSettingsChanged()
+    End Sub
     Sub orderChanged()
         Dim order As Integer = ModulesManager.Instance.externalScrapersModules_Data_TV.FirstOrDefault(Function(p) p.AssemblyName = IMDB_Data._AssemblyName).ModuleOrder
         If ModulesManager.Instance.externalScrapersModules_Data_TV.Count > 1 Then
