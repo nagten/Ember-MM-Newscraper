@@ -14,7 +14,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Add a favourite with the given details
                 /// </summary>
-        public async Task<string> AddFavourite(string title=null, XBMCRPC.Favourite.Type type=0, string path=null, string window=null, string windowparameter=null, string thumbnail=null)
+        public async Task<string> AddFavourite(string title=null, XBMCRPC.Favourite.Type? type=0, string path=null, string window=null, string windowparameter=null, string thumbnail=null)
         {
             var jArgs = new JObject();
              if (title != null)
@@ -53,7 +53,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Retrieve all favourites
                 /// </summary>
-        public async Task<XBMCRPC.Favourites.GetFavouritesResponse> GetFavourites(XBMCRPC.Favourite.Type type=0, XBMCRPC.Favourite.Fields.Favourite properties=null)
+        public async Task<XBMCRPC.Favourites.GetFavouritesResponse> GetFavourites(XBMCRPC.Favourite.Type? type=0, XBMCRPC.Favourite.Fields.Favourite properties=null)
         {
             var jArgs = new JObject();
              if (type != null)

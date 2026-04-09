@@ -14,7 +14,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Retrieves all setting categories
                 /// </summary>
-        public async Task<XBMCRPC.Settings.GetCategoriesResponse> GetCategories(XBMCRPC.Setting.Level level=0, string section=null, XBMCRPC.Settings.GetCategories_properties properties=null)
+        public async Task<XBMCRPC.Settings.GetCategoriesResponse> GetCategories(XBMCRPC.Setting.Level? level=0, string section=null, XBMCRPC.Settings.GetCategories_properties properties=null)
         {
             var jArgs = new JObject();
              if (level != null)
@@ -38,7 +38,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Retrieves all setting sections
                 /// </summary>
-        public async Task<XBMCRPC.Settings.GetSectionsResponse> GetSections(XBMCRPC.Setting.Level level=0, XBMCRPC.Settings.GetSections_properties properties=null)
+        public async Task<XBMCRPC.Settings.GetSectionsResponse> GetSections(XBMCRPC.Setting.Level? level=0, XBMCRPC.Settings.GetSections_properties properties=null)
         {
             var jArgs = new JObject();
              if (level != null)
@@ -71,7 +71,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Retrieves all settings
                 /// </summary>
-        public async Task<XBMCRPC.Settings.GetSettingsResponse> GetSettings(XBMCRPC.Settings.GetSettings_filter1 filter, XBMCRPC.Setting.Level level=0)
+        public async Task<XBMCRPC.Settings.GetSettingsResponse> GetSettings(XBMCRPC.Settings.GetSettings_filter1 filter, XBMCRPC.Setting.Level? level=0)
         {
             var jArgs = new JObject();
              if (level != null)
@@ -90,7 +90,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Retrieves all settings
                 /// </summary>
-        public async Task<XBMCRPC.Settings.GetSettingsResponse> GetSettings(XBMCRPC.Setting.Level level=0)
+        public async Task<XBMCRPC.Settings.GetSettingsResponse> GetSettings(XBMCRPC.Setting.Level? level=0)
         {
             var jArgs = new JObject();
              if (level != null)

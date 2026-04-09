@@ -14,7 +14,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Activates the given window
                 /// </summary>
-        public async Task<string> ActivateWindow(XBMCRPC.GUI.Window window=0, global::System.Collections.Generic.List<string> parameters=null)
+        public async Task<string> ActivateWindow(XBMCRPC.GUI.Window? window=0, global::System.Collections.Generic.List<string> parameters=null)
         {
             var jArgs = new JObject();
              if (window != null)
@@ -70,7 +70,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Toggle fullscreen/GUI
                 /// </summary>
-        public async Task<bool> SetFullscreen(XBMCRPC.Global.Toggle2 fullscreen)
+        public async Task<bool> SetFullscreen(XBMCRPC.Global.Toggle2? fullscreen)
         {
             var jArgs = new JObject();
              if (fullscreen != null)
@@ -93,7 +93,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Sets the stereoscopic mode of the GUI to the given mode
                 /// </summary>
-        public async Task<string> SetStereoscopicMode(XBMCRPC.GUI.SetStereoscopicMode_mode mode=0)
+        public async Task<string> SetStereoscopicMode(XBMCRPC.GUI.SetStereoscopicMode_mode? mode=0)
         {
             var jArgs = new JObject();
              if (mode != null)
@@ -107,7 +107,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Shows a GUI notification
                 /// </summary>
-        public async Task<string> ShowNotification(XBMCRPC.GUI.ShowNotification_image1 image, string title=null, string message=null, int? displaytime =0)
+        public async Task<string> ShowNotification(XBMCRPC.GUI.ShowNotification_image1? image, string title=null, string message=null, int? displaytime =0)
         {
             var jArgs = new JObject();
              if (title != null)

@@ -95,7 +95,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Retrieves the details of a specific channel group
                 /// </summary>
-        public async Task<XBMCRPC.PVR.GetChannelGroupDetailsResponse> GetChannelGroupDetails(XBMCRPC.PVR.ChannelGroup.Id1 channelgroupid, XBMCRPC.PVR.GetChannelGroupDetails_channels channels=null)
+        public async Task<XBMCRPC.PVR.GetChannelGroupDetailsResponse> GetChannelGroupDetails(XBMCRPC.PVR.ChannelGroup.Id1? channelgroupid, XBMCRPC.PVR.GetChannelGroupDetails_channels channels=null)
         {
             var jArgs = new JObject();
              if (channelgroupid != null)
@@ -128,7 +128,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Retrieves the channel groups for the specified type
                 /// </summary>
-        public async Task<XBMCRPC.PVR.GetChannelGroupsResponse> GetChannelGroups(XBMCRPC.PVR.Channel.Type channeltype=0, XBMCRPC.List.Limits limits=null)
+        public async Task<XBMCRPC.PVR.GetChannelGroupsResponse> GetChannelGroups(XBMCRPC.PVR.Channel.Type? channeltype=0, XBMCRPC.List.Limits limits=null)
         {
             var jArgs = new JObject();
              if (channeltype != null)
@@ -171,7 +171,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Retrieves the channel list
                 /// </summary>
-        public async Task<XBMCRPC.PVR.GetChannelsResponse> GetChannels(XBMCRPC.PVR.ChannelGroup.Id1 channelgroupid, XBMCRPC.PVR.Fields.Channel properties=null, XBMCRPC.List.Limits limits=null)
+        public async Task<XBMCRPC.PVR.GetChannelsResponse> GetChannels(XBMCRPC.PVR.ChannelGroup.Id1? channelgroupid, XBMCRPC.PVR.Fields.Channel properties=null, XBMCRPC.List.Limits limits=null)
         {
             var jArgs = new JObject();
              if (channelgroupid != null)
@@ -323,7 +323,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Toggle recording of a channel
                 /// </summary>
-        public async Task<string> Record(XBMCRPC.Global.Toggle2 record, object channel=null)
+        public async Task<string> Record(XBMCRPC.Global.Toggle2? record, object channel=null)
         {
             var jArgs = new JObject();
              if (record != null)

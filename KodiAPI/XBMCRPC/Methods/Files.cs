@@ -14,7 +14,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Get the directories and files in the given directory
                 /// </summary>
-        public async Task<XBMCRPC.Files.GetDirectoryResponse> GetDirectory(string directory=null, XBMCRPC.Files.Media media=0, XBMCRPC.List.Fields.Files properties=null, XBMCRPC.List.Sort sort=null, XBMCRPC.List.Limits limits=null)
+        public async Task<XBMCRPC.Files.GetDirectoryResponse> GetDirectory(string directory=null, XBMCRPC.Files.Media? media=0, XBMCRPC.List.Fields.Files properties=null, XBMCRPC.List.Sort sort=null, XBMCRPC.List.Limits limits=null)
         {
             var jArgs = new JObject();
              if (directory != null)
@@ -48,7 +48,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Get details for a specific file
                 /// </summary>
-        public async Task<XBMCRPC.Files.GetFileDetailsResponse> GetFileDetails(string file=null, XBMCRPC.Files.Media media=0, XBMCRPC.List.Fields.Files properties=null)
+        public async Task<XBMCRPC.Files.GetFileDetailsResponse> GetFileDetails(string file=null, XBMCRPC.Files.Media? media=0, XBMCRPC.List.Fields.Files properties=null)
         {
             var jArgs = new JObject();
              if (file != null)
@@ -72,7 +72,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Get the sources of the media windows
                 /// </summary>
-        public async Task<XBMCRPC.Files.GetSourcesResponse> GetSources(XBMCRPC.Files.Media media=0, XBMCRPC.List.Limits limits=null, XBMCRPC.List.Sort sort=null)
+        public async Task<XBMCRPC.Files.GetSourcesResponse> GetSources(XBMCRPC.Files.Media? media=0, XBMCRPC.List.Limits limits=null, XBMCRPC.List.Sort sort=null)
         {
             var jArgs = new JObject();
              if (media != null)
