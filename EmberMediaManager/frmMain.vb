@@ -12422,7 +12422,8 @@ Public Class frmMain
         mnuScrapeOptionCollectionID.Click,
         mnuScrapeOptionCertifications.Click,
         mnuScrapeOptionAired.Click,
-        mnuScrapeOptionActors.Click
+        mnuScrapeOptionActors.Click,
+        mnuScrapeOptionRefreshMetadata.Click
 
         Dim ContentType As String = String.Empty
         Dim ScrapeOption As String = String.Empty
@@ -12496,6 +12497,8 @@ Public Class frmMain
             Case "writers"
                 ScrapeOptions.bEpisodeCredits = True
                 ScrapeOptions.bMainWriters = True
+            Case "metadata"
+                ScrapeModifiers.MainMeta = True
         End Select
 
         Select Case ContentType
