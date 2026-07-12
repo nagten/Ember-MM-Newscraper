@@ -495,7 +495,9 @@
     <Compile Include="frmMain.Designer.vb">
       <DependentUpon>frmMain.vb</DependentUpon>
     </Compile>
-    <Compile Include="frmMain.vb" />
+    <Compile Include="frmMain.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="MasterSettingsPanels\frmTV_Data_SeasonTitleBlacklist.Designer.vb">
       <DependentUpon>frmTV_Data_SeasonTitleBlacklist.vb</DependentUpon>
     </Compile>

@@ -1516,6 +1516,7 @@ Public Class frmMain
             If Not Cancelled Then
                 If Master.eSettings.MovieScraperMetaDataScan AndAlso tScrapeItem.ScrapeModifiers.MainMeta Then
                     bwMovieScraper.ReportProgress(-3, String.Concat(Master.eLang.GetString(140, "Scanning Meta Data"), ":"))
+                    logger.Trace(String.Format("[Movie Scraper] [UpdateMediaInfo] [{0}]", DBScrapeMovie.Movie.Title))
                     MediaInfo.UpdateMediaInfo(DBScrapeMovie)
                 End If
                 If bwMovieScraper.CancellationPending Then Exit For
@@ -1936,6 +1937,7 @@ Public Class frmMain
                 If tScrapeItem.ScrapeModifiers.withEpisodes AndAlso tScrapeItem.ScrapeModifiers.EpisodeMeta AndAlso Master.eSettings.TVScraperMetaDataScan Then
                     bwTVScraper.ReportProgress(-3, String.Concat(Master.eLang.GetString(140, "Scanning Meta Data"), ":"))
                     For Each tEpisode In DBScrapeShow.Episodes.Where(Function(f) f.FilenameSpecified)
+                        logger.Trace(String.Format("[TVScraper] [UpdateTVMediaInfo] [{0}]", tEpisode.TVEpisode.Title))
                         MediaInfo.UpdateTVMediaInfo(tEpisode)
                     Next
                 End If
@@ -2058,6 +2060,7 @@ Public Class frmMain
 
             If Not Cancelled Then
                 If Master.eSettings.TVScraperMetaDataScan AndAlso tScrapeItem.ScrapeModifiers.EpisodeMeta Then
+                    logger.Trace(String.Format("[TVScraper] [UpdateTVMediaInfo] [{0}]", DBScrapeEpisode.TVEpisode.Title))
                     MediaInfo.UpdateTVMediaInfo(DBScrapeEpisode)
                 End If
                 If bwTVEpisodeScraper.CancellationPending Then Exit For
@@ -11829,6 +11832,7 @@ Public Class frmMain
                     mnuScrapeOptionUserRating.Visible = True
                     mnuScrapeOptionWriters.Enabled = .MovieScraperCredits
                     mnuScrapeOptionWriters.Visible = True
+                    mnuScrapeOptionRefreshMetadata.Visible = True
                 Case "movieset"
                     mnuScrapeOptionActors.Enabled = False
                     mnuScrapeOptionActors.Visible = False
@@ -11880,6 +11884,7 @@ Public Class frmMain
                     mnuScrapeOptionUserRating.Visible = False
                     mnuScrapeOptionWriters.Enabled = False
                     mnuScrapeOptionWriters.Visible = False
+                    mnuScrapeOptionRefreshMetadata.Visible = False
                 Case "tvepisode"
                     mnuScrapeOptionActors.Enabled = .TVScraperEpisodeActors
                     mnuScrapeOptionActors.Visible = True
@@ -11931,6 +11936,7 @@ Public Class frmMain
                     mnuScrapeOptionUserRating.Visible = True
                     mnuScrapeOptionWriters.Enabled = .TVScraperEpisodeCredits
                     mnuScrapeOptionWriters.Visible = True
+                    mnuScrapeOptionRefreshMetadata.Visible = True
                 Case "tvseason"
                     mnuScrapeOptionActors.Enabled = False
                     mnuScrapeOptionActors.Visible = False
@@ -11982,6 +11988,7 @@ Public Class frmMain
                     mnuScrapeOptionUserRating.Visible = True
                     mnuScrapeOptionWriters.Enabled = False
                     mnuScrapeOptionWriters.Visible = False
+                    mnuScrapeOptionRefreshMetadata.Visible = False
                 Case "tvshow"
                     mnuScrapeOptionActors.Enabled = .TVScraperShowActors
                     mnuScrapeOptionActors.Visible = True
@@ -12033,6 +12040,7 @@ Public Class frmMain
                     mnuScrapeOptionUserRating.Visible = True
                     mnuScrapeOptionWriters.Enabled = False
                     mnuScrapeOptionWriters.Visible = False
+                    mnuScrapeOptionRefreshMetadata.Visible = True
             End Select
         End With
     End Sub
@@ -12498,24 +12506,44 @@ Public Class frmMain
                 ScrapeOptions.bEpisodeCredits = True
                 ScrapeOptions.bMainWriters = True
             Case "metadata"
-                ScrapeModifiers.MainMeta = True
+                If ContentType = "movie" Then
+                    ScrapeModifiers.MainMeta = True
+                Else
+                    ScrapeModifiers.EpisodeMeta = True
+                    ScrapeModifiers.withEpisodes = True
+                End If
         End Select
 
         Select Case ContentType
             Case "movie"
-                ScrapeModifiers.MainNFO = True
+                If ScrapeOption = "metadata" Then
+                    ScrapeModifiers.MainNFO = False
+                Else
+                    ScrapeModifiers.MainNFO = True
+                End If
+
                 CreateScrapeList_Movie(Enums.ScrapeType.SingleField, ScrapeOptions, ScrapeModifiers)
             Case "movieset"
                 ScrapeModifiers.MainNFO = True
                 CreateScrapeList_MovieSet(Enums.ScrapeType.SingleField, ScrapeOptions, ScrapeModifiers)
             Case "tvepisode"
-                ScrapeModifiers.EpisodeNFO = True
+                If ScrapeOption = "metadata" Then
+                    ScrapeModifiers.EpisodeNFO = False
+                Else
+                    ScrapeModifiers.EpisodeNFO = True
+                End If
+
                 CreateScrapeList_TVEpisode(Enums.ScrapeType.SingleField, ScrapeOptions, ScrapeModifiers)
             Case "tvseason"
                 ScrapeModifiers.SeasonNFO = True
                 CreateScrapeList_TVSeason(Enums.ScrapeType.SingleField, ScrapeOptions, ScrapeModifiers)
             Case "tvshow"
-                ScrapeModifiers.MainNFO = True
+                If ScrapeOption = "metadata" Then
+                    ScrapeModifiers.MainNFO = False
+                Else
+                    ScrapeModifiers.MainNFO = True
+                End If
+
                 CreateScrapeList_TV(Enums.ScrapeType.SingleField, ScrapeOptions, ScrapeModifiers)
         End Select
     End Sub
