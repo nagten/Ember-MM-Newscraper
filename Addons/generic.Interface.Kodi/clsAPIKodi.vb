@@ -396,8 +396,6 @@ Namespace Kodi
         ''' <param name="tDBElement"></param>
         ''' <returns></returns>
         Private Async Function GetMediaID(ByVal tDBElement As Database.DBElement) As Task(Of Integer)
-            Dim KodiID As Integer = -1
-
             Select Case tDBElement.ContentType
                 Case Enums.ContentType.Movie
                     Dim KodiMovie As Video.Details.Movie = Await Search_Movie(tDBElement).ConfigureAwait(False)
@@ -2666,7 +2664,9 @@ Namespace Kodi
         Public Sub Dispose() Implements IDisposable.Dispose
         End Sub
 
+#Disable Warning BC42356 ' This async method lacks 'Await' operators and so will run synchronously
         Public Async Function ConnectAsync(hostName As String, port As Integer) As Task Implements ISocket.ConnectAsync
+#Enable Warning BC42356 ' This async method lacks 'Await' operators and so will run synchronously
             _socket = New Net.Sockets.Socket(Net.Sockets.AddressFamily.InterNetwork, Net.Sockets.SocketType.Stream, Net.Sockets.ProtocolType.Tcp)
             _socket.Connect(hostName, port)
         End Function

@@ -41,7 +41,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Execute a specific action
                 /// </summary>
-        public async Task<string> ExecuteAction(XBMCRPC.Input.Action action=0)
+        public async Task<string> ExecuteAction(XBMCRPC.Input.Action? action=0)
         {
             var jArgs = new JObject();
              if (action != null)

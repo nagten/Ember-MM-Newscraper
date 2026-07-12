@@ -124,7 +124,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Gets all available addons
                 /// </summary>
-        public async Task<XBMCRPC.Addons.GetAddonsResponse> GetAddons(bool? enabled, XBMCRPC.Addon.Types type=0, XBMCRPC.Addon.Content content=0, XBMCRPC.Addon.Fields properties=null, XBMCRPC.List.Limits limits=null)
+        public async Task<XBMCRPC.Addons.GetAddonsResponse> GetAddons(bool? enabled, XBMCRPC.Addon.Types? type=0, XBMCRPC.Addon.Content? content=0, XBMCRPC.Addon.Fields properties=null, XBMCRPC.List.Limits limits=null)
         {
             var jArgs = new JObject();
              if (type != null)
@@ -158,7 +158,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Gets all available addons
                 /// </summary>
-        public async Task<XBMCRPC.Addons.GetAddonsResponse> GetAddons(XBMCRPC.Addons.GetAddons_enabled2 enabled, XBMCRPC.Addon.Types type=0, XBMCRPC.Addon.Content content=0, XBMCRPC.Addon.Fields properties=null, XBMCRPC.List.Limits limits=null)
+        public async Task<XBMCRPC.Addons.GetAddonsResponse> GetAddons(XBMCRPC.Addons.GetAddons_enabled2? enabled, XBMCRPC.Addon.Types? type=0, XBMCRPC.Addon.Content? content=0, XBMCRPC.Addon.Fields properties=null, XBMCRPC.List.Limits limits=null)
         {
             var jArgs = new JObject();
              if (type != null)
@@ -192,7 +192,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Gets all available addons
                 /// </summary>
-        public async Task<XBMCRPC.Addons.GetAddonsResponse> GetAddons(XBMCRPC.Addon.Types type=0, XBMCRPC.Addon.Content content=0, XBMCRPC.Addon.Fields properties=null, XBMCRPC.List.Limits limits=null)
+        public async Task<XBMCRPC.Addons.GetAddonsResponse> GetAddons(XBMCRPC.Addon.Types? type=0, XBMCRPC.Addon.Content? content=0, XBMCRPC.Addon.Fields properties=null, XBMCRPC.List.Limits limits=null)
         {
             var jArgs = new JObject();
              if (type != null)
@@ -240,7 +240,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Enables/Disables a specific addon
                 /// </summary>
-        public async Task<string> SetAddonEnabled(XBMCRPC.Global.Toggle2 enabled, string addonid=null)
+        public async Task<string> SetAddonEnabled(XBMCRPC.Global.Toggle2? enabled, string addonid=null)
         {
             var jArgs = new JObject();
              if (addonid != null)

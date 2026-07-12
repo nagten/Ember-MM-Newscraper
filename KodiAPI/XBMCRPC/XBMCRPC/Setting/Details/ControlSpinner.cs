@@ -9,6 +9,6 @@ namespace XBMCRPC.Setting.Details
    {
        public string formatlabel { get; set; }
        public string minimumlabel { get; set; }
-       public XBMCRPC.Setting.Details.ControlSpinner_type type { get; set; }
+       public XBMCRPC.Setting.Details.ControlSpinner_type Type { get; set; }
     }
 }

@@ -51,7 +51,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Toggle mute/unmute
                 /// </summary>
-        public async Task<bool> SetMute(XBMCRPC.Global.Toggle2 mute)
+        public async Task<bool> SetMute(XBMCRPC.Global.Toggle2? mute)
         {
             var jArgs = new JObject();
              if (mute != null)
@@ -88,7 +88,7 @@ namespace XBMCRPC.Methods
                 /// <summary>
                 /// Set the current volume
                 /// </summary>
-        public async Task<int> SetVolume(XBMCRPC.Global.IncrementDecrement volume)
+        public async Task<int> SetVolume(XBMCRPC.Global.IncrementDecrement? volume)
         {
             var jArgs = new JObject();
              if (volume != null)
